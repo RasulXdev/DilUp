@@ -119,11 +119,15 @@
     "cta": "İndi başla"
   },
   "becomeTutor": {
+    "badge": "DilUp müəllim",
     "title": "Müəllim ol, öz qiymətini təyin et",
     "text": "İstədiyin vaxt, istədiyin yerdən tədris et. Qazancını özün idarə et — qiymətini sən qoyursan.",
-    "bullet1": "Öz saatlıq qiymətini təyin et",
-    "bullet2": "İstənilən vaxt, istənilən yerdən tədris et",
-    "bullet3": "Peşəkar şəkildə inkişaf et",
+    "priceLabel": "Öz qiymətini təyin et",
+    "priceValue": "30 ₼",
+    "priceUnit": "/ dərs",
+    "trust1": "Təhlükəsiz ödəniş",
+    "trust2": "Pulsuz qeydiyyat",
+    "trust3": "İstənilən vaxt tədris",
     "cta": "Müəllim profili yarat",
     "secondary": "Platforma necə işləyir"
   },

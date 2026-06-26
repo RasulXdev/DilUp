@@ -1,51 +1,41 @@
+import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { Check, ArrowRight, Wallet, Clock, GraduationCap } from "lucide-react";
+import { ArrowRight, ShieldCheck, UserPlus, CalendarClock } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 export function BecomeTutorCTA() {
   const t = useTranslations("becomeTutor");
 
-  const bullets = [
-    { icon: Wallet, text: t("bullet1") },
-    { icon: Clock, text: t("bullet2") },
-    { icon: GraduationCap, text: t("bullet3") },
+  const trust = [
+    { icon: ShieldCheck, text: t("trust1") },
+    { icon: UserPlus, text: t("trust2") },
+    { icon: CalendarClock, text: t("trust3") },
   ];
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-      <div className="grid items-center gap-12 lg:grid-cols-2">
-        {/* Visual */}
-        <div className="relative order-last lg:order-first">
-          <div className="relative rounded-3xl border border-line bg-gradient-to-br from-brand-50 to-surface p-8">
-            <div className="rounded-2xl border border-line bg-white p-6 shadow-card">
-              <p className="text-sm font-medium text-muted">
-                {t("bullet1")}
-              </p>
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="font-display text-4xl font-extrabold text-ink">
-                  30 ₼
-                </span>
-                <span className="text-muted">/ dərs</span>
-              </div>
-              <div className="mt-5 space-y-3">
-                {bullets.map((b) => (
-                  <div key={b.text} className="flex items-center gap-3">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
-                      <b.icon className="h-4.5 w-4.5" />
-                    </span>
-                    <span className="text-sm font-medium text-ink">
-                      {b.text}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+    <section className="relative mt-10 overflow-hidden rounded-t-[2.5rem] bg-brand-700 sm:mt-14">
+      {/* Decorative glow */}
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div className="absolute -right-20 -top-28 h-80 w-80 rounded-full bg-accent-400/15 blur-3xl" />
+        <div className="absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-white/5 blur-3xl" />
+      </div>
+
+      <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[minmax(0,360px)_1fr] lg:gap-16 lg:px-8 lg:py-20">
+        {/* Photo */}
+        <div className="relative mx-auto w-full max-w-[320px] lg:mx-0">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-brand-600 shadow-card">
+            <Image
+              src="/images/become-tutor-portrait.jpg"
+              alt=""
+              fill
+              sizes="(min-width: 1024px) 360px, 320px"
+              className="object-cover"
+            />
           </div>
+          {/* Floating manat badge */}
           <span
             aria-hidden
-            className="animate-float absolute -right-4 -top-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent-400 font-display text-2xl font-extrabold text-ink shadow-accent"
+            className="animate-float absolute -left-3 -top-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-400 font-display text-2xl font-extrabold text-ink shadow-accent"
           >
             ₼
           </span>
@@ -53,33 +43,50 @@ export function BecomeTutorCTA() {
 
         {/* Copy */}
         <div className="max-w-xl">
-          <h2 className="font-display text-3xl font-extrabold text-ink sm:text-4xl">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-400/15 px-3 py-1 text-xs font-bold text-accent-200">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent-400" />
+            {t("badge")}
+          </span>
+          <h2 className="mt-4 font-display text-3xl font-extrabold leading-[1.08] text-white sm:text-4xl">
             {t("title")}
           </h2>
-          <p className="mt-4 text-lg leading-relaxed text-ink-soft">
+          <p className="mt-4 text-lg leading-relaxed text-white/75">
             {t("text")}
           </p>
+
+          {/* Inline price stat */}
+          <div className="mt-6 flex items-center gap-3">
+            <span className="font-display text-4xl font-extrabold text-accent-300">
+              {t("priceValue")}
+            </span>
+            <div className="text-sm leading-tight text-white/70">
+              <span className="block">{t("priceUnit")}</span>
+              <span className="block">{t("priceLabel")}</span>
+            </div>
+          </div>
+
           <ul className="mt-6 space-y-3">
-            {bullets.map((b) => (
-              <li key={b.text} className="flex items-center gap-3">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-success/10 text-success">
-                  <Check className="h-4 w-4" />
+            {trust.map((item) => (
+              <li key={item.text} className="flex items-center gap-3 text-white">
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 text-accent-300">
+                  <item.icon className="h-4 w-4" />
                 </span>
-                <span className="text-ink">{b.text}</span>
+                <span className="font-medium">{item.text}</span>
               </li>
             ))}
           </ul>
+
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Link
               href="/register/tutor"
-              className={cn(buttonVariants({ variant: "primary", size: "lg" }))}
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-accent-400 px-7 text-base font-semibold text-ink shadow-accent transition-colors hover:bg-accent-300"
             >
               {t("cta")}
               <ArrowRight className="h-5 w-5" />
             </Link>
             <Link
               href="/how-it-works"
-              className={cn(buttonVariants({ variant: "ghost", size: "lg" }))}
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-white/30 px-6 text-base font-semibold text-white transition-colors hover:bg-white/10"
             >
               {t("secondary")}
             </Link>

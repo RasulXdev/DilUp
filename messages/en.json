@@ -119,11 +119,15 @@
     "cta": "Get started"
   },
   "becomeTutor": {
+    "badge": "DilUp tutor",
     "title": "Become a tutor, set your own rate",
     "text": "Teach whenever and wherever you want. You're in control of your earnings — you set the price.",
-    "bullet1": "Set your own hourly rate",
-    "bullet2": "Teach anytime, anywhere",
-    "bullet3": "Grow professionally",
+    "priceLabel": "Set your own rate",
+    "priceValue": "30 ₼",
+    "priceUnit": "/ lesson",
+    "trust1": "Secure payments",
+    "trust2": "Free registration",
+    "trust3": "Teach anytime",
     "cta": "Create a tutor profile",
     "secondary": "How our platform works"
   },
