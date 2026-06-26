@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+/* ============================================================
+   DilUp Design System — blue-dominant, warm-gold accent.
+   Fonts injected via next/font as --font-display / --font-sans.
+   ============================================================ */
+
+@theme {
+  /* ---- Brand: DilUp Blue ---- */
+  --color-brand-50: #eef4ff;
+  --color-brand-100: #dbe7fe;
+  --color-brand-200: #bfd5fe;
+  --color-brand-300: #93b8fd;
+  --color-brand-400: #6092fa;
+  --color-brand-500: #3b6cf6;
+  --color-brand-600: #2456e6;
+  --color-brand-700: #1c43cf;
+  --color-brand-800: #1d39a8;
+  --color-brand-900: #1d3585;
+  --color-brand-950: #162152;
+
+  /* ---- Accent: warm gold (conversion pops only) ---- */
+  --color-accent-50: #fff8eb;
+  --color-accent-100: #ffedc6;
+  --color-accent-200: #ffd988;
+  --color-accent-300: #ffc14a;
+  --color-accent-400: #ffac20;
+  --color-accent-500: #f98e07;
+  --color-accent-600: #dd6b02;
+  --color-accent-700: #b74e06;
+  --color-accent-800: #943c0c;
+  --color-accent-900: #7a330d;
+  --color-accent-950: #461902;
+
+  /* ---- Ink & cool-tinted neutrals ---- */
+  --color-ink: #0d1530;
+  --color-ink-soft: #3a4366;
+  --color-muted: #6b7393;
+  --color-line: #e6ebf4;
+  --color-surface: #f6f8fc;
+  --color-success: #16a34a;
+
+  /* ---- Typography ---- */
+  --font-sans:
+    var(--font-body), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display:
+    var(--font-heading), var(--font-body), ui-sans-serif, system-ui, sans-serif;
+
+  /* ---- Radius scale (friendly, generous) ---- */
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.125rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+
+  /* ---- Soft blue-tinted shadows ---- */
+  --shadow-soft: 0 1px 2px rgba(13, 21, 48, 0.04),
+    0 4px 16px rgba(13, 21, 48, 0.06);
+  --shadow-card: 0 2px 4px rgba(13, 21, 48, 0.04),
+    0 12px 32px -8px rgba(13, 21, 48, 0.12);
+  --shadow-brand: 0 8px 24px -6px rgba(36, 86, 230, 0.45);
+  --shadow-accent: 0 8px 24px -6px rgba(249, 142, 7, 0.4);
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: var(--color-ink);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+  ::selection {
+    background: var(--color-brand-200);
+    color: var(--color-brand-900);
+  }
+}
+
+/* Decorative blurred blob used behind hero / illustrations. */
+@utility blob {
+  filter: blur(56px);
+  opacity: 0.55;
+}
+
+/* Subtle dotted grid texture for section backgrounds. */
+@utility dot-grid {
+  background-image: radial-gradient(
+    var(--color-brand-200) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility animate-float {
+  animation: float-slow 7s ease-in-out infinite;
+}
+
+@utility animate-rise {
+  animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "common": {
+    "appName": "DilUp",
+    "tagline": "Level up your language",
+    "comingSoon": "Coming soon",
+    "loading": "Loading…",
+    "showMore": "Show more",
+    "showLess": "Show less"
+  },
+  "nav": {
+    "findTutors": "Find tutors",
+    "becomeTutor": "Become a tutor",
+    "howItWorks": "How it works",
+    "provenProgress": "Proven progress",
+    "help": "Help",
+    "logIn": "Log in",
+    "signUp": "Sign up",
+    "language": "Language"
+  },
+  "hero": {
+    "badge": "Azerbaijan's online language platform",
+    "title": "Learn English with <mark>a tutor who fits you</mark>",
+    "subtitle": "Thousands of live lessons at a price for every budget. Pick your tutor, pick your time, and start speaking from the very first lesson.",
+    "ctaPrimary": "Find your tutor",
+    "ctaSecondary": "How it works",
+    "trustNote": "No risk — swap a trial lesson you didn't love for free"
+  },
+  "trustStats": {
+    "title": "The platform learners trust",
+    "tutors": "Experienced tutors",
+    "reviews": "5-star reviews",
+    "languages": "Languages taught",
+    "countries": "Tutor nationalities",
+    "rating": "Average rating"
+  },
+  "languageGrid": {
+    "title": "Which language do you want to learn?",
+    "subtitle": "Start with English — more languages are on the way.",
+    "tutorsCount": "{count} tutors",
+    "explore": "Explore"
+  },
+  "howItWorks": {
+    "title": "Get started in three simple steps",
+    "step1Title": "Find your tutor",
+    "step1Text": "Filter by price, availability and specialty. Browse profiles and intro videos.",
+    "step2Title": "Start learning",
+    "step2Text": "Talk to your tutor in a live video lesson. No software to install.",
+    "step3Title": "Make progress every week",
+    "step3Text": "Keep your schedule, do the homework and see real results."
+  },
+  "guarantee": {
+    "title": "A tutor match, guaranteed",
+    "text": "If your first lesson isn't the right fit, get a free trial with another tutor. No risk at all.",
+    "cta": "Get started"
+  },
+  "becomeTutor": {
+    "title": "Become a tutor, set your own rate",
+    "text": "Teach whenever and wherever you want. You're in control of your earnings — you set the price.",
+    "bullet1": "Set your own hourly rate",
+    "bullet2": "Teach anytime, anywhere",
+    "bullet3": "Grow professionally",
+    "cta": "Create a tutor profile",
+    "secondary": "How our platform works"
+  },
+  "footer": {
+    "about": "About us",
+    "forStudents": "For students",
+    "forTutors": "For tutors",
+    "company": "Company",
+    "careers": "Careers",
+    "contact": "Contact",
+    "findTutors": "Find tutors",
+    "howItWorks": "How it works",
+    "becomeTutor": "Become a tutor",
+    "faq": "FAQ",
+    "privacy": "Privacy policy",
+    "terms": "Terms of service",
+    "rights": "All rights reserved.",
+    "madeIn": "Made in Azerbaijan"
+  }
+}

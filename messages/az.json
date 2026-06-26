@@ -1,0 +1,81 @@
+{
+  "common": {
+    "appName": "DilUp",
+    "tagline": "Dilini yüksəlt",
+    "comingSoon": "Tezliklə",
+    "loading": "Yüklənir…",
+    "showMore": "Daha çox",
+    "showLess": "Gizlət"
+  },
+  "nav": {
+    "findTutors": "Müəllim tap",
+    "becomeTutor": "Müəllim ol",
+    "howItWorks": "Necə işləyir",
+    "provenProgress": "Sübut olunmuş nəticə",
+    "help": "Kömək",
+    "logIn": "Daxil ol",
+    "signUp": "Qeydiyyat",
+    "language": "Dil"
+  },
+  "hero": {
+    "badge": "Azərbaycanın online dil platforması",
+    "title": "İngilis dilini <mark>sənə uyğun müəllimlə</mark> öyrən",
+    "subtitle": "Minlərlə canlı dərs, hər büdcəyə uyğun qiymət. Müəllimini seç, vaxtını seç və ilk dərsindən danışmağa başla.",
+    "ctaPrimary": "Müəllimini tap",
+    "ctaSecondary": "Necə işləyir?",
+    "trustNote": "Riskə yox — bəyənmədiyin trial dərsi pulsuz dəyiş"
+  },
+  "trustStats": {
+    "title": "Öyrənənlərin etibar etdiyi platforma",
+    "tutors": "Təcrübəli müəllim",
+    "reviews": "5 ulduzlu rəy",
+    "languages": "Tədris olunan dil",
+    "countries": "Müəllim ölkəsi",
+    "rating": "Orta reytinq"
+  },
+  "languageGrid": {
+    "title": "Hansı dili öyrənmək istəyirsən?",
+    "subtitle": "İngilis dili ilə başla — yeni dillər yoldadır.",
+    "tutorsCount": "{count} müəllim",
+    "explore": "Bax"
+  },
+  "howItWorks": {
+    "title": "Üç sadə addımda başla",
+    "step1Title": "Müəllimini tap",
+    "step1Text": "Qiymət, mövcudluq və ixtisasa görə filtrlə. Profilləri və videoları nəzərdən keçir.",
+    "step2Title": "Öyrənməyə başla",
+    "step2Text": "Canlı video dərsdə birbaşa müəllimlə danış. Heç bir proqram quraşdırmaq lazım deyil.",
+    "step3Title": "Hər həftə irəlilə",
+    "step3Text": "Cədvəlini tut, tapşırıqları yerinə yetir və real nəticələri gör."
+  },
+  "guarantee": {
+    "title": "Sənə uyğun müəllimə zəmanət",
+    "text": "Əgər ilk dərs uyğun gəlməsə, başqa müəllimlə pulsuz trial dərsi əldə et. Heç bir risk yoxdur.",
+    "cta": "İndi başla"
+  },
+  "becomeTutor": {
+    "title": "Müəllim ol, öz qiymətini təyin et",
+    "text": "İstədiyin vaxt, istədiyin yerdən tədris et. Qazancını özün idarə et — qiymətini sən qoyursan.",
+    "bullet1": "Öz saatlıq qiymətini təyin et",
+    "bullet2": "İstənilən vaxt, istənilən yerdən tədris et",
+    "bullet3": "Peşəkar şəkildə inkişaf et",
+    "cta": "Müəllim profili yarat",
+    "secondary": "Platforma necə işləyir"
+  },
+  "footer": {
+    "about": "Haqqımızda",
+    "forStudents": "Tələbələr üçün",
+    "forTutors": "Müəllimlər üçün",
+    "company": "Şirkət",
+    "careers": "Karyera",
+    "contact": "Əlaqə",
+    "findTutors": "Müəllim tap",
+    "howItWorks": "Necə işləyir",
+    "becomeTutor": "Müəllim ol",
+    "faq": "Tez-tez verilən suallar",
+    "privacy": "Məxfilik siyasəti",
+    "terms": "İstifadə şərtləri",
+    "rights": "Bütün hüquqlar qorunur.",
+    "madeIn": "Azərbaycanda hazırlanıb"
+  }
+}
