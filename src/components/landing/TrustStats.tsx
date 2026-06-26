@@ -12,7 +12,7 @@ export function TrustStats() {
   ];
 
   return (
-    <section className="border-y border-line bg-surface">
+    <section className="bg-white">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <p className="text-center text-sm font-semibold uppercase tracking-wide text-muted">
           {t("title")}
