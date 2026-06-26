@@ -1,4 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
+import { redirect } from "@/i18n/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { resolveUserHome } from "@/lib/auth/redirects";
 import { Logo } from "@/components/shared/Logo";
 import { LocaleCurrencySwitcher } from "@/components/shared/LocaleCurrencySwitcher";
 import { AuthBrandPanel } from "@/components/auth/AuthBrandPanel";
@@ -12,6 +15,13 @@ export default async function AuthLayout({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getUser();
+  if (data.user) {
+    const home = await resolveUserHome(supabase, data.user.id);
+    redirect({ href: home, locale });
+  }
 
   return (
     <div className="grid min-h-dvh lg:grid-cols-[1.05fr_1fr]">
