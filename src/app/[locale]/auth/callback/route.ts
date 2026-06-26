@@ -1,0 +1,72 @@
+import { NextResponse } from "next/server";
+import { getRoleHome, isSafeRedirectPath, type UserRole } from "@/lib/auth/redirects";
+import { createClient } from "@/lib/supabase/server";
+
+/** OAuth / magic-link / password-reset code exchange. */
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ locale: string }> },
+) {
+  const { locale } = await params;
+  const { searchParams, origin } = new URL(request.url);
+  const code = searchParams.get("code");
+  const next = searchParams.get("next");
+  const roleParam = searchParams.get("role");
+
+  if (code) {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      const intendedRole = normalizeRole(
+        roleParam ?? user?.user_metadata?.intended_role,
+      );
+
+      if (user && intendedRole) {
+        await supabase
+          .from("profiles")
+          .update({
+            role: intendedRole,
+            full_name:
+              user.user_metadata?.full_name ??
+              user.user_metadata?.name ??
+              user.email?.split("@")[0] ??
+              "DilUp user",
+            avatar_url: user.user_metadata?.avatar_url ?? null,
+          })
+          .eq("id", user.id);
+
+        if (intendedRole === "tutor") {
+          await supabase.from("tutor_profiles").upsert(
+            {
+              user_id: user.id,
+              price_per_lesson: 20,
+              trial_price_per_lesson: 10,
+              headline: "DilUp tutor",
+              about: "Ready to teach live language lessons on DilUp.",
+            },
+            { onConflict: "user_id" },
+          );
+        }
+      }
+
+      const { data: profile } = user
+        ? await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle()
+        : { data: null };
+      const fallback = getRoleHome(profile?.role);
+      const path = isSafeRedirectPath(next) ? next : fallback;
+      return NextResponse.redirect(`${origin}/${locale}${path}`);
+    }
+  }
+
+  return NextResponse.redirect(`${origin}/${locale}/login?error=auth`);
+}
+
+function normalizeRole(role: unknown): UserRole | null {
+  return role === "student" || role === "tutor" || role === "admin"
+    ? role
+    : null;
+}

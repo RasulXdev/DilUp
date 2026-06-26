@@ -1,15 +1,16 @@
 import { createServerClient } from "@supabase/ssr";
 import type { NextRequest, NextResponse } from "next/server";
+import type { User } from "@supabase/supabase-js";
 
 /**
- * Refreshes the Supabase auth session and writes refreshed cookies onto the
- * given response. Designed to be composed with the next-intl proxy in the
- * project-root `proxy.ts` (Next.js 16 renamed Middleware → Proxy).
+ * Refreshes the Supabase auth session, writing refreshed cookies onto the
+ * given response, and returns the current user (or null). Composed with the
+ * next-intl proxy in the project-root `proxy.ts` (Next 16 renamed Middleware → Proxy).
  */
 export async function updateSession(
   request: NextRequest,
   response: NextResponse,
-): Promise<NextResponse> {
+): Promise<{ response: NextResponse; user: User | null }> {
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -28,8 +29,9 @@ export async function updateSession(
     },
   );
 
-  // IMPORTANT: refresh the session so Server Components receive a valid token.
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  return response;
+  return { response, user };
 }

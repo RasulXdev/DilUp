@@ -1,4 +1,61 @@
 {
+  "auth": {
+    "continueGoogle": "Continue with Google",
+    "orEmail": "or continue with email",
+    "welcomeBack": "Welcome back!",
+    "accountCreated": "Your account is ready!",
+    "checkEmail": "Check your email for the confirmation link.",
+    "magicLinkSent": "A sign-in link has been sent to your email.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "fields": {
+      "email": "Email",
+      "password": "Password",
+      "fullName": "Full name",
+      "fullNamePlaceholder": "E.g. Aysel Mammadova",
+      "passwordHint": "At least 8 characters"
+    },
+    "errors": {
+      "invalidCredentials": "Email or password is incorrect",
+      "email": "Enter a valid email address",
+      "password": "Password must be at least 8 characters",
+      "fullName": "Enter your name"
+    },
+    "login": {
+      "title": "Welcome back",
+      "noAccount": "No account yet?",
+      "signUpLink": "Sign up",
+      "forgot": "Forgot password?",
+      "remember": "Remember me",
+      "submit": "Log in",
+      "magicLink": "Send passwordless link"
+    },
+    "register": {
+      "title": "Create your account",
+      "titleTutor": "Join as a tutor",
+      "haveAccount": "Already have an account?",
+      "logInLink": "Log in",
+      "submit": "Create account",
+      "defaultTutorHeadline": "DilUp tutor",
+      "defaultTutorAbout": "I am ready to teach live language lessons on DilUp.",
+      "terms": "By continuing, you agree to the <terms>Terms of service</terms> and <privacy>Privacy policy</privacy>."
+    },
+    "forgot": {
+      "title": "Reset your password",
+      "subtitle": "Enter your email and we will send you a secure reset link.",
+      "submit": "Send reset link",
+      "sentTitle": "Email sent",
+      "sentBody": "We sent a reset link to {email}. Check your inbox.",
+      "backToLogin": "Back to login"
+    },
+    "panel": {
+      "headline": "Explore the world in your own voice",
+      "subline": "Start live lessons today with a tutor matched to your goals.",
+      "quote": "With DilUp, I reached IELTS 7.0 in three months. My tutor was with me at every step.",
+      "author": "Nilufar H.",
+      "authorRole": "IELTS 7.0 · DilUp student"
+    }
+  },
   "common": {
     "appName": "DilUp",
     "tagline": "Level up your language",

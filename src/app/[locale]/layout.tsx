@@ -5,6 +5,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { Providers } from "../providers";
+import { Toaster } from "@/components/ui/sonner";
 import "../globals.css";
 
 const fontHeading = Onest({
@@ -56,6 +57,7 @@ export default async function LocaleLayout({
       <body className="flex min-h-dvh flex-col bg-white antialiased">
         <NextIntlClientProvider>
           <Providers>{children}</Providers>
+          <Toaster />
         </NextIntlClientProvider>
       </body>
     </html>

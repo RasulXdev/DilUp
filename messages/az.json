@@ -1,4 +1,61 @@
 {
+  "auth": {
+    "continueGoogle": "Google ilə davam et",
+    "orEmail": "və ya email ilə",
+    "welcomeBack": "Xoş gəldin!",
+    "accountCreated": "Hesabın yaradıldı!",
+    "checkEmail": "Təsdiq linki üçün email-ini yoxla.",
+    "magicLinkSent": "Giriş linki email-inə göndərildi.",
+    "showPassword": "Şifrəni göstər",
+    "hidePassword": "Şifrəni gizlət",
+    "fields": {
+      "email": "E-poçt",
+      "password": "Şifrə",
+      "fullName": "Ad və soyad",
+      "fullNamePlaceholder": "Məs. Aysel Məmmədova",
+      "passwordHint": "Ən azı 8 simvol"
+    },
+    "errors": {
+      "invalidCredentials": "E-poçt və ya şifrə yanlışdır",
+      "email": "Düzgün e-poçt ünvanı daxil et",
+      "password": "Şifrə ən azı 8 simvol olmalıdır",
+      "fullName": "Adını daxil et"
+    },
+    "login": {
+      "title": "Yenidən xoş gəldin",
+      "noAccount": "Hesabın yoxdur?",
+      "signUpLink": "Qeydiyyatdan keç",
+      "forgot": "Şifrəni unutdun?",
+      "remember": "Məni xatırla",
+      "submit": "Daxil ol",
+      "magicLink": "Şifrəsiz link göndər"
+    },
+    "register": {
+      "title": "Hesab yarat",
+      "titleTutor": "Müəllim kimi qoşul",
+      "haveAccount": "Artıq hesabın var?",
+      "logInLink": "Daxil ol",
+      "submit": "Hesab yarat",
+      "defaultTutorHeadline": "DilUp müəllimi",
+      "defaultTutorAbout": "DilUp-da canlı dil dərsləri keçməyə hazıram.",
+      "terms": "Davam etməklə <terms>İstifadə şərtləri</terms> və <privacy>Məxfilik siyasəti</privacy> ilə razılaşırsan."
+    },
+    "forgot": {
+      "title": "Şifrəni bərpa et",
+      "subtitle": "E-poçtunu daxil et — sənə bərpa linki göndərək.",
+      "submit": "Bərpa linki göndər",
+      "sentTitle": "Email göndərildi",
+      "sentBody": "{email} ünvanına bərpa linki göndərdik. Gələnlər qutusunu yoxla.",
+      "backToLogin": "Girişə qayıt"
+    },
+    "panel": {
+      "headline": "Dünyanı öz dilində kəşf et",
+      "subline": "Sənə uyğun müəllimlə canlı dərslərə bu gün başla.",
+      "quote": "DilUp ilə 3 ayda IELTS-də 7.0 aldım. Müəllimim hər addımda yanımda idi.",
+      "author": "Nilufər H.",
+      "authorRole": "IELTS 7.0 · DilUp tələbəsi"
+    }
+  },
   "common": {
     "appName": "DilUp",
     "tagline": "Dilini yüksəlt",
