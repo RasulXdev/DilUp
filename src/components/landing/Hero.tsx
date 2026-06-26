@@ -9,12 +9,12 @@ export function Hero() {
   const t = useTranslations("hero");
 
   return (
-    <section className="relative -mt-px overflow-hidden bg-brand-300 lg:h-[calc(100svh-4.5rem)] lg:min-h-[680px]">
+    <section className="relative -mt-px overflow-hidden bg-brand-300">
       <div aria-hidden className="absolute inset-0">
         <div className="absolute right-0 top-20 h-[72%] w-1/2 bg-[radial-gradient(circle_at_70%_35%,rgba(36,86,230,0.13),transparent_48%)]" />
       </div>
 
-      <div className="relative mx-auto grid h-full max-w-7xl items-center gap-10 px-4 pb-12 pt-9 sm:px-6 lg:grid-cols-[0.86fr_1.14fr] lg:px-8 lg:py-8">
+      <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 pb-10 pt-9 sm:px-6 lg:grid-cols-[0.86fr_1.14fr] lg:px-8 lg:pb-8 lg:pt-9">
         <div className="max-w-xl">
           <span className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white/75 px-4 py-2 text-sm font-bold text-brand-700 shadow-sm">
             <ShieldCheck className="h-4 w-4" />
