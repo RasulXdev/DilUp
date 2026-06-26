@@ -1,58 +1,73 @@
+import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { Search, Video, TrendingUp } from "lucide-react";
 
 export function HowItWorks() {
   const t = useTranslations("howItWorks");
 
   const steps = [
     {
-      icon: Search,
       title: t("step1Title"),
       text: t("step1Text"),
+      image: "/images/how-it-works/step-1.jpg",
+      badge: "bg-brand-600 text-white",
+      imageClass: "object-cover object-center",
     },
     {
-      icon: Video,
       title: t("step2Title"),
       text: t("step2Text"),
+      image: "/images/how-it-works/step-2.jpg",
+      badge: "bg-accent-400 text-ink",
+      imageClass: "object-cover object-center",
     },
     {
-      icon: TrendingUp,
       title: t("step3Title"),
       text: t("step3Text"),
+      image: "/images/how-it-works/step-3.jpg",
+      badge: "bg-success text-white",
+      imageClass: "object-cover object-center scale-[1.18]",
     },
   ];
 
   return (
-    <section className="bg-surface">
+    <section className="bg-white">
       <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-        <h2 className="text-center font-display text-3xl font-extrabold text-ink sm:text-4xl">
-          {t("title")}
-        </h2>
+        <div className="flex flex-col items-center text-center">
+          <h2 className="font-display text-4xl font-extrabold tracking-tight text-ink sm:text-5xl">
+            {t.rich("title", {
+              mark: (chunks) => <span className="text-brand-600">{chunks}</span>,
+            })}
+          </h2>
+        </div>
 
-        <ol className="mt-14 grid gap-8 md:grid-cols-3">
+        <ol className="mt-14 grid gap-6 md:grid-cols-3">
           {steps.map((step, i) => (
-            <li key={step.title} className="relative">
-              {i < steps.length - 1 && (
-                <span
-                  aria-hidden
-                  className="absolute left-7 top-14 hidden h-[calc(100%-1rem)] w-px bg-gradient-to-b from-brand-200 to-transparent md:hidden"
-                />
-              )}
-              <div className="flex flex-col items-start">
-                <div className="relative">
-                  <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-600 text-white shadow-brand">
-                    <step.icon className="h-6 w-6" />
-                  </span>
-                  <span className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full border-2 border-surface bg-accent-400 font-display text-sm font-bold text-ink">
-                    {i + 1}
-                  </span>
+            <li
+              key={step.title}
+              className="flex h-full flex-col rounded-3xl border border-brand-100 bg-white p-7 shadow-soft"
+            >
+              <span
+                className={`flex h-9 w-9 items-center justify-center rounded-xl font-display text-base font-bold ${step.badge}`}
+              >
+                {i + 1}
+              </span>
+
+              <h3 className="mt-5 min-h-[3.5rem] font-display text-xl font-bold text-ink">
+                {step.title}
+              </h3>
+              <p className="mt-2 min-h-[5.25rem] leading-relaxed text-ink-soft">
+                {step.text}
+              </p>
+
+              <div className="mt-auto pt-6">
+                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-brand-50">
+                  <Image
+                    src={step.image}
+                    alt=""
+                    fill
+                    sizes="(min-width: 768px) 33vw, 100vw"
+                    className={step.imageClass}
+                  />
                 </div>
-                <h3 className="mt-5 font-display text-xl font-bold text-ink">
-                  {step.title}
-                </h3>
-                <p className="mt-2 leading-relaxed text-ink-soft">
-                  {step.text}
-                </p>
               </div>
             </li>
           ))}
