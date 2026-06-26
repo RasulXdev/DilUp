@@ -10,7 +10,7 @@ import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Link, useRouter } from "@/i18n/navigation";
 import { loginSchema, type LoginValues } from "@/lib/validations/auth";
-import { isSafeRedirectPath, resolveUserHome } from "@/lib/auth/redirects";
+import { isSafeRedirectPath, resolvePostAuthPath } from "@/lib/auth/redirects";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -40,7 +40,9 @@ export function LoginForm() {
       return;
     }
     const next = searchParams.get("next");
-    const fallback = data.user ? await resolveUserHome(supabase, data.user.id) : "/";
+    const fallback = data.user
+      ? await resolvePostAuthPath(supabase, data.user.id)
+      : "/";
     toast.success(t("welcomeBack"));
     router.push(isSafeRedirectPath(next) ? next! : fallback);
     router.refresh();

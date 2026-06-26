@@ -29,3 +29,36 @@ export async function resolveUserHome(
 
   return getRoleHome(data?.role);
 }
+
+export async function hasCompletedStudentSetup(
+  supabase: SupabaseClient<Database>,
+  userId: string,
+) {
+  const { data } = await supabase
+    .from("onboarding_responses")
+    .select("id")
+    .eq("user_id", userId)
+    .limit(1)
+    .maybeSingle();
+
+  return Boolean(data?.id);
+}
+
+export async function resolvePostAuthPath(
+  supabase: SupabaseClient<Database>,
+  userId: string,
+) {
+  const { data } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", userId)
+    .maybeSingle();
+  const role = data?.role ?? "student";
+
+  if (role === "student") {
+    const completedSetup = await hasCompletedStudentSetup(supabase, userId);
+    if (!completedSetup) return "/setup";
+  }
+
+  return getRoleHome(role);
+}

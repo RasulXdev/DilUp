@@ -6,6 +6,7 @@ import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { Providers } from "../providers";
 import { Toaster } from "@/components/ui/sonner";
+import { absoluteUrl } from "@/lib/seo";
 import "../globals.css";
 
 const fontHeading = Onest({
@@ -27,9 +28,17 @@ export const metadata: Metadata = {
   },
   description:
     "DilUp — Azərbaycanın online dil öyrənmə platforması. Sənə uyğun müəllimi tap və ilk dərsindən danışmağa başla.",
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
-  ),
+  metadataBase: new URL(absoluteUrl()),
+  openGraph: {
+    title: "DilUp — Dilini yüksəlt",
+    description:
+      "DilUp — Azərbaycanın online dil öyrənmə platforması. Sənə uyğun müəllimi tap və ilk dərsindən danışmağa başla.",
+    siteName: "DilUp",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export function generateStaticParams() {

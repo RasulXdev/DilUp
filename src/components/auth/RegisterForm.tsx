@@ -9,7 +9,7 @@ import { User, Mail, Lock, Eye, EyeOff, Loader2, ArrowRight } from "lucide-react
 import { createClient } from "@/lib/supabase/client";
 import { Link, useRouter } from "@/i18n/navigation";
 import { registerSchema, type RegisterValues } from "@/lib/validations/auth";
-import { resolveUserHome } from "@/lib/auth/redirects";
+import { resolvePostAuthPath } from "@/lib/auth/redirects";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -68,7 +68,7 @@ export function RegisterForm({
           { onConflict: "user_id" },
         );
       }
-      const home = await resolveUserHome(supabase, data.session.user.id);
+      const home = await resolvePostAuthPath(supabase, data.session.user.id);
       toast.success(t("accountCreated"));
       router.push(home);
       router.refresh();

@@ -146,5 +146,237 @@
     "terms": "İstifadə şərtləri",
     "rights": "Bütün hüquqlar qorunur.",
     "madeIn": "Azərbaycanda hazırlanıb"
+  },
+  "onboarding": {
+    "back": "Geri qayıt",
+    "introTitle": "<mark>Sənə uyğun</mark> müəllimi tap",
+    "introText": "Məqsədini, səviyyəni və uyğun vaxtlarını de — biz sənə ən uyğun müəllimləri göstərək.",
+    "subjectLabel": "Nə öyrənmək istəyirsən?",
+    "introCta": "Öyrənmə yolumu qur",
+    "continue": "Davam et",
+    "finish": "Uyğunluğu tamamla",
+    "clearAll": "Hamısını təmizlə",
+    "showAll": "Hamısını göstər",
+    "showAllIndustries": "Bütün sahələri göstər",
+    "daysLabel": "Günlər",
+    "timesLabel": "Vaxtlar",
+    "budgetUnit": "50 dəqiqəlik dərs üçün",
+    "saveError": "Cavablarını lokal saxladıq, amma hələ sinxron edə bilmədik.",
+    "loadingTitle": "{subject} müəllim siyahını hazırlayırıq.",
+    "loadingText": "Cavablarını faydalı axtarış filtrlərinə çeviririk.",
+    "nativeOnly": "Yalnız ana dili {subject} olan müəllimlər",
+    "visual": {
+      "tutorName": "Murad A.",
+      "tutorType": "Müəllim",
+      "pathLabel": "Sənin yolun",
+      "pathText": "Məqsəd, cədvəl və müəllim uyğunluğu bir yerdə",
+      "profileText": "Təsdiqlənmiş müəllim profili",
+      "language": "Dil",
+      "schedule": "Vaxt aralığı",
+      "ctaHint": "Aydın yolla başla"
+    },
+    "subjects": {
+      "placeholder": "Dil seç",
+      "comingSoon": "Tezliklə",
+      "scrollHint": "Daha çox dil aşağıdadır",
+      "english": "İngilis dili",
+      "russian": "Rus dili",
+      "turkish": "Türk dili",
+      "arabic": "Ərəb dili",
+      "italian": "İtalyan dili",
+      "spanish": "İspan dili",
+      "french": "Fransız dili",
+      "german": "Alman dili"
+    },
+    "questions": {
+      "goal": "Əsas məqsədin nədir?",
+      "timeline": "Nə vaxt irəliləyiş hiss etmək istəyirsən?",
+      "industry": "Dərslər hansı sahə ilə bağlı olsun?",
+      "industryHelp": "Bu, kontekstini anlayan müəllimləri önə çıxarmağa kömək edir.",
+      "role": "Rolun və ya gündəlik vəziyyətin nədir?",
+      "roleHelp": "Bir neçə söz kifayətdir.",
+      "careerSkills": "Hansı iş bacarıqları daha vacibdir?",
+      "topics": "Müəllimin hansı mövzulara fokuslansın?",
+      "level": "{subject} səviyyən necədir?",
+      "style": "Hansı tədris üslubu sənə uyğundur?",
+      "styleHelp": "Maksimum üç seçim et.",
+      "country": "Müəllimin harada yerləşsin?",
+      "alsoSpeaks": "Müəllimin başqa hansı dili danışsın?",
+      "availability": "Dərsləri nə vaxt götürə bilərsən?",
+      "budget": "Dərs büdcən nə qədərdir?",
+      "future": "Gələcəkdə başqa dil öyrənmək istəyirsən?",
+      "summary": "Səni daha yaxşı uyğunlaşdırmaq üçün başqa nə bilməliyik?",
+      "summaryHelp": "Bunu siyahını daha faydalı etmək üçün istifadə edəcəyik."
+    },
+    "placeholders": {
+      "role": "Məhsul meneceri, müəllim, təsisçi, tələbə...",
+      "note": "Məsələn: iclaslarda daha rahat danışmaq istəyirəm."
+    },
+    "goals": {
+      "career": "Karyera və biznes",
+      "kids": "Uşaqlar üçün dərslər",
+      "exams": "İmtahan və kurs işi",
+      "culture": "Mədəniyyət, səyahət və hobbi"
+    },
+    "timelines": {
+      "weeks": "1-4 həftə",
+      "months1": "1-3 ay",
+      "months3": "3-6 ay",
+      "steady": "Nə qədər lazımdırsa",
+      "oneLesson": "Sadəcə bir dərs lazımdır"
+    },
+    "industries": {
+      "finance": "Maliyyə və bank işi",
+      "technology": "Texnologiya və IT",
+      "healthcare": "Səhiyyə",
+      "education": "Təhsil",
+      "creative": "Yaradıcı sahələr",
+      "construction": "Tikinti",
+      "engineering": "Mühəndislik",
+      "hospitality": "Qonaqpərvərlik",
+      "law": "Hüquq və dövlət xidməti",
+      "sales": "Satış və marketinq"
+    },
+    "careerSkills": {
+      "none": "Fərq etməz",
+      "workplace": "İş ünsiyyəti",
+      "interview": "Müsahibəyə hazırlıq",
+      "presentations": "Təqdimatlar",
+      "writing": "Peşəkar yazı",
+      "relationships": "Əlaqə qurmaq",
+      "industryLanguage": "Sahəyə uyğun dil"
+    },
+    "topics": {
+      "none": "Fərq etməz",
+      "business": "Biznes ingiliscəsi",
+      "conversation": "Danışıq praktikası",
+      "intensive": "İntensiv dərslər",
+      "beginners": "Yeni başlayanlar üçün ingilis dili",
+      "american": "Amerikan ingiliscəsi",
+      "ielts": "IELTS hazırlığı",
+      "grammar": "Qrammatika və dəqiqlik",
+      "travel": "Səyahət üçün ingilis dili",
+      "kids": "Uşaqlar üçün ingilis dili"
+    },
+    "levels": {
+      "starter": "Yeni başlayıram",
+      "basics": "Əsasları bilirəm",
+      "conversation": "Söhbət edə bilirəm",
+      "fluent": "Səlis danışıram"
+    },
+    "styles": {
+      "adaptable": "Uyğunlaşan",
+      "approachable": "Rahat ünsiyyətli",
+      "encouraging": "Həvəsləndirən",
+      "engaging": "Cəlbedici",
+      "goalFocused": "Məqsəd yönümlü",
+      "patient": "Səbirli",
+      "structured": "Strukturlaşdırılmış"
+    },
+    "countries": {
+      "any": "İstənilən ölkə",
+      "azerbaijan": "Azərbaycan",
+      "usa": "ABŞ",
+      "uk": "Böyük Britaniya",
+      "canada": "Kanada",
+      "turkey": "Türkiyə",
+      "ukraine": "Ukrayna",
+      "ireland": "İrlandiya",
+      "australia": "Avstraliya",
+      "germany": "Almaniya",
+      "poland": "Polşa",
+      "netherlands": "Niderland",
+      "southAfrica": "Cənubi Afrika",
+      "philippines": "Filippin",
+      "india": "Hindistan",
+      "pakistan": "Pakistan"
+    },
+    "languages": {
+      "none": "Fərq etməz",
+      "azerbaijani": "Azərbaycan dili",
+      "russian": "Rus dili",
+      "turkish": "Türk dili",
+      "english": "İngilis dili",
+      "arabic": "Ərəb dili",
+      "french": "Fransız dili",
+      "german": "Alman dili",
+      "spanish": "İspan dili",
+      "italian": "İtalyan dili"
+    },
+    "days": {
+      "mon": "B.e.",
+      "tue": "Ç.a.",
+      "wed": "Ç.",
+      "thu": "C.a.",
+      "fri": "C.",
+      "sat": "Ş.",
+      "sun": "B."
+    },
+    "times": {
+      "morning": "Səhər",
+      "afternoon": "Günorta",
+      "evening": "Axşam",
+      "night": "Gecə"
+    },
+    "future": {
+      "english": "İngilis dili",
+      "russian": "Rus dili",
+      "turkish": "Türk dili",
+      "spanish": "İspan dili",
+      "french": "Fransız dili",
+      "german": "Alman dili",
+      "italian": "İtalyan dili",
+      "arabic": "Ərəb dili"
+    },
+    "catalog": {
+      "industries": {
+        "title": "Sahələr",
+        "placeholder": "Sahə axtar"
+      },
+      "topics": {
+        "title": "Fokus mövzuları",
+        "placeholder": "Mövzu axtar"
+      },
+      "countries": {
+        "title": "Müəllimin lokasiyası",
+        "placeholder": "Ölkə axtar"
+      },
+      "languages": {
+        "title": "Müəllimin dilləri",
+        "placeholder": "Dil axtar"
+      },
+      "future": {
+        "title": "Gələcək dillər",
+        "placeholder": "Dil axtar"
+      }
+    },
+    "signup": {
+      "title": "Demək olar hazırdır. Sənə uyğun {subject} müəllimlərini gör.",
+      "text": "Cavablarını saxlamaq, uyğun siyahını açmaq və trial dərs bron etmək üçün pulsuz hesab yarat.",
+      "email": "Email ilə davam et",
+      "emailContinue": "Email ilə qeydiyyata davam et",
+      "emailDivider": "və ya email ilə qeydiyyatdan keç",
+      "emailPlaceholder": "Email ünvanın",
+      "facebook": "Facebook ilə davam et",
+      "google": "Google ilə davam et",
+      "loginAction": "Daxil ol",
+      "loginPrompt": "Artıq hesabın var?",
+      "preview": "Müəllim nəticələrinə bax",
+      "legal": "Davam etməklə DilUp şərtləri və məxfilik siyasəti ilə razılaşırsan."
+    }
+  },
+  "quickSetup": {
+    "eyebrow": "1 dəqiqəlik setup",
+    "title": "Sənə uyğun ilk müəllimləri göstərək.",
+    "text": "Uzun quiz deyil — sadəcə ilkin seçimlərini saxlayırıq. İstəsən keçə bilərsən.",
+    "subject": "Nə öyrənmək istəyirsən?",
+    "goal": "Əsas məqsədin nədir?",
+    "schedule": "Dərs üçün hansı vaxt uyğundur?",
+    "continue": "Seçimləri saxla",
+    "skip": "Hələlik keç",
+    "saving": "Saxlanılır...",
+    "saved": "Seçimlərin saxlandı.",
+    "skipped": "Setup keçildi. Sonra yeniləyə bilərsən.",
+    "error": "Setup saxlanmadı. Bir az sonra yenə yoxla."
   }
 }

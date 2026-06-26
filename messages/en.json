@@ -146,5 +146,237 @@
     "terms": "Terms of service",
     "rights": "All rights reserved.",
     "madeIn": "Made in Azerbaijan"
+  },
+  "onboarding": {
+    "back": "Go back",
+    "introTitle": "Find the tutor who <mark>fits you</mark>",
+    "introText": "Share your goal, level and weekly availability so we can shape the right tutor shortlist.",
+    "subjectLabel": "What do you want to learn?",
+    "introCta": "Create my learning path",
+    "continue": "Continue",
+    "finish": "Finish matching",
+    "clearAll": "Clear all",
+    "showAll": "Show all",
+    "showAllIndustries": "Show all industries",
+    "daysLabel": "Days",
+    "timesLabel": "Times",
+    "budgetUnit": "per 50-min lesson",
+    "saveError": "We saved your answers locally, but could not sync them yet.",
+    "loadingTitle": "Shaping your {subject} tutor shortlist.",
+    "loadingText": "We are turning your answers into useful search filters.",
+    "nativeOnly": "Only native {subject} speakers",
+    "visual": {
+      "tutorName": "Murad A.",
+      "tutorType": "Tutor",
+      "pathLabel": "Your route",
+      "pathText": "Goals, schedule and tutor fit in one path",
+      "profileText": "Verified tutor profile",
+      "language": "Language",
+      "schedule": "Time window",
+      "ctaHint": "Start with a clear path"
+    },
+    "subjects": {
+      "placeholder": "Select a language",
+      "comingSoon": "Coming soon",
+      "scrollHint": "More languages below",
+      "english": "English",
+      "russian": "Russian",
+      "turkish": "Turkish",
+      "arabic": "Arabic",
+      "italian": "Italian",
+      "spanish": "Spanish",
+      "french": "French",
+      "german": "German"
+    },
+    "questions": {
+      "goal": "What is your main goal?",
+      "timeline": "When would you like to feel progress?",
+      "industry": "Which field should lessons connect to?",
+      "industryHelp": "This helps us surface tutors who understand your context.",
+      "role": "What is your role or day-to-day situation?",
+      "roleHelp": "A few words are enough.",
+      "careerSkills": "Which work skills matter most?",
+      "topics": "What topics should your tutor focus on?",
+      "level": "What is your {subject} level?",
+      "style": "What teaching style works best for you?",
+      "styleHelp": "Pick up to three.",
+      "country": "Where would you like your tutor to be based?",
+      "alsoSpeaks": "Any other language your tutor should speak?",
+      "availability": "When can you take lessons?",
+      "budget": "What is your lesson budget?",
+      "future": "Interested in another language later?",
+      "summary": "Anything else that would help us match you?",
+      "summaryHelp": "We will use this to make the shortlist more useful."
+    },
+    "placeholders": {
+      "role": "Product manager, teacher, founder, student...",
+      "note": "For example: I want to speak more confidently in meetings."
+    },
+    "goals": {
+      "career": "Career and business",
+      "kids": "Lessons for kids",
+      "exams": "Exams and coursework",
+      "culture": "Culture, travel and hobbies"
+    },
+    "timelines": {
+      "weeks": "1-4 weeks",
+      "months1": "1-3 months",
+      "months3": "3-6 months",
+      "steady": "As long as it takes",
+      "oneLesson": "I just need one lesson"
+    },
+    "industries": {
+      "finance": "Finance and banking",
+      "technology": "Technology and IT",
+      "healthcare": "Healthcare",
+      "education": "Education",
+      "creative": "Creative industries",
+      "construction": "Construction",
+      "engineering": "Engineering",
+      "hospitality": "Hospitality",
+      "law": "Law and public service",
+      "sales": "Sales and marketing"
+    },
+    "careerSkills": {
+      "none": "No preference",
+      "workplace": "Workplace communication",
+      "interview": "Interview preparation",
+      "presentations": "Presentations",
+      "writing": "Professional writing",
+      "relationships": "Building relationships",
+      "industryLanguage": "Industry-specific language"
+    },
+    "topics": {
+      "none": "No preference",
+      "business": "Business English",
+      "conversation": "Conversation practice",
+      "intensive": "Intensive lessons",
+      "beginners": "English for beginners",
+      "american": "American English",
+      "ielts": "IELTS preparation",
+      "grammar": "Grammar and accuracy",
+      "travel": "English for travel",
+      "kids": "English for kids"
+    },
+    "levels": {
+      "starter": "I am just starting",
+      "basics": "I know the basics",
+      "conversation": "I can hold a conversation",
+      "fluent": "I am fluent"
+    },
+    "styles": {
+      "adaptable": "Adaptable",
+      "approachable": "Approachable",
+      "encouraging": "Encouraging",
+      "engaging": "Engaging",
+      "goalFocused": "Goal-focused",
+      "patient": "Patient",
+      "structured": "Structured"
+    },
+    "countries": {
+      "any": "Any country",
+      "azerbaijan": "Azerbaijan",
+      "usa": "United States",
+      "uk": "United Kingdom",
+      "canada": "Canada",
+      "turkey": "Turkey",
+      "ukraine": "Ukraine",
+      "ireland": "Ireland",
+      "australia": "Australia",
+      "germany": "Germany",
+      "poland": "Poland",
+      "netherlands": "Netherlands",
+      "southAfrica": "South Africa",
+      "philippines": "Philippines",
+      "india": "India",
+      "pakistan": "Pakistan"
+    },
+    "languages": {
+      "none": "No preference",
+      "azerbaijani": "Azerbaijani",
+      "russian": "Russian",
+      "turkish": "Turkish",
+      "english": "English",
+      "arabic": "Arabic",
+      "french": "French",
+      "german": "German",
+      "spanish": "Spanish",
+      "italian": "Italian"
+    },
+    "days": {
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
+    },
+    "times": {
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening",
+      "night": "Night"
+    },
+    "future": {
+      "english": "English",
+      "russian": "Russian",
+      "turkish": "Turkish",
+      "spanish": "Spanish",
+      "french": "French",
+      "german": "German",
+      "italian": "Italian",
+      "arabic": "Arabic"
+    },
+    "catalog": {
+      "industries": {
+        "title": "Fields",
+        "placeholder": "Search fields"
+      },
+      "topics": {
+        "title": "Focus topics",
+        "placeholder": "Search topics"
+      },
+      "countries": {
+        "title": "Tutor location",
+        "placeholder": "Search countries"
+      },
+      "languages": {
+        "title": "Tutor languages",
+        "placeholder": "Search languages"
+      },
+      "future": {
+        "title": "Future languages",
+        "placeholder": "Search languages"
+      }
+    },
+    "signup": {
+      "title": "Almost there. See {subject} tutors matched to you.",
+      "text": "Create a free account to keep your answers, unlock the shortlist and book a trial lesson.",
+      "email": "Continue with email",
+      "emailContinue": "Continue with email",
+      "emailDivider": "or sign up with email",
+      "emailPlaceholder": "Your email address",
+      "facebook": "Continue with Facebook",
+      "google": "Continue with Google",
+      "loginAction": "Log in",
+      "loginPrompt": "Already have an account?",
+      "preview": "Preview tutor results",
+      "legal": "By continuing, you agree to DilUp terms and privacy policy."
+    }
+  },
+  "quickSetup": {
+    "eyebrow": "1-minute setup",
+    "title": "Let us show your first tutor matches.",
+    "text": "This is not the long quiz — we only save your first preferences. You can skip it.",
+    "subject": "What do you want to learn?",
+    "goal": "What is your main goal?",
+    "schedule": "When do lessons usually work for you?",
+    "continue": "Save preferences",
+    "skip": "Skip for now",
+    "saving": "Saving...",
+    "saved": "Your preferences were saved.",
+    "skipped": "Setup skipped. You can update it later.",
+    "error": "We could not save setup. Try again shortly."
   }
 }

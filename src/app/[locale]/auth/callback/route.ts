@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getRoleHome, isSafeRedirectPath, type UserRole } from "@/lib/auth/redirects";
+import { isSafeRedirectPath, resolvePostAuthPath, type UserRole } from "@/lib/auth/redirects";
 import { createClient } from "@/lib/supabase/server";
 
 /** OAuth / magic-link / password-reset code exchange. */
@@ -53,11 +53,8 @@ export async function GET(
         }
       }
 
-      const { data: profile } = user
-        ? await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle()
-        : { data: null };
-      const fallback = getRoleHome(profile?.role);
-      const path = isSafeRedirectPath(next) ? next : fallback;
+      const fallback = user ? await resolvePostAuthPath(supabase, user.id) : "/";
+      const path = isSafeRedirectPath(next) && next !== "/" ? next : fallback;
       return NextResponse.redirect(`${origin}/${locale}${path}`);
     }
   }
