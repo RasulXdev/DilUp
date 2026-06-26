@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Menu, X, HelpCircle } from "lucide-react";
+import { Menu, X, HelpCircle, LogIn } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { Logo } from "@/components/shared/Logo";
-import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
+import { LocaleCurrencySwitcher } from "@/components/shared/LocaleCurrencySwitcher";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -17,19 +17,20 @@ export function Navbar() {
     { href: "/tutors", label: t("findTutors") },
     { href: "/become-tutor", label: t("becomeTutor") },
     { href: "/how-it-works", label: t("howItWorks") },
+    { href: "/how-it-works#results", label: t("outcomes") },
   ];
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line/80 bg-white/80 backdrop-blur-md">
-      <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-8">
+    <header className="sticky top-0 z-40 bg-brand-300">
+      <nav className="flex h-18 w-full items-center justify-between gap-4 px-5 sm:px-7 lg:px-8 xl:px-10">
+        <div className="flex items-center gap-7">
           <Logo />
           <ul className="hidden items-center gap-1 md:flex">
             {links.map((l) => (
               <li key={l.href}>
                 <Link
                   href={l.href}
-                  className="rounded-full px-3 py-2 text-sm font-medium text-ink-soft transition-colors hover:bg-surface hover:text-ink"
+                  className="rounded-full px-3.5 py-2 text-sm font-semibold text-ink-soft transition-colors hover:bg-white/80 hover:text-brand-700"
                 >
                   {l.label}
                 </Link>
@@ -38,37 +39,35 @@ export function Navbar() {
           </ul>
         </div>
 
-        <div className="hidden items-center gap-2 md:flex">
-          <LanguageSwitcher />
+        <div className="hidden items-center gap-2 lg:flex">
+          <LocaleCurrencySwitcher />
           <Link
             href="/contact"
             aria-label={t("help")}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-surface hover:text-ink"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-white/70 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
           >
             <HelpCircle className="h-5 w-5" />
           </Link>
           <Link
             href="/login"
-            className={buttonVariants({ variant: "outline", size: "md" })}
+            className={cn(
+              buttonVariants({ variant: "outline", size: "md" }),
+              "border-transparent bg-transparent shadow-none hover:border-transparent hover:bg-white/70",
+            )}
           >
+            <LogIn className="h-4 w-4" />
             {t("logIn")}
-          </Link>
-          <Link
-            href="/register"
-            className={buttonVariants({ variant: "primary", size: "md" })}
-          >
-            {t("signUp")}
           </Link>
         </div>
 
-        <div className="flex items-center gap-2 md:hidden">
-          <LanguageSwitcher />
+        <div className="flex items-center gap-2 lg:hidden">
+          <LocaleCurrencySwitcher className="hidden sm:block" />
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-label="Menu"
             aria-expanded={open}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-line text-ink cursor-pointer"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-transparent bg-transparent text-ink cursor-pointer hover:bg-white/70"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -76,32 +75,27 @@ export function Navbar() {
       </nav>
 
       {open && (
-        <div className="border-t border-line bg-white md:hidden">
-          <div className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4">
+        <div className="border-t border-brand-300/55 bg-brand-100 lg:hidden">
+          <div className="flex w-full flex-col gap-1 px-5 py-4 sm:px-7">
             {links.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
                 onClick={() => setOpen(false)}
-                className="rounded-xl px-3 py-2.5 text-base font-medium text-ink-soft hover:bg-surface"
+                className="rounded-xl px-3 py-2.5 text-base font-semibold text-ink-soft hover:bg-brand-50 hover:text-brand-700"
               >
                 {l.label}
               </Link>
             ))}
+            <LocaleCurrencySwitcher className="mt-3 sm:hidden" />
             <div className="mt-3 flex flex-col gap-2">
               <Link
                 href="/login"
                 onClick={() => setOpen(false)}
                 className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
               >
+                <LogIn className="h-4 w-4" />
                 {t("logIn")}
-              </Link>
-              <Link
-                href="/register"
-                onClick={() => setOpen(false)}
-                className={cn(buttonVariants({ variant: "primary", size: "lg" }))}
-              >
-                {t("signUp")}
               </Link>
             </div>
           </div>

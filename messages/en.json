@@ -68,11 +68,13 @@
     "findTutors": "Find tutors",
     "becomeTutor": "Become a tutor",
     "howItWorks": "How it works",
-    "provenProgress": "Proven progress",
+    "outcomes": "Results",
+    "preferences": "Language and currency preferences",
     "help": "Help",
     "logIn": "Log in",
     "signUp": "Sign up",
-    "language": "Language"
+    "language": "Language",
+    "currency": "Currency"
   },
   "hero": {
     "badge": "Azerbaijan's online language platform",
@@ -80,7 +82,10 @@
     "subtitle": "Thousands of live lessons at a price for every budget. Pick your tutor, pick your time, and start speaking from the very first lesson.",
     "ctaPrimary": "Find your tutor",
     "ctaSecondary": "How it works",
-    "trustNote": "No risk — swap a trial lesson you didn't love for free"
+    "trustNote": "No risk — swap a trial lesson you didn't love for free",
+    "imageAlt": "DilUp tutor teaching online with a student on a video call",
+    "liveBadgeTitle": "Live lesson",
+    "liveBadgeText": "1:1 video with a tutor"
   },
   "trustStats": {
     "title": "The platform learners trust",

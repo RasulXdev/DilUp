@@ -68,11 +68,13 @@
     "findTutors": "Müəllim tap",
     "becomeTutor": "Müəllim ol",
     "howItWorks": "Necə işləyir",
-    "provenProgress": "Sübut olunmuş nəticə",
+    "outcomes": "Nəticələr",
+    "preferences": "Dil və valyuta seçimləri",
     "help": "Kömək",
     "logIn": "Daxil ol",
     "signUp": "Qeydiyyat",
-    "language": "Dil"
+    "language": "Dil",
+    "currency": "Valyuta"
   },
   "hero": {
     "badge": "Azərbaycanın online dil platforması",
@@ -80,7 +82,10 @@
     "subtitle": "Minlərlə canlı dərs, hər büdcəyə uyğun qiymət. Müəllimini seç, vaxtını seç və ilk dərsindən danışmağa başla.",
     "ctaPrimary": "Müəllimini tap",
     "ctaSecondary": "Necə işləyir?",
-    "trustNote": "Riskə yox — bəyənmədiyin trial dərsi pulsuz dəyiş"
+    "trustNote": "Riskə yox — bəyənmədiyin trial dərsi pulsuz dəyiş",
+    "imageAlt": "DilUp-da online dərs keçən müəllim və video zəngdə tələbə",
+    "liveBadgeTitle": "Canlı dərs",
+    "liveBadgeText": "Müəllimlə 1:1 video"
   },
   "trustStats": {
     "title": "Öyrənənlərin etibar etdiyi platforma",
