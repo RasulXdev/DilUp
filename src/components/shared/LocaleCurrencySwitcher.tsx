@@ -46,12 +46,12 @@ export function LocaleCurrencySwitcher({ className }: { className?: string }) {
         disabled={isPending}
         aria-haspopup="dialog"
         aria-expanded={open}
-        className="inline-flex h-11 items-center gap-2 rounded-lg border border-transparent bg-transparent px-3.5 text-sm font-semibold text-ink transition-colors hover:border-brand-700 hover:bg-white/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:opacity-60"
+        className="inline-flex h-11 max-w-[11rem] items-center gap-2 rounded-lg border border-transparent bg-transparent px-3 text-sm font-semibold text-ink transition-colors hover:border-brand-700 hover:bg-white/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:opacity-60 sm:max-w-none sm:px-3.5"
       >
-        <Globe2 className="h-4 w-4 text-brand-600" />
-        <span>{currentLocale.label}, {currency}</span>
+        <Globe2 className="h-4 w-4 shrink-0 text-brand-600" />
+        <span className="truncate">{currentLocale.label}, {currency}</span>
         <ChevronDown
-          className={cn("h-4 w-4 text-ink-soft transition-transform", open && "rotate-180")}
+          className={cn("h-4 w-4 shrink-0 text-ink-soft transition-transform", open && "rotate-180")}
         />
       </button>
 

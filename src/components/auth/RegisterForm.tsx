@@ -92,17 +92,17 @@ export function RegisterForm({
             {t("register.logInLink")}
           </Link>
         </p>
-        <p className="mx-auto mt-4 flex max-w-sm flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-center text-sm text-ink-soft">
+        <p className="mx-auto mt-4 grid max-w-sm grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-1.5 text-center text-[13px] text-ink-soft sm:text-sm">
           <Link
             href="/register"
-            className="font-semibold text-brand-600 underline underline-offset-4 hover:text-brand-700"
+            className="min-w-0 leading-snug font-semibold text-brand-600 underline underline-offset-4 hover:text-brand-700"
           >
             {t("login.signUpStudent")}
           </Link>
           <span>{t("login.signUpOr")}</span>
           <Link
             href="/become-tutor"
-            className="font-semibold text-brand-600 underline underline-offset-4 hover:text-brand-700"
+            className="min-w-0 leading-snug font-semibold text-brand-600 underline underline-offset-4 hover:text-brand-700"
           >
             {t("login.signUpTutor")}
           </Link>

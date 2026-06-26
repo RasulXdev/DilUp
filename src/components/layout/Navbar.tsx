@@ -25,12 +25,12 @@ export function Navbar() {
       <nav className="flex h-18 w-full items-center justify-between gap-4 px-5 sm:px-7 lg:px-8 xl:px-10">
         <div className="flex items-center gap-7">
           <Logo />
-          <ul className="hidden items-center gap-1 md:flex">
+          <ul className="hidden min-w-0 items-center gap-0.5 xl:flex">
             {links.map((l) => (
               <li key={l.href}>
                 <Link
                   href={l.href}
-                  className="rounded-full px-3.5 py-2 text-sm font-semibold text-ink-soft transition-colors hover:bg-white/80 hover:text-brand-700"
+                  className="rounded-full px-2.5 py-2 text-xs font-semibold text-ink-soft transition-colors hover:bg-white/80 hover:text-brand-700 2xl:px-3.5 2xl:text-sm"
                 >
                   {l.label}
                 </Link>
