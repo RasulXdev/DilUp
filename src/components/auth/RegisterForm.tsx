@@ -79,7 +79,7 @@ export function RegisterForm({
 
   return (
     <div className="w-full">
-      <div className="mb-8">
+      <div className="mb-8 text-center">
         <h1 className="font-display text-3xl font-extrabold text-ink">
           {variant === "tutor" ? t("register.titleTutor") : t("register.title")}
         </h1>
@@ -90,6 +90,21 @@ export function RegisterForm({
             className="font-semibold text-brand-600 hover:text-brand-700"
           >
             {t("register.logInLink")}
+          </Link>
+        </p>
+        <p className="mx-auto mt-4 flex max-w-sm flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-center text-sm text-ink-soft">
+          <Link
+            href="/register"
+            className="font-semibold text-brand-600 underline underline-offset-4 hover:text-brand-700"
+          >
+            {t("login.signUpStudent")}
+          </Link>
+          <span>{t("login.signUpOr")}</span>
+          <Link
+            href="/become-tutor"
+            className="font-semibold text-brand-600 underline underline-offset-4 hover:text-brand-700"
+          >
+            {t("login.signUpTutor")}
           </Link>
         </p>
       </div>
@@ -131,7 +146,7 @@ export function RegisterForm({
               id="email"
               type="email"
               autoComplete="email"
-              placeholder="ad@example.com"
+              placeholder={t("fields.emailPlaceholder")}
               className="pl-11"
               aria-invalid={!!errors.email}
               {...register("email")}

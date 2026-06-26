@@ -1,18 +1,20 @@
 {
   "auth": {
     "continueGoogle": "Google ilə davam et",
+    "continueFacebook": "Facebook ilə davam et",
+    "continueApple": "Apple ilə davam et",
     "orEmail": "və ya email ilə",
     "welcomeBack": "Xoş gəldin!",
     "accountCreated": "Hesabın yaradıldı!",
     "checkEmail": "Təsdiq linki üçün email-ini yoxla.",
-    "magicLinkSent": "Giriş linki email-inə göndərildi.",
     "showPassword": "Şifrəni göstər",
     "hidePassword": "Şifrəni gizlət",
     "fields": {
       "email": "E-poçt",
+      "emailPlaceholder": "E-poçtun",
       "password": "Şifrə",
       "fullName": "Ad və soyad",
-      "fullNamePlaceholder": "Məs. Aysel Məmmədova",
+      "fullNamePlaceholder": "Adın və soyadın",
       "passwordHint": "Ən azı 8 simvol"
     },
     "errors": {
@@ -23,12 +25,12 @@
     },
     "login": {
       "title": "Yenidən xoş gəldin",
-      "noAccount": "Hesabın yoxdur?",
-      "signUpLink": "Qeydiyyatdan keç",
+      "signUpStudent": "Tələbə kimi qeydiyyat",
+      "signUpOr": "və ya",
+      "signUpTutor": "Müəllim kimi qeydiyyat",
       "forgot": "Şifrəni unutdun?",
       "remember": "Məni xatırla",
-      "submit": "Daxil ol",
-      "magicLink": "Şifrəsiz link göndər"
+      "submit": "Daxil ol"
     },
     "register": {
       "title": "Hesab yarat",
@@ -53,7 +55,8 @@
       "subline": "Sənə uyğun müəllimlə canlı dərslərə bu gün başla.",
       "quote": "DilUp ilə 3 ayda IELTS-də 7.0 aldım. Müəllimim hər addımda yanımda idi.",
       "author": "Nilufər H.",
-      "authorRole": "IELTS 7.0 · DilUp tələbəsi"
+      "authorRole": "IELTS 7.0 · DilUp tələbəsi",
+      "avatarAlt": "Nilufərin portreti"
     }
   },
   "common": {

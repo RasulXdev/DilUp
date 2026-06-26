@@ -1,5 +1,6 @@
+import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { Star, Quote } from "lucide-react";
+import { Star, Quote, CheckCircle2 } from "lucide-react";
 
 /**
  * Immersive blue brand panel for the split-screen auth layout.
@@ -88,17 +89,30 @@ export function AuthBrandPanel() {
         </div>
 
         {/* Glass testimonial */}
-        <figure className="max-w-md rounded-3xl border border-white/15 bg-white/10 p-6 backdrop-blur-md">
-          <Quote className="h-7 w-7 text-accent-300" />
+        <figure className="max-w-md rounded-3xl border border-white/20 bg-white/12 p-6 shadow-2xl shadow-brand-950/20 backdrop-blur-md">
+          <div className="flex items-start justify-between gap-4">
+            <div className="rounded-2xl bg-white/12 p-2 ring-1 ring-white/15">
+              <Quote className="h-7 w-7 text-accent-300" />
+            </div>
+            <div className="flex items-center gap-1.5 rounded-full border border-accent-200/30 bg-accent-300/15 px-3 py-1 text-xs font-bold text-accent-100">
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              IELTS 7.0
+            </div>
+          </div>
           <blockquote className="mt-3 text-lg leading-relaxed">
             {t("quote")}
           </blockquote>
           <figcaption className="mt-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span
-                className="h-10 w-10 rounded-full bg-gradient-to-br from-accent-300 to-accent-500"
-                aria-hidden
-              />
+              <span className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-white/70 bg-brand-100 shadow-lg shadow-brand-950/25">
+                <Image
+                  src="/images/nilufar-avatar.png"
+                  alt={t("avatarAlt")}
+                  fill
+                  sizes="56px"
+                  className="object-cover"
+                />
+              </span>
               <div>
                 <p className="text-sm font-semibold">{t("author")}</p>
                 <p className="text-xs text-brand-200">{t("authorRole")}</p>

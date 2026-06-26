@@ -1,18 +1,20 @@
 {
   "auth": {
     "continueGoogle": "Continue with Google",
+    "continueFacebook": "Continue with Facebook",
+    "continueApple": "Continue with Apple",
     "orEmail": "or continue with email",
     "welcomeBack": "Welcome back!",
     "accountCreated": "Your account is ready!",
     "checkEmail": "Check your email for the confirmation link.",
-    "magicLinkSent": "A sign-in link has been sent to your email.",
     "showPassword": "Show password",
     "hidePassword": "Hide password",
     "fields": {
       "email": "Email",
+      "emailPlaceholder": "Your Email",
       "password": "Password",
       "fullName": "Full name",
-      "fullNamePlaceholder": "E.g. Aysel Mammadova",
+      "fullNamePlaceholder": "Your Name and Surname",
       "passwordHint": "At least 8 characters"
     },
     "errors": {
@@ -23,12 +25,12 @@
     },
     "login": {
       "title": "Welcome back",
-      "noAccount": "No account yet?",
-      "signUpLink": "Sign up",
+      "signUpStudent": "Sign up as a student",
+      "signUpOr": "or",
+      "signUpTutor": "Sign up as a tutor",
       "forgot": "Forgot password?",
       "remember": "Remember me",
-      "submit": "Log in",
-      "magicLink": "Send passwordless link"
+      "submit": "Log in"
     },
     "register": {
       "title": "Create your account",
@@ -53,7 +55,8 @@
       "subline": "Start live lessons today with a tutor matched to your goals.",
       "quote": "With DilUp, I reached IELTS 7.0 in three months. My tutor was with me at every step.",
       "author": "Nilufar H.",
-      "authorRole": "IELTS 7.0 · DilUp student"
+      "authorRole": "IELTS 7.0 · DilUp student",
+      "avatarAlt": "Portrait of Nilufar"
     }
   },
   "common": {

@@ -4,9 +4,28 @@ import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import type { Provider } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
-import { GoogleIcon } from "@/components/icons/BrandIcons";
+import { AppleIcon, FacebookIcon, GoogleIcon } from "@/components/icons/BrandIcons";
+
+const providers = [
+  {
+    id: "google",
+    labelKey: "continueGoogle",
+    icon: GoogleIcon,
+  },
+  {
+    id: "facebook",
+    labelKey: "continueFacebook",
+    icon: FacebookIcon,
+  },
+  {
+    id: "apple",
+    labelKey: "continueApple",
+    icon: AppleIcon,
+  },
+] as const;
 
 export function SocialButtons({
   next = "/",
@@ -17,10 +36,10 @@ export function SocialButtons({
 }) {
   const t = useTranslations("auth");
   const locale = useLocale();
-  const [loading, setLoading] = useState(false);
+  const [loadingProvider, setLoadingProvider] = useState<Provider | null>(null);
 
-  async function signInWithGoogle() {
-    setLoading(true);
+  async function signInWithProvider(provider: Provider) {
+    setLoadingProvider(provider);
     const callbackUrl = new URL(
       `/${locale}/auth/callback`,
       window.location.origin,
@@ -30,32 +49,41 @@ export function SocialButtons({
 
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
+      provider,
       options: {
         redirectTo: callbackUrl.toString(),
       },
     });
     if (error) {
       toast.error(error.message);
-      setLoading(false);
+      setLoadingProvider(null);
     }
   }
 
   return (
-    <Button
-      type="button"
-      variant="outline"
-      size="lg"
-      className="w-full"
-      onClick={signInWithGoogle}
-      disabled={loading}
-    >
-      {loading ? (
-        <Loader2 className="h-5 w-5 animate-spin" />
-      ) : (
-        <GoogleIcon className="h-5 w-5" />
-      )}
-      {t("continueGoogle")}
-    </Button>
+    <div className="space-y-3">
+      {providers.map(({ id, labelKey, icon: Icon }) => {
+        const loading = loadingProvider === id;
+
+        return (
+          <Button
+            key={id}
+            type="button"
+            variant="outline"
+            size="lg"
+            className="w-full border-ink/80 text-[15px] hover:border-brand-500 hover:bg-brand-50 sm:text-base"
+            onClick={() => signInWithProvider(id)}
+            disabled={!!loadingProvider}
+          >
+            {loading ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <Icon className="h-5 w-5" />
+            )}
+            {t(labelKey)}
+          </Button>
+        );
+      })}
+    </div>
   );
 }

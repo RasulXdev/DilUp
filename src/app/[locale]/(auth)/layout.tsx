@@ -1,6 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 import { Logo } from "@/components/shared/Logo";
-import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
+import { LocaleCurrencySwitcher } from "@/components/shared/LocaleCurrencySwitcher";
 import { AuthBrandPanel } from "@/components/auth/AuthBrandPanel";
 
 export default async function AuthLayout({
@@ -20,8 +20,10 @@ export default async function AuthLayout({
         <div className="absolute left-5 top-5 sm:left-8 sm:top-7">
           <Logo />
         </div>
-        <LanguageSwitcher className="absolute right-5 top-5 sm:right-8 sm:top-7" />
-        <div className="w-full max-w-md animate-rise">{children}</div>
+        <LocaleCurrencySwitcher className="absolute right-5 top-5 sm:right-8 sm:top-7" />
+        <div className="w-full min-w-0 max-w-md animate-rise">
+          {children}
+        </div>
       </div>
     </div>
   );

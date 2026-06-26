@@ -1,18 +1,20 @@
 {
   "auth": {
     "continueGoogle": "Продолжить с Google",
+    "continueFacebook": "Продолжить с Facebook",
+    "continueApple": "Продолжить с Apple",
     "orEmail": "или через email",
     "welcomeBack": "С возвращением!",
     "accountCreated": "Аккаунт создан!",
     "checkEmail": "Проверь email для подтверждения.",
-    "magicLinkSent": "Ссылка для входа отправлена на email.",
     "showPassword": "Показать пароль",
     "hidePassword": "Скрыть пароль",
     "fields": {
       "email": "Email",
+      "emailPlaceholder": "Ваш email",
       "password": "Пароль",
       "fullName": "Имя и фамилия",
-      "fullNamePlaceholder": "Напр. Айсель Мамедова",
+      "fullNamePlaceholder": "Ваше имя и фамилия",
       "passwordHint": "Минимум 8 символов"
     },
     "errors": {
@@ -23,12 +25,12 @@
     },
     "login": {
       "title": "С возвращением",
-      "noAccount": "Нет аккаунта?",
-      "signUpLink": "Зарегистрироваться",
+      "signUpStudent": "Зарегистрироваться как студент",
+      "signUpOr": "или",
+      "signUpTutor": "Зарегистрироваться как репетитор",
       "forgot": "Забыли пароль?",
       "remember": "Запомнить меня",
-      "submit": "Войти",
-      "magicLink": "Отправить ссылку без пароля"
+      "submit": "Войти"
     },
     "register": {
       "title": "Создать аккаунт",
@@ -53,7 +55,8 @@
       "subline": "Начни живые уроки с репетитором под твои цели.",
       "quote": "С DilUp я получила IELTS 7.0 за три месяца. Репетитор был рядом на каждом шаге.",
       "author": "Нилуфар Г.",
-      "authorRole": "IELTS 7.0 · студент DilUp"
+      "authorRole": "IELTS 7.0 · студент DilUp",
+      "avatarAlt": "Портрет Нилуфар"
     }
   },
   "common": {

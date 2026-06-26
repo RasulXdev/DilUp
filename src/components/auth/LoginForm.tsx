@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight, Sparkles } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Link, useRouter } from "@/i18n/navigation";
 import { loginSchema, type LoginValues } from "@/lib/validations/auth";
@@ -23,12 +23,9 @@ export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
-  const [magicSending, setMagicSending] = useState(false);
   const {
     register,
     handleSubmit,
-    getValues,
-    trigger,
     formState: { errors, isSubmitting },
   } = useForm<LoginValues>({ resolver: zodResolver(loginSchema) });
 
@@ -49,50 +46,25 @@ export function LoginForm() {
     router.refresh();
   }
 
-  async function sendMagicLink() {
-    const valid = await trigger("email");
-    if (!valid) return;
-
-    setMagicSending(true);
-    const email = getValues("email");
-    const next = searchParams.get("next");
-    const supabase = createClient();
-    const redirectTo = new URL(
-      `/${window.location.pathname.split("/")[1]}/auth/callback`,
-      window.location.origin,
-    );
-    if (isSafeRedirectPath(next)) {
-      redirectTo.searchParams.set("next", next!);
-    }
-
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: redirectTo.toString(),
-      },
-    });
-
-    setMagicSending(false);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    toast.success(t("magicLinkSent"), { duration: 6000 });
-  }
-
   return (
     <div className="w-full">
-      <div className="mb-8">
+      <div className="mb-8 text-center">
         <h1 className="font-display text-3xl font-extrabold text-ink">
           {t("login.title")}
         </h1>
-        <p className="mt-2 text-ink-soft">
-          {t("login.noAccount")}{" "}
+        <p className="mx-auto mt-4 flex max-w-sm flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-center text-sm text-ink-soft">
           <Link
             href="/register"
-            className="font-semibold text-brand-600 hover:text-brand-700"
+            className="font-semibold text-brand-600 underline underline-offset-4 hover:text-brand-700"
           >
-            {t("login.signUpLink")}
+            {t("login.signUpStudent")}
+          </Link>{" "}
+          <span>{t("login.signUpOr")}</span>
+          <Link
+            href="/become-tutor"
+            className="font-semibold text-brand-600 underline underline-offset-4 hover:text-brand-700"
+          >
+            {t("login.signUpTutor")}
           </Link>
         </p>
       </div>
@@ -116,7 +88,7 @@ export function LoginForm() {
               id="email"
               type="email"
               autoComplete="email"
-              placeholder="ad@example.com"
+              placeholder={t("fields.emailPlaceholder")}
               className="pl-11"
               aria-invalid={!!errors.email}
               {...register("email")}
@@ -184,22 +156,6 @@ export function LoginForm() {
               <ArrowRight className="h-5 w-5" />
             </>
           )}
-        </Button>
-
-        <Button
-          type="button"
-          variant="subtle"
-          size="lg"
-          className="w-full"
-          onClick={sendMagicLink}
-          disabled={isSubmitting || magicSending}
-        >
-          {magicSending ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
-          ) : (
-            <Sparkles className="h-5 w-5" />
-          )}
-          {t("login.magicLink")}
         </Button>
       </form>
     </div>
