@@ -40,11 +40,23 @@ export function RegisterForm({
     );
     callbackUrl.searchParams.set("role", variant);
 
+    // Carry the anonymous onboarding session so it can be linked to the new
+    // account — works whether or not email confirmation is enabled (the
+    // callback reads it from metadata when there is no immediate session).
+    const onboardingSession =
+      window.localStorage.getItem("dilup_onboarding_session") ?? undefined;
+
     const { data, error } = await supabase.auth.signUp({
       email: values.email,
       password: values.password,
       options: {
-        data: { full_name: values.fullName, intended_role: variant },
+        data: {
+          full_name: values.fullName,
+          intended_role: variant,
+          ...(onboardingSession
+            ? { onboarding_session: onboardingSession }
+            : {}),
+        },
         emailRedirectTo: callbackUrl.toString(),
       },
     });

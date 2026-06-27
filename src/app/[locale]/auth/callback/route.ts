@@ -51,6 +51,15 @@ export async function GET(
             { onConflict: "user_id" },
           );
         }
+
+        // Link the anonymous onboarding answers carried through signup metadata,
+        // so a freshly confirmed user is not pushed back through setup.
+        const onboardingSession = user.user_metadata?.onboarding_session;
+        if (typeof onboardingSession === "string" && onboardingSession) {
+          await supabase.rpc("claim_onboarding_session" as never, {
+            p_session_id: onboardingSession,
+          } as never);
+        }
       }
 
       const fallback = user ? await resolvePostAuthPath(supabase, user.id) : "/";

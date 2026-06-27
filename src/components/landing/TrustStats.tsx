@@ -6,29 +6,33 @@ const compact = new Intl.NumberFormat("en-US");
 export function TrustStats({ stats }: { stats: PlatformStats }) {
   const t = useTranslations("trustStats");
 
-  // Honest, always-true facts about the product — never fabricated.
-  const items: { value: string; label: string }[] = [
-    { value: "1:1", label: t("liveLabel") },
-    { value: "3", label: t("interfaceLabel") },
-    { value: "0", label: t("payLabel") },
-  ];
-
-  // Real marketplace metrics — appear automatically once there is real data.
+  // Real marketplace metrics — each appears once it has actual data.
+  const realItems: { value: string; label: string }[] = [];
   if (stats.tutors > 0) {
-    items.push({ value: `${compact.format(stats.tutors)}+`, label: t("tutors") });
+    realItems.push({ value: `${compact.format(stats.tutors)}+`, label: t("tutors") });
   }
   if (stats.fiveStarReviews > 0) {
-    items.push({
+    realItems.push({
       value: `${compact.format(stats.fiveStarReviews)}+`,
       label: t("reviews"),
     });
   }
   if (stats.countries > 0) {
-    items.push({ value: `${stats.countries}+`, label: t("countries") });
+    realItems.push({ value: `${stats.countries}+`, label: t("countries") });
   }
   if (stats.averageRating != null) {
-    items.push({ value: `${stats.averageRating}★`, label: t("rating") });
+    realItems.push({ value: `${stats.averageRating}★`, label: t("rating") });
   }
+
+  // Honest, always-true product facts — shown only until real numbers exist,
+  // then they step aside so the band reads as live marketplace metrics.
+  const fillerItems = [
+    { value: "1:1", label: t("liveLabel") },
+    { value: "3", label: t("interfaceLabel") },
+    { value: "0", label: t("payLabel") },
+  ];
+
+  const items = realItems.length > 0 ? realItems : fillerItems;
 
   return (
     <section className="bg-white">
