@@ -155,7 +155,20 @@
     "privacy": "Privacy policy",
     "terms": "Terms of service",
     "rights": "All rights reserved.",
-    "madeIn": "Made in Azerbaijan"
+    "madeIn": "Made in Azerbaijan",
+    "tagline": "The Azerbaijan-based marketplace where students learn live, one-to-one, with a tutor who fits their goal and budget.",
+    "learnLanguage": "Learn a language",
+    "comingSoon": "Soon",
+    "followUs": "Follow us",
+    "backToTop": "Back to top",
+    "languages": {
+      "en": "English",
+      "ru": "Russian",
+      "tr": "Turkish",
+      "de": "German",
+      "fr": "French",
+      "es": "Spanish"
+    }
   },
   "onboarding": {
     "back": "Go back",

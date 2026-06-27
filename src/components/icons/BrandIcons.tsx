@@ -36,6 +36,61 @@ export function FacebookIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+/** Monochrome Instagram glyph (inherits currentColor). */
+export function InstagramIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden {...props}>
+      <rect
+        x="3"
+        y="3"
+        width="18"
+        height="18"
+        rx="5"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      />
+      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.8" />
+      <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" />
+    </svg>
+  );
+}
+
+/** Monochrome Facebook glyph (inherits currentColor). */
+export function FacebookGlyphIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden {...props}>
+      <path
+        fill="currentColor"
+        d="M13.5 21v-8h2.6l.4-3h-3V8.1c0-.87.27-1.46 1.52-1.46H17V3.96c-.28-.04-1.24-.12-2.36-.12-2.33 0-3.93 1.42-3.93 4.04V10H8v3h2.71v8h2.79z"
+      />
+    </svg>
+  );
+}
+
+/** Monochrome LinkedIn glyph (inherits currentColor). */
+export function LinkedInIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden {...props}>
+      <path
+        fill="currentColor"
+        d="M6.94 5a1.94 1.94 0 1 1-3.88 0 1.94 1.94 0 0 1 3.88 0zM3.4 8.4h3.1V21H3.4V8.4zm5.06 0h2.97v1.72h.04c.41-.78 1.42-1.6 2.93-1.6 3.13 0 3.71 2.06 3.71 4.74V21h-3.1v-5.62c0-1.34-.02-3.06-1.86-3.06-1.87 0-2.15 1.46-2.15 2.96V21h-3.1V8.4z"
+      />
+    </svg>
+  );
+}
+
+/** Monochrome YouTube glyph (inherits currentColor). */
+export function YouTubeIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden {...props}>
+      <path
+        fill="currentColor"
+        d="M23.5 7.2a3 3 0 0 0-2.1-2.1C19.5 4.6 12 4.6 12 4.6s-7.5 0-9.4.5A3 3 0 0 0 .5 7.2 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 4.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-4.8zM9.6 15.5v-7l6.3 3.5-6.3 3.5z"
+      />
+    </svg>
+  );
+}
+
 /** Apple brand mark. */
 export function AppleIcon(props: SVGProps<SVGSVGElement>) {
   return (

@@ -155,7 +155,20 @@
     "privacy": "Məxfilik siyasəti",
     "terms": "İstifadə şərtləri",
     "rights": "Bütün hüquqlar qorunur.",
-    "madeIn": "Azərbaycanda hazırlanıb"
+    "madeIn": "Azərbaycanda hazırlanıb",
+    "tagline": "DilUp — tələbələrin məqsəd və büdcəsinə uyğun müəllimlə canlı, fərdi dərs aldığı Azərbaycan platformasıdır.",
+    "learnLanguage": "Dil öyrən",
+    "comingSoon": "Tezliklə",
+    "followUs": "Bizi izlə",
+    "backToTop": "Yuxarı qayıt",
+    "languages": {
+      "en": "İngilis dili",
+      "ru": "Rus dili",
+      "tr": "Türk dili",
+      "de": "Alman dili",
+      "fr": "Fransız dili",
+      "es": "İspan dili"
+    }
   },
   "onboarding": {
     "back": "Geri qayıt",
