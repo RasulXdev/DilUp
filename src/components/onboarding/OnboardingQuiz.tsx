@@ -941,15 +941,17 @@ export function OnboardingQuiz() {
       </Dialog>
 
       <Dialog open={signupOpen} onOpenChange={setSignupOpen}>
-        <DialogContent className="max-w-md overflow-hidden rounded-[2rem] border-0 p-0 shadow-card">
-          <div className="bg-brand-300 px-7 pb-7 pt-8 sm:px-8">
-            <Logo />
-            <span className="mt-6 inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white/75 px-3.5 py-1.5 text-xs font-bold text-brand-700 shadow-sm">
+        <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-md overflow-y-auto rounded-[2rem] border-0 p-0 shadow-card">
+          <div className="bg-brand-300 px-6 pb-6 pt-7 sm:px-8 sm:pt-8">
+            <div className="flex items-center">
+              <Logo />
+            </div>
+            <span className="mt-5 inline-flex max-w-full items-center gap-2 rounded-full border border-brand-200 bg-white/75 px-3.5 py-1.5 text-xs font-bold text-brand-700 shadow-sm">
               <ShieldCheck className="h-3.5 w-3.5" />
-              {t("signup.badge")}
+              <span className="truncate">{t("signup.badge")}</span>
             </span>
-            <DialogHeader className="mt-4 items-start text-left">
-              <DialogTitle className="font-display text-2xl font-extrabold leading-tight text-ink sm:text-[1.7rem]">
+            <DialogHeader className="mt-5 items-start text-left">
+              <DialogTitle className="font-display text-[1.45rem] font-extrabold leading-tight text-ink sm:text-[1.7rem]">
                 {t("signup.title", { subject: subjectLabel })}
               </DialogTitle>
               <DialogDescription className="text-[15px] leading-6 text-ink-soft">
@@ -958,7 +960,7 @@ export function OnboardingQuiz() {
             </DialogHeader>
           </div>
 
-          <div className="space-y-5 px-7 py-7 sm:px-8">
+          <div className="space-y-4 px-6 py-6 sm:space-y-5 sm:px-8 sm:py-7">
             <SocialButtons
               next={`/tutors?${tutorSearchParams().toString()}`}
               role="student"

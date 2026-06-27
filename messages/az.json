@@ -106,7 +106,46 @@
     "signUp": "Qeydiyyat",
     "language": "Dil",
     "currency": "Valyuta",
-    "signOut": "Çıxış"
+    "signOut": "Çıxış",
+    "referFriend": "Dostunu dəvət et",
+    "actions": {
+      "messages": "Mesajlar",
+      "savedTutors": "Yadda saxlanılan müəllimlər",
+      "notifications": "Bildirişlər",
+      "account": "Hesab menyusu"
+    },
+    "account": {
+      "home": "Ana səhifə",
+      "messages": "Mesajlar",
+      "lessons": "Dərslərim",
+      "savedTutors": "Yadda saxlanılan müəllimlər",
+      "refer": "Dostunu dəvət et",
+      "settings": "Ayarlar",
+      "help": "Kömək"
+    },
+    "emailConfirm": {
+      "text": "{email} ünvanına göndərdiyimiz linkə klikləyərək e-poçtunu təsdiqlə",
+      "resend": "Təsdiq emailini yenidən göndər",
+      "sent": "Təsdiq emaili göndərildi.",
+      "close": "Təsdiq bildirişini gizlət"
+    },
+    "notifications": {
+      "title": "Bildirişlər",
+      "description": "DilUp öyrənmə yeniliklərin",
+      "emptyTitle": "Öyrənmə yeniliklərini qaçırma",
+      "emptyText": "Dərs xatırlatmaları, müəllim cavabları və hesab yenilikləri burada görünəcək."
+    },
+    "messages": {
+      "title": "Mesajlar",
+      "description": "Müəllimlə yazışmaların",
+      "openFull": "Tam mesajlar səhifəsini aç",
+      "all": "Hamısı",
+      "unread": "Oxunmamış",
+      "archived": "Arxiv",
+      "emptyTitle": "Öyrənməyə hazırsan?",
+      "emptyText": "Hazır olanda müəllim tap və ilk mesajını göndər.",
+      "cta": "Müəllimini tap"
+    }
   },
   "hero": {
     "badge": "Azərbaycanın online dil platforması",

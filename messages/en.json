@@ -106,7 +106,46 @@
     "signUp": "Sign up",
     "language": "Language",
     "currency": "Currency",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "referFriend": "Refer a friend",
+    "actions": {
+      "messages": "Messages",
+      "savedTutors": "Saved tutors",
+      "notifications": "Notifications",
+      "account": "Account menu"
+    },
+    "account": {
+      "home": "Home",
+      "messages": "Messages",
+      "lessons": "My lessons",
+      "savedTutors": "Saved tutors",
+      "refer": "Refer a friend",
+      "settings": "Settings",
+      "help": "Help"
+    },
+    "emailConfirm": {
+      "text": "Please confirm your email by clicking the link we sent to {email}",
+      "resend": "Resend confirmation email",
+      "sent": "Confirmation email sent.",
+      "close": "Hide confirmation notice"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Your DilUp learning updates",
+      "emptyTitle": "Do not miss your learning updates",
+      "emptyText": "Lesson reminders, tutor replies and account updates will appear here."
+    },
+    "messages": {
+      "title": "Messages",
+      "description": "Your tutor conversations",
+      "openFull": "Open full messages page",
+      "all": "All",
+      "unread": "Unread",
+      "archived": "Archived",
+      "emptyTitle": "Ready to start learning?",
+      "emptyText": "Find a tutor and send your first message when you are ready.",
+      "cta": "Find your tutor"
+    }
   },
   "hero": {
     "badge": "Azerbaijan's online language platform",
