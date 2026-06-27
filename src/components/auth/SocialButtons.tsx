@@ -28,7 +28,7 @@ const providers = [
 ] as const;
 
 export function SocialButtons({
-  next = "/",
+  next = "/tutors",
   role = "student",
 }: {
   next?: string;

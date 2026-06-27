@@ -108,6 +108,7 @@
     "currency": "Valyuta",
     "signOut": "Çıxış",
     "referFriend": "Dostunu dəvət et",
+    "comingSoonAction": "{item} tezliklə hazır olacaq.",
     "actions": {
       "messages": "Mesajlar",
       "savedTutors": "Yadda saxlanılan müəllimlər",

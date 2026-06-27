@@ -108,6 +108,7 @@
     "currency": "Валюта",
     "signOut": "Выйти",
     "referFriend": "Пригласить друга",
+    "comingSoonAction": "{item} скоро будет готово.",
     "actions": {
       "messages": "Сообщения",
       "savedTutors": "Сохранённые репетиторы",

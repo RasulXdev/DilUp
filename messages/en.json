@@ -108,6 +108,7 @@
     "currency": "Currency",
     "signOut": "Sign out",
     "referFriend": "Refer a friend",
+    "comingSoonAction": "{item} is coming soon.",
     "actions": {
       "messages": "Messages",
       "savedTutors": "Saved tutors",

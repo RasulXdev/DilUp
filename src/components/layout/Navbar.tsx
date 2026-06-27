@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { Logo } from "@/components/shared/Logo";
 import { LocaleCurrencySwitcher } from "@/components/shared/LocaleCurrencySwitcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -72,15 +72,35 @@ function initials(user: User | null) {
 }
 
 type Panel = "messages" | "notifications";
+type MessageTab = "all" | "unread" | "archived";
+type AccountItem =
+  | {
+      href: string;
+      label: string;
+      icon: typeof Home;
+    }
+  | {
+      panel: Panel;
+      label: string;
+      icon: typeof Home;
+    }
+  | {
+      unavailable: true;
+      label: string;
+      icon: typeof Home;
+    };
 
 export function Navbar() {
   const t = useTranslations("nav");
   const locale = useLocale();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [panel, setPanel] = useState<Panel | null>(null);
+  const [messageTab, setMessageTab] = useState<MessageTab>("all");
   const [showConfirmBanner, setShowConfirmBanner] = useState(true);
   const [resending, setResending] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -112,13 +132,13 @@ export function Navbar() {
     { href: "/how-it-works#results", label: t("outcomes") },
   ];
 
-  const menuLinks = [
+  const accountItems: AccountItem[] = [
     { href: "/", label: t("account.home"), icon: Home },
-    { href: "/messages", label: t("account.messages"), icon: MessageCircle },
-    { href: "/lessons", label: t("account.lessons"), icon: BookOpen },
-    { href: "/saved-tutors", label: t("account.savedTutors"), icon: Heart },
-    { href: "/refer", label: t("account.refer"), icon: Gift },
-    { href: "/settings", label: t("account.settings"), icon: Settings },
+    { panel: "messages" as const, label: t("account.messages"), icon: MessageCircle },
+    { unavailable: true, label: t("account.lessons"), icon: BookOpen },
+    { unavailable: true, label: t("account.savedTutors"), icon: Heart },
+    { unavailable: true, label: t("account.refer"), icon: Gift },
+    { unavailable: true, label: t("account.settings"), icon: Settings },
     { href: "/contact", label: t("account.help"), icon: HelpCircle },
   ];
 
@@ -141,6 +161,28 @@ export function Navbar() {
     }
 
     toast.success(t("emailConfirm.sent"));
+  }
+
+  function showComingSoon(label: string) {
+    toast.info(t("comingSoonAction", { item: label }));
+  }
+
+  async function signOut() {
+    setSigningOut(true);
+    const supabase = createClient();
+    const { error } = await supabase.auth.signOut();
+    setSigningOut(false);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
+    setUser(null);
+    setOpen(false);
+    setPanel(null);
+    router.push("/");
+    router.refresh();
   }
 
   return (
@@ -190,15 +232,16 @@ export function Navbar() {
 
         <div className="hidden items-center gap-2 lg:flex">
           {user ? (
-            <Link
-              href="/refer"
+            <button
+              type="button"
+              onClick={() => showComingSoon(t("account.refer"))}
               className={cn(
                 buttonVariants({ variant: "outline", size: "md" }),
                 "border-brand-200 bg-white/80 hover:bg-white",
               )}
             >
               {t("referFriend")}
-            </Link>
+            </button>
           ) : null}
           <LocaleCurrencySwitcher />
           {userName ? (
@@ -218,13 +261,14 @@ export function Navbar() {
               >
                 <HelpCircle className="h-5 w-5" />
               </Link>
-              <Link
-                href="/saved-tutors"
+              <button
+                type="button"
+                onClick={() => showComingSoon(t("account.savedTutors"))}
                 aria-label={t("actions.savedTutors")}
                 className="inline-flex h-11 w-11 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-white/70 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
               >
                 <Heart className="h-5 w-5" />
-              </Link>
+              </button>
               <button
                 type="button"
                 onClick={() => setPanel("notifications")}
@@ -266,23 +310,55 @@ export function Navbar() {
                     </span>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  {menuLinks.map(({ href, label, icon: Icon }) => (
-                    <DropdownMenuItem key={href} asChild>
-                      <Link href={href} className="py-2.5">
-                        <Icon className="h-4 w-4 text-brand-700" />
-                        {label}
-                      </Link>
-                    </DropdownMenuItem>
-                  ))}
+                  {accountItems.map((item) => {
+                    const Icon = item.icon;
+
+                    if ("href" in item) {
+                      return (
+                        <DropdownMenuItem key={item.label} asChild>
+                          <Link href={item.href} className="py-2.5">
+                            <Icon className="h-4 w-4 text-brand-700" />
+                            {item.label}
+                          </Link>
+                        </DropdownMenuItem>
+                      );
+                    }
+
+                    return (
+                      <DropdownMenuItem key={item.label} asChild>
+                        <button
+                          type="button"
+                          className="w-full py-2.5 text-left"
+                          onClick={() => {
+                            if ("panel" in item) {
+                              setPanel(item.panel);
+                              return;
+                            }
+                            showComingSoon(item.label);
+                          }}
+                        >
+                          <Icon className="h-4 w-4 text-brand-700" />
+                          {item.label}
+                        </button>
+                      </DropdownMenuItem>
+                    );
+                  })}
                   <DropdownMenuSeparator />
-                  <form action={`/${locale}/auth/signout`} method="post">
-                    <DropdownMenuItem asChild>
-                      <button type="submit" className="w-full py-2.5 text-left">
+                  <DropdownMenuItem asChild>
+                    <button
+                      type="button"
+                      className="w-full py-2.5 text-left"
+                      onClick={signOut}
+                      disabled={signingOut}
+                    >
+                      {signingOut ? (
+                        <Loader2 className="h-4 w-4 animate-spin text-brand-700" />
+                      ) : (
                         <LogOut className="h-4 w-4 text-brand-700" />
-                        {t("signOut")}
-                      </button>
-                    </DropdownMenuItem>
-                  </form>
+                      )}
+                      {t("signOut")}
+                    </button>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </>
@@ -376,14 +452,14 @@ export function Navbar() {
                     >
                       <HelpCircle className="h-5 w-5" />
                     </Link>
-                    <Link
-                      href="/saved-tutors"
-                      onClick={() => setOpen(false)}
+                    <button
+                      type="button"
+                      onClick={() => showComingSoon(t("account.savedTutors"))}
                       aria-label={t("actions.savedTutors")}
                       className="flex h-12 items-center justify-center rounded-full bg-white/75 text-brand-700"
                     >
                       <Heart className="h-5 w-5" />
-                    </Link>
+                    </button>
                     <button
                       type="button"
                       onClick={() => {
@@ -396,29 +472,60 @@ export function Navbar() {
                       <Bell className="h-5 w-5" />
                     </button>
                   </div>
-                  {menuLinks.map(({ href, label, icon: Icon }) => (
-                    <Link
-                      key={href}
-                      href={href}
-                      onClick={() => setOpen(false)}
-                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-base font-semibold text-ink-soft hover:bg-brand-50 hover:text-brand-700"
-                    >
-                      <Icon className="h-4 w-4" />
-                      {label}
-                    </Link>
-                  ))}
-                  <form action={`/${locale}/auth/signout`} method="post">
+                  {accountItems.map((item) => {
+                    const Icon = item.icon;
+
+                    if ("href" in item) {
+                      return (
+                        <Link
+                          key={item.label}
+                          href={item.href}
+                          onClick={() => setOpen(false)}
+                          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-base font-semibold text-ink-soft hover:bg-brand-50 hover:text-brand-700"
+                        >
+                          <Icon className="h-4 w-4" />
+                          {item.label}
+                        </Link>
+                      );
+                    }
+
+                    return (
+                      <button
+                        key={item.label}
+                        type="button"
+                        onClick={() => {
+                          setOpen(false);
+                          if ("panel" in item) {
+                            setPanel(item.panel);
+                            return;
+                          }
+                          showComingSoon(item.label);
+                        }}
+                        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-base font-semibold text-ink-soft hover:bg-brand-50 hover:text-brand-700"
+                      >
+                        <Icon className="h-4 w-4" />
+                        {item.label}
+                      </button>
+                    );
+                  })}
+                  <div>
                     <button
-                      type="submit"
+                      type="button"
+                      onClick={signOut}
+                      disabled={signingOut}
                       className={cn(
                         buttonVariants({ variant: "outline", size: "lg" }),
                         "w-full",
                       )}
                     >
-                      <LogOut className="h-4 w-4" />
+                      {signingOut ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <LogOut className="h-4 w-4" />
+                      )}
                       {t("signOut")}
                     </button>
-                  </form>
+                  </div>
                 </>
               ) : (
                 <Link
@@ -470,23 +577,32 @@ export function Navbar() {
                   <SheetTitle className="text-2xl font-extrabold">
                     {t("messages.title")}
                   </SheetTitle>
-                  <Link
-                    href="/messages"
+                  <button
+                    type="button"
+                    onClick={() => showComingSoon(t("account.messages"))}
                     aria-label={t("messages.openFull")}
                     className="inline-flex h-10 w-10 items-center justify-center rounded-full text-ink-soft hover:bg-surface hover:text-brand-700"
                   >
                     <Maximize2 className="h-5 w-5" />
-                  </Link>
+                  </button>
                 </div>
                 <SheetDescription className="sr-only">
                   {t("messages.description")}
                 </SheetDescription>
                 <div className="mt-6 flex gap-8 text-sm font-bold text-muted">
-                  <span className="border-b-4 border-brand-600 pb-4 text-ink">
-                    {t("messages.all")}
-                  </span>
-                  <span className="pb-4">{t("messages.unread")}</span>
-                  <span className="pb-4">{t("messages.archived")}</span>
+                  {(["all", "unread", "archived"] as const).map((tab) => (
+                    <button
+                      key={tab}
+                      type="button"
+                      onClick={() => setMessageTab(tab)}
+                      className={cn(
+                        "border-b-4 border-transparent pb-4 transition-colors hover:text-ink",
+                        messageTab === tab && "border-brand-600 text-ink",
+                      )}
+                    >
+                      {t(`messages.${tab}`)}
+                    </button>
+                  ))}
                 </div>
               </SheetHeader>
               <div className="flex flex-1 items-center justify-center px-8 text-center">

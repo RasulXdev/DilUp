@@ -3,12 +3,10 @@ import type { Database } from "@/lib/types/database";
 
 export type UserRole = Database["public"]["Enums"]["user_role"];
 
-// TODO (day 3): point these at the real authenticated dashboards once built.
-// Until then everyone lands on the public home so auth never hits a 404.
 const ROLE_HOME: Record<UserRole, string> = {
-  student: "/",
-  tutor: "/",
-  admin: "/",
+  student: "/tutors",
+  tutor: "/tutors",
+  admin: "/tutors",
 };
 
 export function getRoleHome(role?: UserRole | null) {
@@ -56,11 +54,6 @@ export async function resolvePostAuthPath(
     .eq("id", userId)
     .maybeSingle();
   const role = data?.role ?? "student";
-
-  if (role === "student") {
-    const completedSetup = await hasCompletedStudentSetup(supabase, userId);
-    if (!completedSetup) return "/setup";
-  }
 
   return getRoleHome(role);
 }
