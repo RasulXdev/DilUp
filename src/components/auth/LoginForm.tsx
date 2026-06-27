@@ -48,8 +48,10 @@ export function LoginForm() {
     const fallback = data.user
       ? await resolvePostAuthPath(supabase, data.user.id)
       : "/";
+    const destination =
+      fallback === "/setup" ? fallback : isSafeRedirectPath(next) ? next! : fallback;
     toast.success(t("welcomeBack"));
-    router.push(isSafeRedirectPath(next) ? next! : fallback);
+    router.push(destination);
     router.refresh();
   }
 

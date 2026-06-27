@@ -63,7 +63,12 @@ export async function GET(
       }
 
       const fallback = user ? await resolvePostAuthPath(supabase, user.id) : "/";
-      const path = isSafeRedirectPath(next) && next !== "/" ? next : fallback;
+      const path =
+        fallback === "/setup"
+          ? fallback
+          : isSafeRedirectPath(next) && next !== "/"
+            ? next
+            : fallback;
       return NextResponse.redirect(`${origin}/${locale}${path}`);
     }
   }
