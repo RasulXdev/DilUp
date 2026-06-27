@@ -1,20 +1,28 @@
-import Image from "next/image";
+import { HowItWorksMock } from "@/components/public/sections/HowItWorksMock";
 
-type Step = { title: string; body: string; image: string };
+type Step = { title: string; body: string };
+type StepKind = "student" | "tutor";
 
 const BADGES = ["bg-brand-600 text-white", "bg-accent-400 text-ink", "bg-success text-white"];
 
 export function StepFlow({
+  id,
   eyebrow,
   title,
   steps,
+  kind = "student",
 }: {
+  id?: string;
   eyebrow?: string;
   title?: string;
   steps: Step[];
+  kind?: StepKind;
 }) {
   return (
-    <section className="bg-white px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+    <section
+      id={id}
+      className="scroll-mt-24 bg-white px-4 py-16 sm:px-6 lg:px-8 lg:py-20"
+    >
       <div className="mx-auto max-w-7xl">
         {(eyebrow || title) && (
           <div className="mb-12 max-w-2xl">
@@ -47,14 +55,8 @@ export function StepFlow({
               </h3>
               <p className="mt-2 leading-relaxed text-ink-soft">{step.body}</p>
               <div className="mt-auto pt-6">
-                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-brand-50">
-                  <Image
-                    src={step.image}
-                    alt=""
-                    fill
-                    sizes="(min-width: 768px) 33vw, 100vw"
-                    className="object-cover object-center"
-                  />
+                <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-brand-50">
+                  <HowItWorksMock index={i} kind={kind} />
                 </div>
               </div>
             </li>

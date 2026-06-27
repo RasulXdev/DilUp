@@ -160,24 +160,27 @@
     "secondary": "How our platform works"
   },
   "footer": {
-    "about": "About us",
-    "forStudents": "For students",
+    "about": "About the platform",
+    "forStudents": "For learners",
     "forTutors": "For tutors",
     "company": "Company",
     "careers": "Careers",
-    "contact": "Contact",
+    "contact": "Contact us",
     "findTutors": "Find tutors",
+    "getStarted": "Find your tutor",
     "howItWorks": "How it works",
-    "becomeTutor": "Become a tutor",
-    "faq": "FAQ",
+    "howItWorksStudents": "How lessons work",
+    "howItWorksTutors": "How teaching works",
+    "becomeTutor": "Join as a tutor",
+    "faq": "Questions and answers",
     "privacy": "Privacy policy",
     "terms": "Terms of service",
     "rights": "All rights reserved.",
     "madeIn": "Made in Azerbaijan",
-    "tagline": "The Azerbaijan-based marketplace where students learn live, one-to-one, with a tutor who fits their goal and budget.",
-    "learnLanguage": "Learn a language",
+    "tagline": "DilUp connects learners with tutors who fit their goals, budget and schedule through live, one-to-one lessons.",
+    "learnLanguage": "Languages to learn",
     "comingSoon": "Soon",
-    "followUs": "Follow us",
+    "followUs": "Social channels",
     "backToTop": "Back to top",
     "languages": {
       "en": "English",
@@ -185,7 +188,9 @@
       "tr": "Turkish",
       "de": "German",
       "fr": "French",
-      "es": "Spanish"
+      "es": "Spanish",
+      "ar": "Arabic",
+      "it": "Italian"
     }
   },
   "onboarding": {

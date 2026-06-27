@@ -21,9 +21,10 @@ export function HowItWorksPage({ locale }: { locale: string }) {
         />
 
         <StepFlow
-          eyebrow={copy.stepsEyebrow}
-          title={copy.stepsTitle}
-          steps={copy.steps}
+          eyebrow={copy.studentStepsEyebrow}
+          title={copy.studentStepsTitle}
+          steps={copy.studentSteps}
+          kind="student"
         />
 
         <ValueGrid
@@ -33,6 +34,41 @@ export function HowItWorksPage({ locale }: { locale: string }) {
         />
 
         <FaqAccordion groups={[{ items: copy.faq }]} />
+
+        <CtaBand />
+      </main>
+      <Footer />
+    </>
+  );
+}
+
+export function TutorHowItWorksPage({ locale }: { locale: string }) {
+  const copy = getPublicPageCopy(locale, "how-it-works");
+
+  return (
+    <>
+      <Navbar />
+      <main className="flex-1 bg-white">
+        <PageHero
+          eyebrow={copy.tutorEyebrow}
+          title={copy.tutorTitle}
+          description={copy.tutorDescription}
+        />
+
+        <StepFlow
+          eyebrow={copy.tutorStepsEyebrow}
+          title={copy.tutorStepsTitle}
+          steps={copy.tutorSteps}
+          kind="tutor"
+        />
+
+        <ValueGrid
+          eyebrow={copy.tutorValuesEyebrow}
+          title={copy.tutorValuesTitle}
+          items={copy.tutorValues}
+        />
+
+        <FaqAccordion groups={[{ items: copy.tutorFaq }]} />
 
         <CtaBand />
       </main>

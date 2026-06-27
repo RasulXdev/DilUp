@@ -25,7 +25,7 @@ export type BecomeTutorContent = {
   faq: FaqItem[];
 };
 
-const BECOME_TUTOR_HERO = "/images/footer/become-tutor-hero.jpg";
+const BECOME_TUTOR_HERO = "/images/footer/dilup-tutor-teach-home.jpg";
 
 const content: Record<string, BecomeTutorContent> = {
   az: {

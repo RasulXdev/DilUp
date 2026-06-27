@@ -7,6 +7,7 @@ export const publicRoutes = [
   "get-started",
   "about",
   "how-it-works",
+  "how-it-works/tutors",
   "faq",
   "become-tutor",
   "privacy",

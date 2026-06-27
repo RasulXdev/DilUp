@@ -1,4 +1,5 @@
 import Image from "next/image";
+import type { ReactNode } from "react";
 
 type Stat = { value: string; label: string };
 
@@ -8,6 +9,7 @@ export function PageHero({
   description,
   image,
   imageAlt = "",
+  visual,
   stats,
 }: {
   eyebrow: string;
@@ -15,9 +17,10 @@ export function PageHero({
   description: string;
   image?: string;
   imageAlt?: string;
+  visual?: ReactNode;
   stats?: Stat[];
 }) {
-  const split = Boolean(image);
+  const split = Boolean(image || visual);
 
   return (
     <section className="relative overflow-hidden border-b border-line bg-brand-50/70">
@@ -67,14 +70,16 @@ export function PageHero({
           {split && (
             <div className="relative mx-auto w-full max-w-[460px]">
               <div className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-brand-100 shadow-card">
-                <Image
-                  src={image as string}
-                  alt={imageAlt}
-                  fill
-                  sizes="(min-width: 1024px) 460px, 100vw"
-                  className="object-cover"
-                  priority
-                />
+                {visual ?? (
+                  <Image
+                    src={image as string}
+                    alt={imageAlt}
+                    fill
+                    sizes="(min-width: 1024px) 460px, 100vw"
+                    className="object-cover"
+                    priority
+                  />
+                )}
               </div>
               <span
                 aria-hidden

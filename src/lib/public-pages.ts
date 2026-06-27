@@ -17,7 +17,7 @@ type StoryRow = {
   bullets?: string[];
   image: string;
 };
-type Step = { title: string; body: string; image: string };
+type Step = { title: string; body: string };
 type FaqItem = { q: string; a: string };
 type FaqGroup = { title?: string; items: FaqItem[] };
 type LegalSection = { id: string; title: string; body: string[] };
@@ -44,13 +44,23 @@ export type HowItWorksContent = {
   eyebrow: string;
   title: string;
   description: string;
-  stepsEyebrow: string;
-  stepsTitle: string;
-  steps: Step[];
+  tutorEyebrow: string;
+  tutorTitle: string;
+  tutorDescription: string;
+  studentStepsEyebrow: string;
+  studentStepsTitle: string;
+  studentSteps: Step[];
+  tutorStepsEyebrow: string;
+  tutorStepsTitle: string;
+  tutorSteps: Step[];
   valuesEyebrow: string;
   valuesTitle: string;
   values: ValueItem[];
+  tutorValuesEyebrow: string;
+  tutorValuesTitle: string;
+  tutorValues: ValueItem[];
   faq: FaqItem[];
+  tutorFaq: FaqItem[];
 };
 
 export type FaqContent = {
@@ -65,7 +75,6 @@ export type ContactContent = {
   eyebrow: string;
   title: string;
   description: string;
-  heroImage: string;
   email: string;
   methods: ContactMethod[];
   formTitle: string;
@@ -88,24 +97,10 @@ type SiteContent = {
   terms: LegalContent;
 };
 
-const HERO = "/images/dilup-hero-tutor.png";
-const STEP1 = "/images/how-it-works/step-1.jpg";
-const STEP2 = "/images/how-it-works/step-2.jpg";
-const STEP3 = "/images/how-it-works/step-3.jpg";
-
-// Footer pages — high-quality Unsplash images
-const ABOUT_HERO = "/images/footer/about-hero.jpg";
-const ABOUT_STORY_1 = "/images/footer/about-story-1.jpg";
-const ABOUT_STORY_2 = "/images/footer/about-story-2.jpg";
-const HOW_IT_WORKS_1 = "/images/footer/how-it-works-1.jpg";
-const HOW_IT_WORKS_2 = "/images/footer/how-it-works-2.jpg";
-const HOW_IT_WORKS_3 = "/images/footer/how-it-works-3.jpg";
-const FAQ_HERO = "/images/footer/faq-hero.jpg";
-const CONTACT_HERO = "/images/footer/contact-hero.jpg";
-const PRIVACY_HERO = "/images/footer/privacy-hero.jpg";
-const TERMS_HERO = "/images/footer/terms-hero.jpg";
-const BECOME_TUTOR_HERO = "/images/footer/become-tutor-hero.jpg";
-const BECOME_TUTOR_EARNINGS = "/images/footer/become-tutor-earnings.jpg";
+const ABOUT_HERO = "/images/footer/dilup-about-hero.jpg";
+const ABOUT_STORY_1 = "/images/footer/dilup-about-story-focus.jpg";
+const ABOUT_STORY_2 = "/images/footer/dilup-about-story-marketplace.jpg";
+const FAQ_HERO = "/images/footer/dilup-about-hero.jpg";
 
 const content: Record<string, SiteContent> = {
   az: {
@@ -174,23 +169,40 @@ const content: Record<string, SiteContent> = {
       title: "Müəllimini seç, vaxtını planla, danışmağa başla.",
       description:
         "DilUp-da uyğun müəllim tapmaq üç sadə addımdır. Heç bir uzun qeydiyyat və ya abunəlik tələb olunmur — birbaşa trial dərslə başlaya bilərsən.",
-      stepsEyebrow: "Üç addım",
-      stepsTitle: "Başlamaq bu qədər asandır.",
-      steps: [
+      tutorEyebrow: "Müəllimlər üçün",
+      tutorTitle: "Profilini qur, tələbələrə görün, dərs keçərək qazan.",
+      tutorDescription:
+        "DilUp-da müəllim kimi proses sadədir: profilini hazırlayırsan, təsdiqdən keçirsən və tələbələr səni bron etdikcə canlı dərslərdən qazanc əldə edirsən.",
+      studentStepsEyebrow: "Tələbə üçün üç addım",
+      studentStepsTitle: "Öyrənmə yolun",
+      studentSteps: [
         {
           title: "1. Məqsədini seç",
           body: "Qısa onboarding suallarına cavab ver — sənin üçün ən uyğun müəllim siyahısı formalaşsın.",
-          image: HOW_IT_WORKS_1,
         },
         {
           title: "2. Müəllimləri müqayisə et",
           body: "Qiymət, təcrübə, danışdığı dillər və boş vaxtlara baxıb əminliklə seç.",
-          image: HOW_IT_WORKS_2,
         },
         {
           title: "3. Dərsə başla",
           body: "Trial dərs bron et, məqsədini bölüş və davam etmək istədiyin müəllimlə plan qur.",
-          image: HOW_IT_WORKS_3,
+        },
+      ],
+      tutorStepsEyebrow: "Müəllim üçün üç addım",
+      tutorStepsTitle: "Qazanc yolunuz",
+      tutorSteps: [
+        {
+          title: "1. Profil yarat",
+          body: "Haqqında, dillər, təcrübə, video təqdimat və qiymət — profilin sənin tədris üslubunu göstərsin.",
+        },
+        {
+          title: "2. Tələbə tap",
+          body: "Profilini nəzərdən keçiririk və təsdiqləyirik — sonra tələbələr səni görüb seçir.",
+        },
+        {
+          title: "3. Qazanc et",
+          body: "Hər dərs bitdikdə haqqını al — heç bir abunəlik yoxdur, yalnız real dərslər.",
         },
       ],
       valuesEyebrow: "Nə əldə edirsən",
@@ -217,6 +229,30 @@ const content: Record<string, SiteContent> = {
           body: "Bəyənmədiyin trial dərsi pulsuz dəyiş.",
         },
       ],
+      tutorValuesEyebrow: "Müəllim kimi nə əldə edirsən",
+      tutorValuesTitle: "Hər dərsdə nəzarət və şəffaf qazanc.",
+      tutorValues: [
+        {
+          icon: "wallet",
+          title: "Qiymət sənin əlində",
+          body: "Dərs qiymətini özün təyin edirsən və profilində açıq göstərirsən.",
+        },
+        {
+          icon: "calendar",
+          title: "Cədvəli sən seçirsən",
+          body: "Uyğun saatlarını əlavə et, dərsləri öz ritminə görə planla.",
+        },
+        {
+          icon: "users",
+          title: "Uyğun tələbələr",
+          body: "Tələbələr məqsəd, büdcə və vaxtına görə səni tapıb bron edir.",
+        },
+        {
+          icon: "shield",
+          title: "Təhlükəsiz proses",
+          body: "Profil təsdiqi, bron axını və ödəniş qaydaları platforma daxilində idarə olunur.",
+        },
+      ],
       faq: [
         {
           q: "Trial dərs nədir?",
@@ -229,6 +265,20 @@ const content: Record<string, SiteContent> = {
         {
           q: "Müəllimi dəyişə bilərəm?",
           a: "Bəli. İstənilən vaxt başqa müəllimlə trial dərs bron edə bilərsən.",
+        },
+      ],
+      tutorFaq: [
+        {
+          q: "Müəllim kimi necə qoşuluram?",
+          a: "Müəllim profili yaradırsan, təcrübəni, dillərini, video təqdimatını və qiymətini əlavə edirsən. Komanda profili təsdiqlədikdən sonra tələbələr səni görə bilir.",
+        },
+        {
+          q: "Dərs qiymətini kim təyin edir?",
+          a: "Qiyməti sən təyin edirsən. Platforma hər dərsdən komissiya tutur, qalan məbləğ sənə çatır.",
+        },
+        {
+          q: "Nə vaxt dərs verə bilərəm?",
+          a: "Cədvəl tam sənin əlindədir. Uyğun saatlarını açırsan, tələbələr həmin vaxtlara bron edir.",
         },
       ],
     },
@@ -306,7 +356,6 @@ const content: Record<string, SiteContent> = {
       title: "DilUp komandası ilə danış.",
       description:
         "Sualın, təklifin və ya müəllim kimi qoşulmaq istəyin var? Formu doldur və ya birbaşa yaz — iş günlərində tez cavab veririk.",
-      heroImage: CONTACT_HERO,
       email: "hello@dilup.az",
       methods: [
         {
@@ -476,23 +525,40 @@ const content: Record<string, SiteContent> = {
       title: "Choose a tutor, plan a time, start speaking.",
       description:
         "Finding the right tutor on DilUp takes three simple steps. No long sign-up or subscription required — you can start with a trial lesson right away.",
-      stepsEyebrow: "Three steps",
-      stepsTitle: "Getting started is this easy.",
-      steps: [
+      tutorEyebrow: "For tutors",
+      tutorTitle: "Build your profile, get discovered, earn from lessons.",
+      tutorDescription:
+        "Teaching on DilUp is straightforward: create your profile, get approved, and earn as students book live lessons with you.",
+      studentStepsEyebrow: "For students",
+      studentStepsTitle: "Your learning path",
+      studentSteps: [
         {
           title: "1. Choose your goal",
           body: "Answer a few short onboarding questions so we can shape a tutor shortlist around your needs.",
-          image: HOW_IT_WORKS_1,
         },
         {
           title: "2. Compare tutors",
           body: "Use price, experience, languages spoken and availability to choose with confidence.",
-          image: HOW_IT_WORKS_2,
         },
         {
           title: "3. Start your lesson",
           body: "Book a trial lesson, share your goal and build a plan with the tutor you want to continue with.",
-          image: HOW_IT_WORKS_3,
+        },
+      ],
+      tutorStepsEyebrow: "For tutors",
+      tutorStepsTitle: "Your earning path",
+      tutorSteps: [
+        {
+          title: "1. Create your profile",
+          body: "Set your about, languages, experience, intro video and price — your style, your rate.",
+        },
+        {
+          title: "2. Get verified",
+          body: "We review your profile and verify it — then students can find and book with you.",
+        },
+        {
+          title: "3. Start earning",
+          body: "After each lesson, get paid — no subscriptions, just real lessons with real students.",
         },
       ],
       valuesEyebrow: "What you get",
@@ -519,6 +585,30 @@ const content: Record<string, SiteContent> = {
           body: "Swap a trial lesson you didn't love, for free.",
         },
       ],
+      tutorValuesEyebrow: "What you get as a tutor",
+      tutorValuesTitle: "Control, visibility and clear earnings.",
+      tutorValues: [
+        {
+          icon: "wallet",
+          title: "Set your own rate",
+          body: "Choose your lesson price and show it openly on your profile.",
+        },
+        {
+          icon: "calendar",
+          title: "Own your schedule",
+          body: "Open the hours that work for you and teach at your own rhythm.",
+        },
+        {
+          icon: "users",
+          title: "Matched students",
+          body: "Students find and book you based on goals, budget and availability.",
+        },
+        {
+          icon: "shield",
+          title: "A safer workflow",
+          body: "Profile review, bookings and payment rules are handled inside the platform.",
+        },
+      ],
       faq: [
         {
           q: "What is a trial lesson?",
@@ -531,6 +621,20 @@ const content: Record<string, SiteContent> = {
         {
           q: "Can I change tutors?",
           a: "Yes. You can book a trial lesson with another tutor at any time.",
+        },
+      ],
+      tutorFaq: [
+        {
+          q: "How do I join as a tutor?",
+          a: "Create a tutor profile, add your experience, languages, intro video and rate. Once approved, students can discover and book you.",
+        },
+        {
+          q: "Who sets my lesson price?",
+          a: "You do. The platform takes a commission per lesson and the rest goes to you.",
+        },
+        {
+          q: "When can I teach?",
+          a: "Your schedule is yours. Open the hours that work for you and students book those slots.",
         },
       ],
     },
@@ -608,7 +712,6 @@ const content: Record<string, SiteContent> = {
       title: "Talk to the DilUp team.",
       description:
         "Have a question, an idea, or want to join as a tutor? Fill in the form or write to us directly — we reply quickly on business days.",
-      heroImage: CONTACT_HERO,
       email: "hello@dilup.az",
       methods: [
         {
@@ -778,23 +881,40 @@ const content: Record<string, SiteContent> = {
       title: "Выбери репетитора, запланируй время, начни говорить.",
       description:
         "Найти подходящего репетитора на DilUp — три простых шага. Без долгой регистрации и подписки: можно сразу начать с пробного урока.",
-      stepsEyebrow: "Три шага",
-      stepsTitle: "Начать действительно просто.",
-      steps: [
+      tutorEyebrow: "Для репетиторов",
+      tutorTitle: "Создай профиль, стань видимым для студентов и зарабатывай на уроках.",
+      tutorDescription:
+        "Преподавать на DilUp просто: заполни профиль, пройди проверку и получай доход, когда студенты бронируют с тобой живые уроки.",
+      studentStepsEyebrow: "Для студентов",
+      studentStepsTitle: "Твой путь обучения",
+      studentSteps: [
         {
           title: "1. Выбери цель",
           body: "Ответь на несколько коротких вопросов onboarding — мы соберём подборку репетиторов под твои задачи.",
-          image: HOW_IT_WORKS_1,
         },
         {
           title: "2. Сравни репетиторов",
           body: "Сравни цену, опыт, языки и доступное время, чтобы выбрать уверенно.",
-          image: HOW_IT_WORKS_2,
         },
         {
           title: "3. Начни урок",
           body: "Забронируй пробный урок, поделись целью и составь план с подходящим репетитором.",
-          image: HOW_IT_WORKS_3,
+        },
+      ],
+      tutorStepsEyebrow: "Для репетиторов",
+      tutorStepsTitle: "Твой путь доходов",
+      tutorSteps: [
+        {
+          title: "1. Создай профиль",
+          body: "Заполни информацию о себе, языки, опыт, видео-представление и установи свою цену — ты сам решаешь.",
+        },
+        {
+          title: "2. Получи верификацию",
+          body: "Мы проверим твой профиль — и тогда студенты смогут найти и забронировать с тобой уроки.",
+        },
+        {
+          title: "3. Начни зарабатывать",
+          body: "После каждого урока получай деньги — никаких подписок, просто реальные уроки с реальными студентами.",
         },
       ],
       valuesEyebrow: "Что ты получаешь",
@@ -821,6 +941,30 @@ const content: Record<string, SiteContent> = {
           body: "Не понравился пробный урок — поменяй бесплатно.",
         },
       ],
+      tutorValuesEyebrow: "Что получает репетитор",
+      tutorValuesTitle: "Контроль, видимость и прозрачный доход.",
+      tutorValues: [
+        {
+          icon: "wallet",
+          title: "Своя ставка",
+          body: "Ты сам задаёшь цену урока и открыто показываешь её в профиле.",
+        },
+        {
+          icon: "calendar",
+          title: "Своё расписание",
+          body: "Открывай удобные часы и преподавай в своём ритме.",
+        },
+        {
+          icon: "users",
+          title: "Подходящие студенты",
+          body: "Студенты находят и бронируют тебя по целям, бюджету и доступному времени.",
+        },
+        {
+          icon: "shield",
+          title: "Безопасный процесс",
+          body: "Проверка профиля, бронирования и правила оплаты управляются внутри платформы.",
+        },
+      ],
       faq: [
         {
           q: "Что такое пробный урок?",
@@ -833,6 +977,20 @@ const content: Record<string, SiteContent> = {
         {
           q: "Можно сменить репетитора?",
           a: "Да. В любой момент можно забронировать пробный урок у другого репетитора.",
+        },
+      ],
+      tutorFaq: [
+        {
+          q: "Как присоединиться как репетитор?",
+          a: "Создай профиль репетитора, добавь опыт, языки, видео-представление и ставку. После подтверждения студенты смогут находить и бронировать тебя.",
+        },
+        {
+          q: "Кто задаёт цену урока?",
+          a: "Ты сам. Платформа берёт комиссию за урок, остальная сумма начисляется тебе.",
+        },
+        {
+          q: "Когда я могу преподавать?",
+          a: "Расписание полностью твоё. Открывай удобные часы, а студенты бронируют эти слоты.",
         },
       ],
     },
@@ -910,7 +1068,6 @@ const content: Record<string, SiteContent> = {
       title: "Свяжись с командой DilUp.",
       description:
         "Есть вопрос, идея или хочешь стать репетитором? Заполни форму или напиши напрямую — в рабочие дни отвечаем быстро.",
-      heroImage: CONTACT_HERO,
       email: "hello@dilup.az",
       methods: [
         {

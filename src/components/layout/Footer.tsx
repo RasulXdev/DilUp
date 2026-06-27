@@ -23,6 +23,8 @@ const TEACH_LANGUAGES = [
   { code: "de", live: false },
   { code: "fr", live: false },
   { code: "es", live: false },
+  { code: "ar", live: false },
+  { code: "it", live: false },
 ] as const;
 
 export function Footer() {
@@ -35,14 +37,13 @@ export function Footer() {
       links: [
         { href: "/about", label: t("about") },
         { href: "/contact", label: t("contact") },
-        { href: "/become-tutor", label: t("careers") },
       ],
     },
     {
       title: t("forStudents"),
       links: [
-        { href: "/tutors", label: t("findTutors") },
-        { href: "/how-it-works", label: t("howItWorks") },
+        { href: "/get-started", label: t("getStarted") },
+        { href: "/how-it-works", label: t("howItWorksStudents") },
         { href: "/faq", label: t("faq") },
       ],
     },
@@ -50,7 +51,7 @@ export function Footer() {
       title: t("forTutors"),
       links: [
         { href: "/become-tutor", label: t("becomeTutor") },
-        { href: "/how-it-works", label: t("howItWorks") },
+        { href: "/how-it-works/tutors", label: t("howItWorksTutors") },
       ],
     },
   ];
@@ -138,7 +139,7 @@ export function Footer() {
                   lang.live ? (
                     <li key={lang.code}>
                       <Link
-                        href="/tutors"
+                        href="/get-started"
                         className="group inline-flex items-center text-sm text-white/70 transition-colors hover:text-white"
                       >
                         <span className="h-px w-0 bg-accent-300 transition-all duration-200 group-hover:mr-2 group-hover:w-3" />

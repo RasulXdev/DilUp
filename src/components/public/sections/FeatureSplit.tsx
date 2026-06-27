@@ -1,4 +1,5 @@
 import Image from "next/image";
+import type { ReactNode } from "react";
 import { Check } from "lucide-react";
 
 export function FeatureSplit({
@@ -8,14 +9,16 @@ export function FeatureSplit({
   bullets,
   image,
   imageAlt = "",
+  visual,
   reverse = false,
 }: {
   eyebrow?: string;
   title: string;
   body: string;
   bullets?: string[];
-  image: string;
+  image?: string;
   imageAlt?: string;
+  visual?: ReactNode;
   reverse?: boolean;
 }) {
   return (
@@ -48,13 +51,15 @@ export function FeatureSplit({
 
         <div className={reverse ? "lg:order-1" : ""}>
           <div className="relative aspect-[5/4] w-full overflow-hidden rounded-3xl bg-brand-100 shadow-card">
-            <Image
-              src={image}
-              alt={imageAlt}
-              fill
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              className="object-cover"
-            />
+            {visual ?? (
+              <Image
+                src={image as string}
+                alt={imageAlt}
+                fill
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                className="object-cover"
+              />
+            )}
           </div>
         </div>
       </div>

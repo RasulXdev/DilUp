@@ -160,24 +160,27 @@
     "secondary": "Platforma necə işləyir"
   },
   "footer": {
-    "about": "Haqqımızda",
-    "forStudents": "Tələbələr üçün",
+    "about": "Platforma haqqında",
+    "forStudents": "Öyrənənlər üçün",
     "forTutors": "Müəllimlər üçün",
     "company": "Şirkət",
     "careers": "Karyera",
-    "contact": "Əlaqə",
+    "contact": "Bizimlə əlaqə",
     "findTutors": "Müəllim tap",
+    "getStarted": "Müəllimini tap",
     "howItWorks": "Necə işləyir",
-    "becomeTutor": "Müəllim ol",
-    "faq": "Tez-tez verilən suallar",
+    "howItWorksStudents": "Dərslər necə işləyir",
+    "howItWorksTutors": "Müəllimlər üçün iş prinsipi",
+    "becomeTutor": "Müəllim kimi qoşul",
+    "faq": "Suallar və cavablar",
     "privacy": "Məxfilik siyasəti",
     "terms": "İstifadə şərtləri",
     "rights": "Bütün hüquqlar qorunur.",
     "madeIn": "Azərbaycanda hazırlanıb",
-    "tagline": "DilUp — tələbələrin məqsəd və büdcəsinə uyğun müəllimlə canlı, fərdi dərs aldığı Azərbaycan platformasıdır.",
-    "learnLanguage": "Dil öyrən",
+    "tagline": "DilUp tələbələri məqsədinə, büdcəsinə və vaxtına uyğun müəllimlərlə birləşdirən yerli online dil platformasıdır.",
+    "learnLanguage": "Öyrənilən dillər",
     "comingSoon": "Tezliklə",
-    "followUs": "Bizi izlə",
+    "followUs": "Sosial kanallar",
     "backToTop": "Yuxarı qayıt",
     "languages": {
       "en": "İngilis dili",
@@ -185,7 +188,9 @@
       "tr": "Türk dili",
       "de": "Alman dili",
       "fr": "Fransız dili",
-      "es": "İspan dili"
+      "es": "İspan dili",
+      "ar": "Ərəb dili",
+      "it": "İtalyan dili"
     }
   },
   "onboarding": {

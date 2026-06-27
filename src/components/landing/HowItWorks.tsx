@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { HowItWorksMock } from "@/components/public/sections/HowItWorksMock";
 
 export function HowItWorks() {
   const t = useTranslations("howItWorks");
@@ -8,23 +8,17 @@ export function HowItWorks() {
     {
       title: t("step1Title"),
       text: t("step1Text"),
-      image: "/images/how-it-works/step-1.jpg",
       badge: "bg-brand-600 text-white",
-      imageClass: "object-cover object-center",
     },
     {
       title: t("step2Title"),
       text: t("step2Text"),
-      image: "/images/how-it-works/step-2.jpg",
       badge: "bg-accent-400 text-ink",
-      imageClass: "object-cover object-center",
     },
     {
       title: t("step3Title"),
       text: t("step3Text"),
-      image: "/images/how-it-works/step-3.jpg",
       badge: "bg-success text-white",
-      imageClass: "object-cover object-center scale-[1.18]",
     },
   ];
 
@@ -59,14 +53,8 @@ export function HowItWorks() {
               </p>
 
               <div className="mt-auto pt-6">
-                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-brand-50">
-                  <Image
-                    src={step.image}
-                    alt=""
-                    fill
-                    sizes="(min-width: 768px) 33vw, 100vw"
-                    className={step.imageClass}
-                  />
+                <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-brand-50">
+                  <HowItWorksMock index={i} kind="student" />
                 </div>
               </div>
             </li>

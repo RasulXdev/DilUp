@@ -5,6 +5,11 @@ import { PageHero } from "@/components/public/sections/PageHero";
 import { FeatureSplit } from "@/components/public/sections/FeatureSplit";
 import { ValueGrid } from "@/components/public/sections/ValueGrid";
 import { CtaBand } from "@/components/public/sections/CtaBand";
+import {
+  AboutHeroMock,
+  AboutMarketplaceMock,
+  AboutMissionMock,
+} from "@/components/public/sections/AboutMockVisual";
 
 export function AboutPage({ locale }: { locale: string }) {
   const copy = getPublicPageCopy(locale, "about");
@@ -17,8 +22,8 @@ export function AboutPage({ locale }: { locale: string }) {
           eyebrow={copy.eyebrow}
           title={copy.title}
           description={copy.description}
-          image={copy.heroImage}
           imageAlt={copy.title}
+          visual={<AboutHeroMock />}
           stats={copy.stats}
         />
 
@@ -29,7 +34,7 @@ export function AboutPage({ locale }: { locale: string }) {
             title={row.title}
             body={row.body}
             bullets={row.bullets}
-            image={row.image}
+            visual={i % 2 === 0 ? <AboutMissionMock /> : <AboutMarketplaceMock />}
             reverse={i % 2 === 1}
           />
         ))}
