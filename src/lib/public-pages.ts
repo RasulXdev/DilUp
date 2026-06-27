@@ -57,6 +57,7 @@ export type FaqContent = {
   eyebrow: string;
   title: string;
   description: string;
+  heroImage: string;
   groups: FaqGroup[];
 };
 
@@ -236,6 +237,7 @@ const content: Record<string, SiteContent> = {
       title: "Ən çox verilən suallar.",
       description:
         "Dərs modeli, ödəniş, müəllim seçimi və hesab haqqında qısa və aydın cavablar. Sualına cavab tapmasan, bizə yaz.",
+      heroImage: FAQ_HERO,
       groups: [
         {
           title: "Dərslər",
@@ -414,7 +416,7 @@ const content: Record<string, SiteContent> = {
       title: "A local, simple and trusted way to learn languages.",
       description:
         "DilUp is an online language marketplace built for Azerbaijan. Instead of buying a subscription, students choose a tutor who fits their goal, level and budget, pay only for the lessons they take, and start speaking from the very first one.",
-      heroImage: FAQ_HERO,
+      heroImage: ABOUT_HERO,
       stats: [
         { value: "1:1", label: "Live video lessons" },
         { value: "0", label: "Subscriptions — pay per lesson" },
@@ -430,7 +432,7 @@ const content: Record<string, SiteContent> = {
             "Swap a trial lesson you didn't love, for free",
             "All payments in manat, with local cards",
           ],
-          image: HOW_IT_WORKS_2,
+          image: ABOUT_STORY_1,
         },
         {
           eyebrow: "How we differ",
@@ -441,7 +443,7 @@ const content: Record<string, SiteContent> = {
             "A personal plan for your level",
             "Lessons whenever you want — in your timezone",
           ],
-          image: HOW_IT_WORKS_1,
+          image: ABOUT_STORY_2,
         },
       ],
       valuesEyebrow: "Our values",
@@ -537,6 +539,7 @@ const content: Record<string, SiteContent> = {
       title: "Frequently asked questions.",
       description:
         "Short, clear answers about lessons, payments, choosing a tutor and your account. Can't find your answer? Just write to us.",
+      heroImage: FAQ_HERO,
       groups: [
         {
           title: "Lessons",
@@ -715,7 +718,7 @@ const content: Record<string, SiteContent> = {
       title: "Локальный, простой и надёжный способ учить языки.",
       description:
         "DilUp — онлайн-маркетплейс языков, созданный для Азербайджана. Вместо подписки студент выбирает репетитора под свою цель, уровень и бюджет, платит только за проведённые уроки и начинает говорить с первого занятия.",
-      heroImage: FAQ_HERO,
+      heroImage: ABOUT_HERO,
       stats: [
         { value: "1:1", label: "Живые видеоуроки" },
         { value: "0", label: "Подписок — оплата за урок" },
@@ -731,7 +734,7 @@ const content: Record<string, SiteContent> = {
             "Не понравился пробный урок — поменяй бесплатно",
             "Все платежи в манатах, локальными картами",
           ],
-          image: HOW_IT_WORKS_2,
+          image: ABOUT_STORY_1,
         },
         {
           eyebrow: "Чем отличаемся",
@@ -742,7 +745,7 @@ const content: Record<string, SiteContent> = {
             "Персональный план под твой уровень",
             "Уроки когда удобно — по твоему часовому поясу",
           ],
-          image: HOW_IT_WORKS_1,
+          image: ABOUT_STORY_2,
         },
       ],
       valuesEyebrow: "Наши ценности",
@@ -838,6 +841,7 @@ const content: Record<string, SiteContent> = {
       title: "Частые вопросы.",
       description:
         "Короткие и понятные ответы об уроках, оплате, выборе репетитора и аккаунте. Не нашёл ответ? Просто напиши нам.",
+      heroImage: FAQ_HERO,
       groups: [
         {
           title: "Уроки",

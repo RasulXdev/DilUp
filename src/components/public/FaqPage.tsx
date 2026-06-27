@@ -18,6 +18,8 @@ export function FaqPage({ locale }: { locale: string }) {
           eyebrow={copy.eyebrow}
           title={copy.title}
           description={copy.description}
+          image={copy.heroImage}
+          imageAlt={copy.title}
         />
 
         <FaqAccordion groups={copy.groups} />
