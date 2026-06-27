@@ -9,6 +9,18 @@
       "description": "Teach English on DilUp. Set your own price, choose your hours, and earn on your terms with secure payments."
     }
   },
+  "publicPages": {
+    "tocLabel": "On this page",
+    "faqStillTitle": "Still have a question?",
+    "faqStillText": "Can't find what you're looking for? Our team is happy to help.",
+    "faqStillCta": "Contact us",
+    "form": {
+      "name": "Your name",
+      "email": "Email",
+      "message": "Message",
+      "submit": "Send message"
+    }
+  },
   "publicCta": {
     "title": "Ready to start learning?",
     "subtitle": "Find a tutor who fits your goal and budget, and book your first lesson today.",

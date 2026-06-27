@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
-import { PublicInfoPage } from "@/components/public/PublicInfoPage";
+import { LegalPage } from "@/components/public/LegalPage";
 import { getPublicPageCopy } from "@/lib/public-pages";
 import { pageMetadata } from "@/lib/seo";
 
@@ -28,5 +28,5 @@ export default async function TermsPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  return <PublicInfoPage locale={locale} slug="terms" />;
+  return <LegalPage locale={locale} slug="terms" />;
 }

@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
-import { BecomeTutorCTA } from "@/components/landing/BecomeTutorCTA";
+import { BecomeTutorPage as BecomeTutorBody } from "@/components/public/BecomeTutorPage";
 import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata({
@@ -29,13 +27,5 @@ export default async function BecomeTutorPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  return (
-    <>
-      <Navbar />
-      <main className="flex-1">
-        <BecomeTutorCTA />
-      </main>
-      <Footer />
-    </>
-  );
+  return <BecomeTutorBody locale={locale} />;
 }

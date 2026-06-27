@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
-import { PublicInfoPage } from "@/components/public/PublicInfoPage";
+import { ContactPage as ContactPageBody } from "@/components/public/ContactPage";
 import { getPublicPageCopy } from "@/lib/public-pages";
 import { pageMetadata } from "@/lib/seo";
 
@@ -28,5 +28,5 @@ export default async function ContactPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  return <PublicInfoPage locale={locale} slug="contact" />;
+  return <ContactPageBody locale={locale} />;
 }

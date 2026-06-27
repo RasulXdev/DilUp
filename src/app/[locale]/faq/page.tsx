@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
-import { PublicInfoPage } from "@/components/public/PublicInfoPage";
+import { FaqPage as FaqPageBody } from "@/components/public/FaqPage";
 import { getPublicPageCopy } from "@/lib/public-pages";
 import { pageMetadata } from "@/lib/seo";
 
@@ -28,5 +28,5 @@ export default async function FaqPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  return <PublicInfoPage locale={locale} slug="faq" />;
+  return <FaqPageBody locale={locale} />;
 }
