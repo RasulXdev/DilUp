@@ -42,6 +42,7 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/lib/supabase/client";
+import { isSafeRedirectPath } from "@/lib/auth/redirects";
 import { cn } from "@/lib/utils";
 
 type StepId =
@@ -270,7 +271,7 @@ function previousStepIndex(index: number, answers: Answers) {
   return 0;
 }
 
-export function OnboardingQuiz() {
+export function OnboardingQuiz({ nextPath }: { nextPath?: string }) {
   const t = useTranslations("onboarding");
   const router = useRouter();
   const [started, setStarted] = useState(false);
@@ -540,6 +541,12 @@ export function OnboardingQuiz() {
     });
   }
 
+  function resultPath() {
+    return isSafeRedirectPath(nextPath ?? null)
+      ? nextPath!
+      : `/tutors?${tutorSearchParams().toString()}`;
+  }
+
   async function finish() {
     setLoading(true);
     const sessionId = getSessionId();
@@ -588,7 +595,7 @@ export function OnboardingQuiz() {
     // so skip straight to results.
     if (signedInUserId) {
       window.setTimeout(() => {
-        router.push(`/tutors?${tutorSearchParams().toString()}`);
+        router.push(resultPath());
         router.refresh();
       }, 1200);
       return;
@@ -962,7 +969,7 @@ export function OnboardingQuiz() {
 
           <div className="space-y-4 px-6 py-6 sm:space-y-5 sm:px-8 sm:py-7">
             <SocialButtons
-              next={`/tutors?${tutorSearchParams().toString()}`}
+              next={resultPath()}
               role="student"
             />
 
@@ -980,6 +987,7 @@ export function OnboardingQuiz() {
                 event.preventDefault();
                 const params = new URLSearchParams();
                 if (signupEmail) params.set("email", signupEmail);
+                params.set("next", resultPath());
                 router.push(`/register${params.toString() ? `?${params.toString()}` : ""}`);
               }}
             >
@@ -999,7 +1007,7 @@ export function OnboardingQuiz() {
 
             <button
               type="button"
-              onClick={() => router.push(`/tutors?${tutorSearchParams().toString()}`)}
+              onClick={() => router.push(resultPath())}
               className="flex h-11 w-full items-center justify-center rounded-full text-sm font-bold text-brand-700 underline underline-offset-4 hover:text-brand-800"
             >
               {t("signup.preview")}

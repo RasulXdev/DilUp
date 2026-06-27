@@ -4,12 +4,13 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocale, useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { User, Mail, Lock, Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Link, useRouter } from "@/i18n/navigation";
 import { registerSchema, type RegisterValues } from "@/lib/validations/auth";
-import { resolvePostAuthPath } from "@/lib/auth/redirects";
+import { isSafeRedirectPath, resolvePostAuthPath } from "@/lib/auth/redirects";
 import { claimOnboardingSession } from "@/lib/auth/onboarding-actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,7 @@ export function RegisterForm({
   const t = useTranslations("auth");
   const router = useRouter();
   const locale = useLocale();
+  const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
   const {
     register,
@@ -39,6 +41,11 @@ export function RegisterForm({
       window.location.origin,
     );
     callbackUrl.searchParams.set("role", variant);
+    const next = searchParams.get("next");
+    const safeNext = isSafeRedirectPath(next) ? next : null;
+    if (safeNext) {
+      callbackUrl.searchParams.set("next", safeNext);
+    }
 
     // Carry the anonymous onboarding session so it can be linked to the new
     // account — works whether or not email confirmation is enabled (the
@@ -86,8 +93,10 @@ export function RegisterForm({
         await claimOnboardingSession(sessionId);
       }
       const home = await resolvePostAuthPath(supabase, data.session.user.id);
+      const destination =
+        home === "/setup" ? home : safeNext ?? home;
       toast.success(t("accountCreated"));
-      router.push(home);
+      router.push(destination);
       router.refresh();
     } else {
       toast.success(t("checkEmail"), { duration: 6000 });

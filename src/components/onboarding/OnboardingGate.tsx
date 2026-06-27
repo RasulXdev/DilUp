@@ -6,7 +6,20 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-export function OnboardingGate({ children }: { children: ReactNode }) {
+function isQuickSetupResponse(response: { free_text: string | null }) {
+  return (
+    response.free_text === "quick_setup_completed" ||
+    response.free_text === "quick_setup_skipped"
+  );
+}
+
+export function OnboardingGate({
+  children,
+  nextPath = "/tutors",
+}: {
+  children: ReactNode;
+  nextPath?: string;
+}) {
   const router = useRouter();
   const [checking, setChecking] = useState(true);
 
@@ -16,7 +29,7 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
     async function checkExistingOnboarding() {
       const localAnswers = window.localStorage.getItem("dilup_onboarding_answers");
       if (localAnswers) {
-        router.replace("/tutors");
+        router.replace(nextPath);
         return;
       }
 
@@ -28,13 +41,12 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
       if (user) {
         const { data } = await supabase
           .from("onboarding_responses")
-          .select("id")
+          .select("id, free_text")
           .eq("user_id", user.id)
-          .limit(1)
-          .maybeSingle();
+          .limit(20);
 
-        if (data?.id) {
-          router.replace("/tutors");
+        if (data?.some((response) => !isQuickSetupResponse(response))) {
+          router.replace(nextPath);
           return;
         }
       }
@@ -47,7 +59,7 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
     return () => {
       active = false;
     };
-  }, [router]);
+  }, [nextPath, router]);
 
   if (checking) {
     return (

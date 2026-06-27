@@ -17,6 +17,13 @@ export function isSafeRedirectPath(path: string | null) {
   return !!path && path.startsWith("/") && !path.startsWith("//");
 }
 
+function isQuickSetupResponse(response: { free_text: string | null }) {
+  return (
+    response.free_text === "quick_setup_completed" ||
+    response.free_text === "quick_setup_skipped"
+  );
+}
+
 export async function resolveUserHome(
   supabase: SupabaseClient<Database>,
   userId: string,
@@ -42,6 +49,19 @@ export async function hasCompletedStudentSetup(
     .maybeSingle();
 
   return Boolean(data?.id);
+}
+
+export async function hasCompletedFullOnboarding(
+  supabase: SupabaseClient<Database>,
+  userId: string,
+) {
+  const { data } = await supabase
+    .from("onboarding_responses")
+    .select("id, free_text")
+    .eq("user_id", userId)
+    .limit(20);
+
+  return Boolean(data?.some((response) => !isQuickSetupResponse(response)));
 }
 
 export async function resolvePostAuthPath(

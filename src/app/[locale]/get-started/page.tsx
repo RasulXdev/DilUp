@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { OnboardingGate } from "@/components/onboarding/OnboardingGate";
 import { OnboardingQuiz } from "@/components/onboarding/OnboardingQuiz";
-import { hasCompletedStudentSetup } from "@/lib/auth/redirects";
+import { hasCompletedFullOnboarding, isSafeRedirectPath } from "@/lib/auth/redirects";
 import { absoluteUrl, pageMetadata } from "@/lib/seo";
 import { createClient } from "@/lib/supabase/server";
 
@@ -43,11 +43,16 @@ export async function generateMetadata({
 
 export default async function GetStartedPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams?: Promise<{ next?: string }>;
 }) {
   const { locale } = await params;
+  const { next } = (await searchParams) ?? {};
   setRequestLocale(locale);
+  const safeNextPath = isSafeRedirectPath(next ?? null) ? next : undefined;
+  const completedDestination = safeNextPath ?? "/tutors";
 
   const supabase = await createClient();
   const {
@@ -55,8 +60,8 @@ export default async function GetStartedPage({
   } = await supabase.auth.getUser();
 
   if (user) {
-    const completed = await hasCompletedStudentSetup(supabase, user.id);
-    if (completed) redirect(`/${locale}/tutors`);
+    const completed = await hasCompletedFullOnboarding(supabase, user.id);
+    if (completed) redirect(`/${locale}${completedDestination}`);
   }
 
   const copy =
@@ -85,8 +90,8 @@ export default async function GetStartedPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <OnboardingGate>
-        <OnboardingQuiz />
+      <OnboardingGate nextPath={completedDestination}>
+        <OnboardingQuiz nextPath={safeNextPath} />
       </OnboardingGate>
     </>
   );
