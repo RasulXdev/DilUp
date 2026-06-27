@@ -1,10 +1,25 @@
 import type { Metadata } from "next";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { BecomeTutorCTA } from "@/components/landing/BecomeTutorCTA";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Become a tutor" };
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta.becomeTutor" });
+
+  return pageMetadata({
+    title: t("title"),
+    description: t("description"),
+    locale,
+    path: "/become-tutor",
+  });
+}
 
 export default async function BecomeTutorPage({
   params,

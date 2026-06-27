@@ -1,4 +1,14 @@
 {
+  "meta": {
+    "home": {
+      "title": "DilUp — Sənə uyğun müəllimlə İngilis dilini öyrən",
+      "description": "DilUp Azərbaycanın online dil platformasıdır. Büdcənə uyğun müəllimi tap və ilk dərsindən danışmağa başla."
+    },
+    "becomeTutor": {
+      "title": "DilUp-da müəllim ol — qiymətini özün təyin et",
+      "description": "DilUp-da İngilis dili tədris et. Qiymətini özün təyin et, iş saatlarını seç və təhlükəsiz ödənişlərlə qazan."
+    }
+  },
   "auth": {
     "continueGoogle": "Google ilə davam et",
     "continueFacebook": "Facebook ilə davam et",

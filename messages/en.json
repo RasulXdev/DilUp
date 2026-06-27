@@ -1,4 +1,14 @@
 {
+  "meta": {
+    "home": {
+      "title": "DilUp — Learn English online with a tutor who fits you",
+      "description": "DilUp is Azerbaijan's online language platform. Find your perfect English tutor, set your budget, and start speaking from the very first lesson."
+    },
+    "becomeTutor": {
+      "title": "Become a tutor on DilUp — set your own rate",
+      "description": "Teach English on DilUp. Set your own price, choose your hours, and earn on your terms with secure payments."
+    }
+  },
   "auth": {
     "continueGoogle": "Continue with Google",
     "continueFacebook": "Continue with Facebook",
