@@ -11,9 +11,14 @@ import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
 const subjects = [
-  { value: "english", flag: "🇬🇧" },
-  { value: "russian", flag: "🇷🇺" },
-  { value: "turkish", flag: "🇹🇷" },
+  { value: "english", flag: "🇬🇧", available: true },
+  { value: "russian", flag: "🇷🇺", available: false },
+  { value: "turkish", flag: "🇹🇷", available: false },
+  { value: "arabic", flag: "🇸🇦", available: false },
+  { value: "italian", flag: "🇮🇹", available: false },
+  { value: "spanish", flag: "🇪🇸", available: false },
+  { value: "french", flag: "🇫🇷", available: false },
+  { value: "german", flag: "🇩🇪", available: false },
 ] as const;
 
 const goals = ["career", "culture", "exams", "kids"] as const;
@@ -23,9 +28,9 @@ export function QuickSetup() {
   const t = useTranslations("quickSetup");
   const onboardingT = useTranslations("onboarding");
   const router = useRouter();
-  const [subject, setSubject] = useState("english");
-  const [goal, setGoal] = useState("career");
-  const [schedule, setSchedule] = useState("evening");
+  const [subject, setSubject] = useState<string | null>(null);
+  const [goal, setGoal] = useState<string | null>(null);
+  const [schedule, setSchedule] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   const subjectOptions = useMemo(
@@ -54,8 +59,8 @@ export function QuickSetup() {
       user_id: user.id,
       session_id: sessionId,
       goal: skipped ? null : goal,
-      specialties: skipped ? [] : [subject],
-      available_times: skipped ? [] : [schedule],
+      specialties: skipped || !subject ? [] : [subject],
+      available_times: skipped || !schedule ? [] : [schedule],
       converted_to_signup: true,
       free_text: skipped ? "quick_setup_skipped" : "quick_setup_completed",
     });
@@ -116,8 +121,10 @@ export function QuickSetup() {
                   <ChoiceButton
                     key={item.value}
                     active={subject === item.value}
-                    onClick={() => setSubject(item.value)}
+                    disabled={!item.available}
+                    onClick={() => item.available && setSubject(item.value)}
                     label={`${item.flag} ${item.label}`}
+                    badge={item.available ? undefined : onboardingT("subjects.comingSoon")}
                   />
                 ))}
               </ChoiceGroup>
@@ -151,7 +158,7 @@ export function QuickSetup() {
                 size="lg"
                 className="h-13 flex-1 rounded-xl"
                 onClick={() => void completeSetup(false)}
-                disabled={saving}
+                disabled={saving || !subject || !goal || !schedule}
               >
                 {saving ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
@@ -199,24 +206,36 @@ function ChoiceButton({
   active,
   label,
   onClick,
+  disabled,
+  badge,
 }: {
   active: boolean;
   label: string;
   onClick: () => void;
+  disabled?: boolean;
+  badge?: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      disabled={disabled}
       className={cn(
         "inline-flex min-h-11 items-center gap-2 rounded-xl border px-4 text-sm font-extrabold transition",
-        active
-          ? "border-brand-700 bg-brand-50 text-brand-800"
-          : "border-line bg-white text-ink hover:border-brand-300 hover:bg-brand-50",
+        disabled
+          ? "cursor-not-allowed border-line bg-surface text-muted"
+          : active
+            ? "border-brand-700 bg-brand-50 text-brand-800"
+            : "border-line bg-white text-ink hover:border-brand-300 hover:bg-brand-50",
       )}
     >
       {label}
-      {active && <Check className="h-4 w-4" />}
+      {active && !disabled && <Check className="h-4 w-4" />}
+      {badge && (
+        <span className="rounded-full bg-line px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-muted">
+          {badge}
+        </span>
+      )}
     </button>
   );
 }
