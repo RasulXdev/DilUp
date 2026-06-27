@@ -6,80 +6,26 @@ import { cn } from "@/lib/utils";
 type Lang = {
   code: string;
   name: string;
-  tutors: number;
-  active: boolean;
   flag: string;
   label: string;
 };
 
 const LANGUAGES: Lang[] = [
-  {
-    code: "en",
-    name: "English",
-    tutors: 1200,
-    active: true,
-    flag: "🇬🇧",
-    label: "EN",
-  },
-  {
-    code: "ru",
-    name: "Русский",
-    tutors: 0,
-    active: false,
-    flag: "🇷🇺",
-    label: "RU",
-  },
-  {
-    code: "tr",
-    name: "Türkçe",
-    tutors: 0,
-    active: false,
-    flag: "🇹🇷",
-    label: "TR",
-  },
-  {
-    code: "de",
-    name: "Deutsch",
-    tutors: 0,
-    active: false,
-    flag: "🇩🇪",
-    label: "DE",
-  },
-  {
-    code: "fr",
-    name: "Français",
-    tutors: 0,
-    active: false,
-    flag: "🇫🇷",
-    label: "FR",
-  },
-  {
-    code: "es",
-    name: "Español",
-    tutors: 0,
-    active: false,
-    flag: "🇪🇸",
-    label: "ES",
-  },
-  {
-    code: "ar",
-    name: "العربية",
-    tutors: 0,
-    active: false,
-    flag: "🇸🇦",
-    label: "AR",
-  },
-  {
-    code: "it",
-    name: "Italiano",
-    tutors: 0,
-    active: false,
-    flag: "🇮🇹",
-    label: "IT",
-  },
+  { code: "en", name: "English", flag: "🇬🇧", label: "EN" },
+  { code: "ru", name: "Русский", flag: "🇷🇺", label: "RU" },
+  { code: "tr", name: "Türkçe", flag: "🇹🇷", label: "TR" },
+  { code: "de", name: "Deutsch", flag: "🇩🇪", label: "DE" },
+  { code: "fr", name: "Français", flag: "🇫🇷", label: "FR" },
+  { code: "es", name: "Español", flag: "🇪🇸", label: "ES" },
+  { code: "ar", name: "العربية", flag: "🇸🇦", label: "AR" },
+  { code: "it", name: "Italiano", flag: "🇮🇹", label: "IT" },
 ];
 
-export function LanguageGrid() {
+export function LanguageGrid({
+  tutorsByLanguage,
+}: {
+  tutorsByLanguage: Record<string, number>;
+}) {
   const t = useTranslations("languageGrid");
   const common = useTranslations("common");
 
@@ -97,8 +43,10 @@ export function LanguageGrid() {
 
         <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {LANGUAGES.map((lang, index) => {
-            const status = lang.active
-              ? t("tutorsCount", { count: lang.tutors })
+            const tutors = tutorsByLanguage[lang.code] ?? 0;
+            const active = tutors > 0;
+            const status = active
+              ? t("tutorsCount", { count: tutors })
               : common("comingSoon");
             const content = (
               <>
@@ -128,7 +76,7 @@ export function LanguageGrid() {
                 <span
                   className={cn(
                     "flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-all",
-                    lang.active
+                    active
                       ? "bg-brand-50 text-brand-700 group-hover:bg-brand-600 group-hover:text-white"
                       : "bg-white text-muted shadow-soft",
                   )}
@@ -141,7 +89,7 @@ export function LanguageGrid() {
 
             return (
               <li key={lang.code}>
-                {lang.active ? (
+                {active ? (
                   <Link
                     href={`/tutors?lang=${lang.code}`}
                     aria-label={`${t("explore")} ${lang.name}`}

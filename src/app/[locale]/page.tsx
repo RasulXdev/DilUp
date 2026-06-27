@@ -9,6 +9,7 @@ import { HowItWorks } from "@/components/landing/HowItWorks";
 import { GuaranteeBanner } from "@/components/landing/GuaranteeBanner";
 import { BecomeTutorCTA } from "@/components/landing/BecomeTutorCTA";
 import { absoluteUrl, pageMetadata } from "@/lib/seo";
+import { getHomeStats } from "@/lib/stats";
 
 export async function generateMetadata({
   params,
@@ -40,6 +41,7 @@ export default async function HomePage({
   setRequestLocale(locale);
 
   const t = await getTranslations({ locale, namespace: "meta.home" });
+  const { platform, tutorsByLanguage } = await getHomeStats();
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -73,8 +75,8 @@ export default async function HomePage({
       <Navbar />
       <main className="flex-1">
         <Hero />
-        <TrustStats />
-        <LanguageGrid />
+        <TrustStats stats={platform} />
+        <LanguageGrid tutorsByLanguage={tutorsByLanguage} />
         <HowItWorks />
         <GuaranteeBanner />
         <BecomeTutorCTA />

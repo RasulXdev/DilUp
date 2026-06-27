@@ -67,7 +67,7 @@ export function QuickSetup() {
     }
 
     toast.success(skipped ? t("skipped") : t("saved"));
-    router.push("/dashboard");
+    router.push("/");
     router.refresh();
   }
 

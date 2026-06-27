@@ -3,10 +3,12 @@ import type { Database } from "@/lib/types/database";
 
 export type UserRole = Database["public"]["Enums"]["user_role"];
 
+// TODO (day 3): point these at the real authenticated dashboards once built.
+// Until then everyone lands on the public home so auth never hits a 404.
 const ROLE_HOME: Record<UserRole, string> = {
-  student: "/dashboard",
-  tutor: "/tutor-dashboard",
-  admin: "/admin",
+  student: "/",
+  tutor: "/",
+  admin: "/",
 };
 
 export function getRoleHome(role?: UserRole | null) {

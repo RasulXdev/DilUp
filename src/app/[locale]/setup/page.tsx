@@ -29,7 +29,7 @@ export default async function SetupPage({
   if (!user) redirect(`/${locale}/login?next=/setup`);
 
   const completed = await hasCompletedStudentSetup(supabase, user.id);
-  if (completed) redirect(`/${locale}/dashboard`);
+  if (completed) redirect(`/${locale}`);
 
   return <QuickSetup />;
 }

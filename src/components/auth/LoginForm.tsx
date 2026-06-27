@@ -11,6 +11,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Link, useRouter } from "@/i18n/navigation";
 import { loginSchema, type LoginValues } from "@/lib/validations/auth";
 import { isSafeRedirectPath, resolvePostAuthPath } from "@/lib/auth/redirects";
+import { claimOnboardingSession } from "@/lib/auth/onboarding-actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -38,6 +39,10 @@ export function LoginForm() {
     if (error) {
       toast.error(t("errors.invalidCredentials"));
       return;
+    }
+    const sessionId = window.localStorage.getItem("dilup_onboarding_session");
+    if (sessionId && data.user) {
+      await claimOnboardingSession(sessionId);
     }
     const next = searchParams.get("next");
     const fallback = data.user

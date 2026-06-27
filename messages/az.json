@@ -105,7 +105,8 @@
     "logIn": "Daxil ol",
     "signUp": "Qeydiyyat",
     "language": "Dil",
-    "currency": "Valyuta"
+    "currency": "Valyuta",
+    "signOut": "Çıxış"
   },
   "hero": {
     "badge": "Azərbaycanın online dil platforması",
@@ -124,7 +125,10 @@
     "reviews": "5 ulduzlu rəy",
     "languages": "Tədris olunan dil",
     "countries": "Müəllim ölkəsi",
-    "rating": "Orta reytinq"
+    "rating": "Orta reytinq",
+    "interfaceLabel": "İnterfeys dili (AZ·EN·RU)",
+    "liveLabel": "Canlı 1:1 video dərs",
+    "payLabel": "Abunəlik · yalnız dərsə görə ödəniş"
   },
   "languageGrid": {
     "title": "Hansı dili öyrənmək istəyirsən?",

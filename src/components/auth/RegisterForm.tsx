@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Link, useRouter } from "@/i18n/navigation";
 import { registerSchema, type RegisterValues } from "@/lib/validations/auth";
 import { resolvePostAuthPath } from "@/lib/auth/redirects";
+import { claimOnboardingSession } from "@/lib/auth/onboarding-actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -67,6 +68,10 @@ export function RegisterForm({
           },
           { onConflict: "user_id" },
         );
+      }
+      const sessionId = window.localStorage.getItem("dilup_onboarding_session");
+      if (sessionId) {
+        await claimOnboardingSession(sessionId);
       }
       const home = await resolvePostAuthPath(supabase, data.session.user.id);
       toast.success(t("accountCreated"));

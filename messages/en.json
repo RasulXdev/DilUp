@@ -105,7 +105,8 @@
     "logIn": "Log in",
     "signUp": "Sign up",
     "language": "Language",
-    "currency": "Currency"
+    "currency": "Currency",
+    "signOut": "Sign out"
   },
   "hero": {
     "badge": "Azerbaijan's online language platform",
@@ -124,7 +125,10 @@
     "reviews": "5-star reviews",
     "languages": "Languages taught",
     "countries": "Tutor nationalities",
-    "rating": "Average rating"
+    "rating": "Average rating",
+    "interfaceLabel": "Interface languages (AZ·EN·RU)",
+    "liveLabel": "Live 1:1 video lessons",
+    "payLabel": "Subscriptions · pay per lesson only"
   },
   "languageGrid": {
     "title": "Which language do you want to learn?",
