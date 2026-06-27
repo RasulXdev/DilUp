@@ -107,7 +107,7 @@ export function Navbar() {
 
   const links = [
     { href: "/tutors", label: t("findTutors") },
-    ...(user ? [] : [{ href: "/become-tutor", label: t("becomeTutor") }]),
+    { href: "/become-tutor", label: t("becomeTutor") },
     { href: "/how-it-works", label: t("howItWorks") },
     { href: "/how-it-works#results", label: t("outcomes") },
   ];
