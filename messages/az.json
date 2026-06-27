@@ -9,6 +9,12 @@
       "description": "DilUp-da İngilis dili tədris et. Qiymətini özün təyin et, iş saatlarını seç və təhlükəsiz ödənişlərlə qazan."
     }
   },
+  "publicCta": {
+    "title": "Öyrənməyə hazırsan?",
+    "subtitle": "Məqsəd və büdcənə uyğun müəllimi tap və ilk dərsini elə bu gün bron et.",
+    "primary": "Müəllimini tap",
+    "secondary": "Müəllim ol"
+  },
   "auth": {
     "continueGoogle": "Google ilə davam et",
     "continueFacebook": "Facebook ilə davam et",

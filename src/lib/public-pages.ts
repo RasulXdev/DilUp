@@ -10,6 +10,10 @@ type PublicPageCopy = {
   eyebrow: string;
   title: string;
   description: string;
+  stats?: Array<{
+    value: string;
+    label: string;
+  }>;
   sections: Array<{
     title: string;
     body: string;
@@ -23,6 +27,11 @@ const pageCopy: Record<string, Record<PublicPageSlug, PublicPageCopy>> = {
       title: "Dil öyrənmək üçün yerli, sadə və etibarlı yol.",
       description:
         "DilUp tələbələri məqsədinə uyğun müəllimlərlə birləşdirən Azərbaycan mərkəzli online dil platformasıdır.",
+      stats: [
+        { value: "1:1", label: "Canlı video dərslər" },
+        { value: "0", label: "Abunəlik — yalnız dərsə görə ödəniş" },
+        { value: "3", label: "İnterfeys dili (AZ · EN · RU)" },
+      ],
       sections: [
         {
           title: "Missiyamız",
@@ -31,6 +40,14 @@ const pageCopy: Record<string, Record<PublicPageSlug, PublicPageCopy>> = {
         {
           title: "Necə fərqlənirik",
           body: "Tələbə dərsə abunəliklə deyil, seçdiyi müəllimin dərsinə görə ödəniş edir.",
+        },
+        {
+          title: "Azərbaycan üçün qurulub",
+          body: "Yerli ödəniş üsulları, manatla qiymət və real istifadə etdiyin dillərdə interfeys.",
+        },
+        {
+          title: "Növbəti addımlar",
+          body: "Daha çox tədris dili və zəngin müəllim alətləri mərhələli şəkildə əlavə olunur.",
         },
       ],
     },
@@ -129,6 +146,11 @@ const pageCopy: Record<string, Record<PublicPageSlug, PublicPageCopy>> = {
       title: "A local, simple and trusted way to learn languages.",
       description:
         "DilUp is an Azerbaijan-centered online language platform that connects students with tutors who fit their goals.",
+      stats: [
+        { value: "1:1", label: "Live video lessons" },
+        { value: "0", label: "Subscriptions — pay per lesson" },
+        { value: "3", label: "Interface languages (AZ · EN · RU)" },
+      ],
       sections: [
         {
           title: "Our mission",
@@ -137,6 +159,14 @@ const pageCopy: Record<string, Record<PublicPageSlug, PublicPageCopy>> = {
         {
           title: "How we differ",
           body: "Students pay per lesson with the tutor they choose, not through a subscription plan.",
+        },
+        {
+          title: "Built for Azerbaijan",
+          body: "Local payment methods, pricing in manat, and an interface in the languages you actually use.",
+        },
+        {
+          title: "What's next",
+          body: "More teachable languages and richer tutor tools are rolling out step by step.",
         },
       ],
     },
@@ -235,6 +265,11 @@ const pageCopy: Record<string, Record<PublicPageSlug, PublicPageCopy>> = {
       title: "Локальный, простой и надёжный способ учить языки.",
       description:
         "DilUp — онлайн-платформа из Азербайджана, которая помогает студентам находить репетиторов под свои цели.",
+      stats: [
+        { value: "1:1", label: "Живые видеоуроки" },
+        { value: "0", label: "Подписок — оплата за урок" },
+        { value: "3", label: "Языка интерфейса (AZ · EN · RU)" },
+      ],
       sections: [
         {
           title: "Наша миссия",
@@ -243,6 +278,14 @@ const pageCopy: Record<string, Record<PublicPageSlug, PublicPageCopy>> = {
         {
           title: "Чем отличаемся",
           body: "Студенты платят за урок выбранному репетитору, а не покупают подписку.",
+        },
+        {
+          title: "Создано для Азербайджана",
+          body: "Локальные способы оплаты, цены в манатах и интерфейс на нужных тебе языках.",
+        },
+        {
+          title: "Что дальше",
+          body: "Постепенно добавляем больше языков и удобные инструменты для репетиторов.",
         },
       ],
     },
