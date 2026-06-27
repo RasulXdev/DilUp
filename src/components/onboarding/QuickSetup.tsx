@@ -67,7 +67,7 @@ export function QuickSetup() {
     }
 
     toast.success(skipped ? t("skipped") : t("saved"));
-    router.push("/");
+    router.push("/tutors");
     router.refresh();
   }
 

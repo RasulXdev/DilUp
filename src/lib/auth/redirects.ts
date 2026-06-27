@@ -55,5 +55,10 @@ export async function resolvePostAuthPath(
     .maybeSingle();
   const role = data?.role ?? "student";
 
+  if (role === "student") {
+    const completedSetup = await hasCompletedStudentSetup(supabase, userId);
+    if (!completedSetup) return "/setup";
+  }
+
   return getRoleHome(role);
 }
