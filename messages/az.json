@@ -401,6 +401,7 @@
       }
     },
     "signup": {
+      "badge": "Cavabların yadda saxlanılır",
       "title": "Demək olar hazırdır. Sənə uyğun {subject} müəllimlərini gör.",
       "text": "Cavablarını saxlamaq, uyğun siyahını açmaq və trial dərs bron etmək üçün pulsuz hesab yarat.",
       "email": "Email ilə davam et",

@@ -401,6 +401,7 @@
       }
     },
     "signup": {
+      "badge": "Your answers are saved",
       "title": "Almost there. See {subject} tutors matched to you.",
       "text": "Create a free account to keep your answers, unlock the shortlist and book a trial lesson.",
       "email": "Continue with email",

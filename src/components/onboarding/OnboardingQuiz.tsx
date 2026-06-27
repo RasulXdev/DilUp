@@ -18,6 +18,7 @@ import {
   Moon,
   Plane,
   Search,
+  ShieldCheck,
   Sun,
   Sunrise,
   Sunset,
@@ -26,6 +27,7 @@ import { toast } from "sonner";
 import { Link, useRouter } from "@/i18n/navigation";
 import { Logo } from "@/components/shared/Logo";
 import { LocaleCurrencySwitcher } from "@/components/shared/LocaleCurrencySwitcher";
+import { SocialButtons } from "@/components/auth/SocialButtons";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -35,6 +37,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -528,9 +531,19 @@ export function OnboardingQuiz() {
     setStepIndex((index) => previousStepIndex(index, answers));
   }
 
+  function tutorSearchParams() {
+    return new URLSearchParams({
+      subject: answers.subject,
+      priceRange: `${answers.budget[0]}-${answers.budget[1]}`,
+      goal: answers.goal,
+      country: answers.country,
+    });
+  }
+
   async function finish() {
     setLoading(true);
     const sessionId = getSessionId();
+    let signedInUserId: string | null = null;
 
     if (
       process.env.NEXT_PUBLIC_SUPABASE_URL &&
@@ -538,8 +551,15 @@ export function OnboardingQuiz() {
     ) {
       try {
         const supabase = createClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        signedInUserId = user?.id ?? null;
+
         await supabase.from("onboarding_responses").insert({
           session_id: sessionId,
+          user_id: signedInUserId,
+          converted_to_signup: Boolean(signedInUserId),
           goal: answers.goal,
           goal_achievement_period: answers.timeline,
           career_industry: answers.industry || null,
@@ -563,6 +583,17 @@ export function OnboardingQuiz() {
     }
 
     window.localStorage.setItem("dilup_onboarding_answers", JSON.stringify(answers));
+
+    // Already signed in: the quiz answers are linked to the account directly,
+    // so skip straight to results.
+    if (signedInUserId) {
+      window.setTimeout(() => {
+        router.push(`/tutors?${tutorSearchParams().toString()}`);
+        router.refresh();
+      }, 1200);
+      return;
+    }
+
     window.setTimeout(() => {
       setLoading(false);
       setSignupOpen(true);
@@ -910,34 +941,37 @@ export function OnboardingQuiz() {
       </Dialog>
 
       <Dialog open={signupOpen} onOpenChange={setSignupOpen}>
-        <DialogContent className="max-w-xl rounded-3xl p-7 sm:p-8">
-          <DialogHeader>
-            <DialogTitle className="text-3xl">
-              {t("signup.title", { subject: subjectLabel })}
-            </DialogTitle>
-            <DialogDescription className="text-base leading-7">
-              {t("signup.text")}
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="max-w-md overflow-hidden rounded-[2rem] border-0 p-0 shadow-card">
+          <div className="bg-brand-300 px-7 pb-7 pt-8 sm:px-8">
+            <Logo />
+            <span className="mt-6 inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white/75 px-3.5 py-1.5 text-xs font-bold text-brand-700 shadow-sm">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              {t("signup.badge")}
+            </span>
+            <DialogHeader className="mt-4 items-start text-left">
+              <DialogTitle className="font-display text-2xl font-extrabold leading-tight text-ink sm:text-[1.7rem]">
+                {t("signup.title", { subject: subjectLabel })}
+              </DialogTitle>
+              <DialogDescription className="text-[15px] leading-6 text-ink-soft">
+                {t("signup.text")}
+              </DialogDescription>
+            </DialogHeader>
+          </div>
 
-          <div className="space-y-3">
-            <button
-              type="button"
-              className="flex h-13 w-full items-center justify-center rounded-xl border border-line bg-white text-base font-bold text-ink transition hover:bg-surface"
-            >
-              {t("signup.google")}
-            </button>
-            <button
-              type="button"
-              className="flex h-13 w-full items-center justify-center rounded-xl border border-line bg-white text-base font-bold text-ink transition hover:bg-surface"
-            >
-              {t("signup.facebook")}
-            </button>
-            <div className="flex items-center gap-3 py-1 text-xs font-bold uppercase text-muted">
-              <span className="h-px flex-1 bg-line" />
-              {t("signup.emailDivider")}
-              <span className="h-px flex-1 bg-line" />
+          <div className="space-y-5 px-7 py-7 sm:px-8">
+            <SocialButtons
+              next={`/tutors?${tutorSearchParams().toString()}`}
+              role="student"
+            />
+
+            <div className="flex items-center gap-3">
+              <Separator className="flex-1" />
+              <span className="text-xs font-bold uppercase tracking-wide text-muted">
+                {t("signup.emailDivider")}
+              </span>
+              <Separator className="flex-1" />
             </div>
+
             <form
               className="space-y-3"
               onSubmit={(event) => {
@@ -953,38 +987,32 @@ export function OnboardingQuiz() {
                 onChange={(event) => setSignupEmail(event.target.value)}
                 placeholder={t("signup.emailPlaceholder")}
                 autoComplete="email"
-                className="h-13 rounded-xl text-base"
+                className="h-13 rounded-full px-5 text-base"
               />
-              <Button type="submit" size="lg" className="h-13 w-full rounded-xl">
+              <Button type="submit" size="lg" className="h-13 w-full">
                 {t("signup.emailContinue")}
+                <ArrowRight className="h-5 w-5" />
               </Button>
             </form>
+
             <button
               type="button"
-              onClick={() => {
-                const params = new URLSearchParams({
-                  subject: answers.subject,
-                  priceRange: `${answers.budget[0]}-${answers.budget[1]}`,
-                  goal: answers.goal,
-                  country: answers.country,
-                });
-                router.push(`/tutors?${params.toString()}`);
-              }}
-              className="flex h-13 w-full items-center justify-center rounded-xl text-base font-bold text-brand-700 underline underline-offset-4"
+              onClick={() => router.push(`/tutors?${tutorSearchParams().toString()}`)}
+              className="flex h-11 w-full items-center justify-center rounded-full text-sm font-bold text-brand-700 underline underline-offset-4 hover:text-brand-800"
             >
               {t("signup.preview")}
             </button>
-          </div>
 
-          <p className="text-center text-sm font-semibold text-ink-soft">
-            {t("signup.loginPrompt")}{" "}
-            <Link href="/login" className="text-brand-700 underline underline-offset-4">
-              {t("signup.loginAction")}
-            </Link>
-          </p>
-          <p className="text-center text-xs leading-5 text-muted">
-            {t("signup.legal")}
-          </p>
+            <p className="text-center text-sm font-semibold text-ink-soft">
+              {t("signup.loginPrompt")}{" "}
+              <Link href="/login" className="text-brand-700 underline underline-offset-4">
+                {t("signup.loginAction")}
+              </Link>
+            </p>
+            <p className="text-center text-xs leading-5 text-muted">
+              {t("signup.legal")}
+            </p>
+          </div>
         </DialogContent>
       </Dialog>
     </main>
