@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
+import { OnboardingGate } from "@/components/onboarding/OnboardingGate";
 import { OnboardingQuiz } from "@/components/onboarding/OnboardingQuiz";
+import { hasCompletedStudentSetup } from "@/lib/auth/redirects";
 import { absoluteUrl, pageMetadata } from "@/lib/seo";
+import { createClient } from "@/lib/supabase/server";
 
 const getStartedMeta = {
   az: {
@@ -45,6 +49,16 @@ export default async function GetStartedPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    const completed = await hasCompletedStudentSetup(supabase, user.id);
+    if (completed) redirect(`/${locale}/tutors`);
+  }
+
   const copy =
     getStartedMeta[locale as keyof typeof getStartedMeta] ?? getStartedMeta.az;
   const jsonLd = {
@@ -71,7 +85,9 @@ export default async function GetStartedPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <OnboardingQuiz />
+      <OnboardingGate>
+        <OnboardingQuiz />
+      </OnboardingGate>
     </>
   );
 }
