@@ -25,7 +25,7 @@ export type BecomeTutorContent = {
   faq: FaqItem[];
 };
 
-const PORTRAIT = "/images/become-tutor-portrait.jpg";
+const BECOME_TUTOR_HERO = "/images/footer/become-tutor-hero.jpg";
 
 const content: Record<string, BecomeTutorContent> = {
   az: {
@@ -33,7 +33,7 @@ const content: Record<string, BecomeTutorContent> = {
     title: "Öz qiymətini təyin et, istədiyin vaxt dərs ver.",
     description:
       "DilUp-da müəllim kimi qazancına özün nəzarət edirsən. Profilini qur, cədvəlini seç və qiymətini özün təyin et. Abunəlik satmırsan — real tələbələrə canlı dərs verirsən.",
-    heroImage: PORTRAIT,
+    heroImage: BECOME_TUTOR_HERO,
     stats: [
       { value: "75%", label: "Komissiyadan sonra sənə qalır" },
       { value: "0 ₼", label: "Qoşulmaq pulsuzdur" },
@@ -100,7 +100,7 @@ const content: Record<string, BecomeTutorContent> = {
     title: "Set your own rate, teach whenever you want.",
     description:
       "As a tutor on DilUp you're in control of your earnings. Build your profile, choose your schedule and set your own price. You're not selling subscriptions — you're giving live lessons to real students.",
-    heroImage: PORTRAIT,
+    heroImage: BECOME_TUTOR_HERO,
     stats: [
       { value: "75%", label: "You keep after commission" },
       { value: "0 ₼", label: "Free to join" },
@@ -167,7 +167,7 @@ const content: Record<string, BecomeTutorContent> = {
     title: "Устанавливай свою цену и преподавай когда удобно.",
     description:
       "Как репетитор на DilUp ты управляешь своим доходом. Создай профиль, выбери расписание и задай свою цену. Ты не продаёшь подписки — ты даёшь живые уроки реальным студентам.",
-    heroImage: PORTRAIT,
+    heroImage: BECOME_TUTOR_HERO,
     stats: [
       { value: "75%", label: "Остаётся тебе после комиссии" },
       { value: "0 ₼", label: "Присоединиться бесплатно" },

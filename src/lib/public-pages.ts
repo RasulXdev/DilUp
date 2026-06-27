@@ -92,6 +92,20 @@ const STEP1 = "/images/how-it-works/step-1.jpg";
 const STEP2 = "/images/how-it-works/step-2.jpg";
 const STEP3 = "/images/how-it-works/step-3.jpg";
 
+// Footer pages — high-quality Unsplash images
+const ABOUT_HERO = "/images/footer/about-hero.jpg";
+const ABOUT_STORY_1 = "/images/footer/about-story-1.jpg";
+const ABOUT_STORY_2 = "/images/footer/about-story-2.jpg";
+const HOW_IT_WORKS_1 = "/images/footer/how-it-works-1.jpg";
+const HOW_IT_WORKS_2 = "/images/footer/how-it-works-2.jpg";
+const HOW_IT_WORKS_3 = "/images/footer/how-it-works-3.jpg";
+const FAQ_HERO = "/images/footer/faq-hero.jpg";
+const CONTACT_HERO = "/images/footer/contact-hero.jpg";
+const PRIVACY_HERO = "/images/footer/privacy-hero.jpg";
+const TERMS_HERO = "/images/footer/terms-hero.jpg";
+const BECOME_TUTOR_HERO = "/images/footer/become-tutor-hero.jpg";
+const BECOME_TUTOR_EARNINGS = "/images/footer/become-tutor-earnings.jpg";
+
 const content: Record<string, SiteContent> = {
   az: {
     about: {
@@ -99,7 +113,7 @@ const content: Record<string, SiteContent> = {
       title: "Dil öyrənmək üçün yerli, sadə və etibarlı yol.",
       description:
         "DilUp Azərbaycan üçün qurulmuş online dil marketplace-idir. Burada tələbə abunəlik almır — məqsədinə, səviyyəsinə və büdcəsinə uyğun müəllimi özü seçir, yalnız keçdiyi dərsə görə ödəyir və ilk dərsdən danışmağa başlayır.",
-      heroImage: HERO,
+      heroImage: ABOUT_HERO,
       stats: [
         { value: "1:1", label: "Canlı video dərslər" },
         { value: "0", label: "Abunəlik — yalnız dərsə görə ödəniş" },
@@ -115,7 +129,7 @@ const content: Record<string, SiteContent> = {
             "Bəyənmədiyin trial dərsi pulsuz dəyiş",
             "Bütün ödənişlər manatla, yerli kartlarla",
           ],
-          image: STEP2,
+          image: ABOUT_STORY_1,
         },
         {
           eyebrow: "Necə fərqlənirik",
@@ -126,7 +140,7 @@ const content: Record<string, SiteContent> = {
             "Səviyyənə uyğun şəxsi plan",
             "İstədiyin vaxt dərs — sənin saat qurşağına görə",
           ],
-          image: STEP1,
+          image: ABOUT_STORY_2,
         },
       ],
       valuesEyebrow: "Dəyərlərimiz",
@@ -165,17 +179,17 @@ const content: Record<string, SiteContent> = {
         {
           title: "1. Məqsədini seç",
           body: "Qısa onboarding suallarına cavab ver — sənin üçün ən uyğun müəllim siyahısı formalaşsın.",
-          image: STEP1,
+          image: HOW_IT_WORKS_1,
         },
         {
           title: "2. Müəllimləri müqayisə et",
           body: "Qiymət, təcrübə, danışdığı dillər və boş vaxtlara baxıb əminliklə seç.",
-          image: STEP2,
+          image: HOW_IT_WORKS_2,
         },
         {
           title: "3. Dərsə başla",
           body: "Trial dərs bron et, məqsədini bölüş və davam etmək istədiyin müəllimlə plan qur.",
-          image: STEP3,
+          image: HOW_IT_WORKS_3,
         },
       ],
       valuesEyebrow: "Nə əldə edirsən",
@@ -290,7 +304,7 @@ const content: Record<string, SiteContent> = {
       title: "DilUp komandası ilə danış.",
       description:
         "Sualın, təklifin və ya müəllim kimi qoşulmaq istəyin var? Formu doldur və ya birbaşa yaz — iş günlərində tez cavab veririk.",
-      heroImage: STEP2,
+      heroImage: CONTACT_HERO,
       email: "hello@dilup.az",
       methods: [
         {
@@ -400,7 +414,7 @@ const content: Record<string, SiteContent> = {
       title: "A local, simple and trusted way to learn languages.",
       description:
         "DilUp is an online language marketplace built for Azerbaijan. Instead of buying a subscription, students choose a tutor who fits their goal, level and budget, pay only for the lessons they take, and start speaking from the very first one.",
-      heroImage: HERO,
+      heroImage: FAQ_HERO,
       stats: [
         { value: "1:1", label: "Live video lessons" },
         { value: "0", label: "Subscriptions — pay per lesson" },
@@ -416,7 +430,7 @@ const content: Record<string, SiteContent> = {
             "Swap a trial lesson you didn't love, for free",
             "All payments in manat, with local cards",
           ],
-          image: STEP2,
+          image: HOW_IT_WORKS_2,
         },
         {
           eyebrow: "How we differ",
@@ -427,7 +441,7 @@ const content: Record<string, SiteContent> = {
             "A personal plan for your level",
             "Lessons whenever you want — in your timezone",
           ],
-          image: STEP1,
+          image: HOW_IT_WORKS_1,
         },
       ],
       valuesEyebrow: "Our values",
@@ -466,17 +480,17 @@ const content: Record<string, SiteContent> = {
         {
           title: "1. Choose your goal",
           body: "Answer a few short onboarding questions so we can shape a tutor shortlist around your needs.",
-          image: STEP1,
+          image: HOW_IT_WORKS_1,
         },
         {
           title: "2. Compare tutors",
           body: "Use price, experience, languages spoken and availability to choose with confidence.",
-          image: STEP2,
+          image: HOW_IT_WORKS_2,
         },
         {
           title: "3. Start your lesson",
           body: "Book a trial lesson, share your goal and build a plan with the tutor you want to continue with.",
-          image: STEP3,
+          image: HOW_IT_WORKS_3,
         },
       ],
       valuesEyebrow: "What you get",
@@ -591,7 +605,7 @@ const content: Record<string, SiteContent> = {
       title: "Talk to the DilUp team.",
       description:
         "Have a question, an idea, or want to join as a tutor? Fill in the form or write to us directly — we reply quickly on business days.",
-      heroImage: STEP2,
+      heroImage: CONTACT_HERO,
       email: "hello@dilup.az",
       methods: [
         {
@@ -701,7 +715,7 @@ const content: Record<string, SiteContent> = {
       title: "Локальный, простой и надёжный способ учить языки.",
       description:
         "DilUp — онлайн-маркетплейс языков, созданный для Азербайджана. Вместо подписки студент выбирает репетитора под свою цель, уровень и бюджет, платит только за проведённые уроки и начинает говорить с первого занятия.",
-      heroImage: HERO,
+      heroImage: FAQ_HERO,
       stats: [
         { value: "1:1", label: "Живые видеоуроки" },
         { value: "0", label: "Подписок — оплата за урок" },
@@ -717,7 +731,7 @@ const content: Record<string, SiteContent> = {
             "Не понравился пробный урок — поменяй бесплатно",
             "Все платежи в манатах, локальными картами",
           ],
-          image: STEP2,
+          image: HOW_IT_WORKS_2,
         },
         {
           eyebrow: "Чем отличаемся",
@@ -728,7 +742,7 @@ const content: Record<string, SiteContent> = {
             "Персональный план под твой уровень",
             "Уроки когда удобно — по твоему часовому поясу",
           ],
-          image: STEP1,
+          image: HOW_IT_WORKS_1,
         },
       ],
       valuesEyebrow: "Наши ценности",
@@ -767,17 +781,17 @@ const content: Record<string, SiteContent> = {
         {
           title: "1. Выбери цель",
           body: "Ответь на несколько коротких вопросов onboarding — мы соберём подборку репетиторов под твои задачи.",
-          image: STEP1,
+          image: HOW_IT_WORKS_1,
         },
         {
           title: "2. Сравни репетиторов",
           body: "Сравни цену, опыт, языки и доступное время, чтобы выбрать уверенно.",
-          image: STEP2,
+          image: HOW_IT_WORKS_2,
         },
         {
           title: "3. Начни урок",
           body: "Забронируй пробный урок, поделись целью и составь план с подходящим репетитором.",
-          image: STEP3,
+          image: HOW_IT_WORKS_3,
         },
       ],
       valuesEyebrow: "Что ты получаешь",
@@ -892,7 +906,7 @@ const content: Record<string, SiteContent> = {
       title: "Свяжись с командой DilUp.",
       description:
         "Есть вопрос, идея или хочешь стать репетитором? Заполни форму или напиши напрямую — в рабочие дни отвечаем быстро.",
-      heroImage: STEP2,
+      heroImage: CONTACT_HERO,
       email: "hello@dilup.az",
       methods: [
         {
