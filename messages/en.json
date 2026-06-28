@@ -179,6 +179,11 @@
   "tutors": {
     "eyebrow": "Tutor marketplace",
     "title": "{subject} tutors that help build confidence speaking",
+    "chooseTitle": "Choose what you want to learn",
+    "chooseSubtitle": "Pick a language first. Then we will ask a few questions and show tutors that fit your goal.",
+    "chooseCardTitle": "Start with a language",
+    "chooseCardText": "DilUp uses your selected language to open the matching quiz. If you already completed the quiz for this language, tutors appear right away.",
+    "startMatching": "Find tutors",
     "resultCount": "{count} tutors",
     "promoTitle": "Enjoy 30% off your trial lesson",
     "promoText": "No code needed. Applies to tutors charging ₼12 or more.",
@@ -190,6 +195,7 @@
     "emptyText": "Try changing price, availability or specialties.",
     "filters": {
       "learn": "I want to learn",
+      "chooseLanguage": "Select a language",
       "price": "Price per lesson",
       "country": "Country of birth",
       "available": "I'm available",

@@ -8,10 +8,14 @@ import { createClient } from "@/lib/supabase/client";
 
 export function OnboardingGate({
   children,
+  forceStart = false,
   nextPath = "/tutors",
+  subject,
 }: {
   children: ReactNode;
+  forceStart?: boolean;
   nextPath?: string;
+  subject?: string;
 }) {
   const router = useRouter();
   const [checking, setChecking] = useState(true);
@@ -20,7 +24,14 @@ export function OnboardingGate({
     let active = true;
 
     async function checkExistingOnboarding() {
-      const localAnswers = window.localStorage.getItem("dilup_onboarding_answers");
+      if (forceStart) {
+        setChecking(false);
+        return;
+      }
+
+      const localAnswers = subject
+        ? window.localStorage.getItem(`dilup_onboarding_answers_${subject}`)
+        : window.localStorage.getItem("dilup_onboarding_answers");
       if (localAnswers) {
         router.replace(nextPath);
         return;
@@ -36,6 +47,7 @@ export function OnboardingGate({
           .from("full_onboarding_responses")
           .select("id")
           .eq("user_id", user.id)
+          .like("session_id", subject ? `full-${subject}-%` : "full-%")
           .limit(1)
           .maybeSingle();
 
@@ -53,7 +65,7 @@ export function OnboardingGate({
     return () => {
       active = false;
     };
-  }, [nextPath, router]);
+  }, [forceStart, nextPath, router, subject]);
 
   if (checking) {
     return (

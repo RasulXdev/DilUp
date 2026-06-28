@@ -3,7 +3,11 @@ import { redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { OnboardingGate } from "@/components/onboarding/OnboardingGate";
 import { OnboardingQuiz } from "@/components/onboarding/OnboardingQuiz";
-import { hasCompletedFullOnboarding, isSafeRedirectPath } from "@/lib/auth/redirects";
+import {
+  hasCompletedFullOnboarding,
+  hasCompletedFullOnboardingForSubject,
+  isSafeRedirectPath,
+} from "@/lib/auth/redirects";
 import { absoluteUrl, pageMetadata } from "@/lib/seo";
 import { createClient } from "@/lib/supabase/server";
 
@@ -24,6 +28,30 @@ const getStartedMeta = {
       "Квиз DilUp подбирает репетиторов по твоей цели, уровню, бюджету и удобному времени.",
   },
 } as const;
+
+const subjectParamMap: Record<string, string> = {
+  en: "english",
+  english: "english",
+  ru: "russian",
+  russian: "russian",
+  tr: "turkish",
+  turkish: "turkish",
+  de: "german",
+  german: "german",
+  fr: "french",
+  french: "french",
+  es: "spanish",
+  spanish: "spanish",
+  ar: "arabic",
+  arabic: "arabic",
+  it: "italian",
+  italian: "italian",
+};
+
+function normalizeSubject(subject?: string) {
+  if (!subject) return undefined;
+  return subjectParamMap[subject.toLowerCase()];
+}
 
 export async function generateMetadata({
   params,
@@ -46,13 +74,15 @@ export default async function GetStartedPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams?: Promise<{ next?: string }>;
+  searchParams?: Promise<{ next?: string; subject?: string }>;
 }) {
   const { locale } = await params;
-  const { next } = (await searchParams) ?? {};
+  const { next, subject } = (await searchParams) ?? {};
   setRequestLocale(locale);
+  const selectedSubject = normalizeSubject(subject);
   const safeNextPath = isSafeRedirectPath(next ?? null) ? next : undefined;
-  const completedDestination = safeNextPath ?? "/tutors";
+  const completedDestination =
+    safeNextPath ?? (selectedSubject ? `/tutors?subject=${selectedSubject}` : "/tutors");
 
   const supabase = await createClient();
   const {
@@ -60,7 +90,9 @@ export default async function GetStartedPage({
   } = await supabase.auth.getUser();
 
   if (user) {
-    const completed = await hasCompletedFullOnboarding(supabase, user.id);
+    const completed = selectedSubject
+      ? await hasCompletedFullOnboardingForSubject(supabase, user.id, selectedSubject)
+      : await hasCompletedFullOnboarding(supabase, user.id);
     if (completed) redirect(`/${locale}${completedDestination}`);
   }
 
@@ -90,8 +122,8 @@ export default async function GetStartedPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <OnboardingGate nextPath={completedDestination}>
-        <OnboardingQuiz nextPath={safeNextPath} />
+      <OnboardingGate nextPath={completedDestination} subject={selectedSubject}>
+        <OnboardingQuiz initialSubject={selectedSubject} nextPath={safeNextPath} />
       </OnboardingGate>
     </>
   );

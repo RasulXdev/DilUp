@@ -58,6 +58,22 @@ export async function hasCompletedFullOnboarding(
   return Boolean(data?.id);
 }
 
+export async function hasCompletedFullOnboardingForSubject(
+  supabase: SupabaseClient<Database>,
+  userId: string,
+  subject: string,
+) {
+  const { data } = await supabase
+    .from("full_onboarding_responses")
+    .select("id")
+    .eq("user_id", userId)
+    .like("session_id", `full-${subject}-%`)
+    .limit(1)
+    .maybeSingle();
+
+  return Boolean(data?.id);
+}
+
 /** Resolves where a "find tutors" / "book" link should go: straight to `dest`
  * if the user is a tutor/admin or already finished the long quiz, otherwise
  * through `/get-started` first so they only ever see it once. */

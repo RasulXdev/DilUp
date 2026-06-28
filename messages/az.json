@@ -179,6 +179,11 @@
   "tutors": {
     "eyebrow": "Müəllim marketplace",
     "title": "Danışıq özgüvənini artıran {subject} müəllimləri",
+    "chooseTitle": "Nə öyrənmək istədiyini seç",
+    "chooseSubtitle": "Əvvəl dili seç. Sonra bir neçə sualla məqsədinə uyğun müəllimləri göstərəcəyik.",
+    "chooseCardTitle": "Dil seçimi ilə başla",
+    "chooseCardText": "DilUp seçdiyin dilə görə matching quiz açır. Bu dil üçün quiz-i artıq bitirmisənsə, müəllimlər birbaşa görünəcək.",
+    "startMatching": "Müəllim tap",
     "resultCount": "{count} müəllim",
     "promoTitle": "Trial dərsinə 30% endirim əldə et",
     "promoText": "Kod lazım deyil. ₼12 və daha yuxarı qiymətli müəllimlərə aiddir.",
@@ -190,6 +195,7 @@
     "emptyText": "Qiyməti, vaxtı və ya ixtisasları dəyişməyə çalış.",
     "filters": {
       "learn": "Öyrənmək istəyirəm",
+      "chooseLanguage": "Dil seç",
       "price": "Dərs qiyməti",
       "country": "Doğulduğu ölkə",
       "available": "Mənə uyğun vaxt",

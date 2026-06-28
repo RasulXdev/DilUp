@@ -40,15 +40,17 @@ export async function generateMetadata({
 
 export default async function TutorsPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams?: Promise<{ subject?: string }>;
 }) {
   const { locale } = await params;
+  const { subject } = (await searchParams) ?? {};
   setRequestLocale(locale);
 
   const dbTutors = await getTutors();
   const tutors = dbTutors.length > 0 ? dbTutors : mockTutors;
 
-  return <TutorSearchPage tutors={tutors} />;
+  return <TutorSearchPage initialSubject={subject} tutors={tutors} />;
 }
-

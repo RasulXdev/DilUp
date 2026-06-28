@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import {
+  ArrowRight,
   BadgeCheck,
   BookOpen,
   CalendarDays,
@@ -16,7 +17,7 @@ import {
   Search,
   ShieldCheck,
   SlidersHorizontal,
-  Sparkles,
+  BadgePercent,
   Star,
   Sun,
   Sunrise,
@@ -76,14 +77,69 @@ const timeGroupIcons: Record<(typeof timeRanges)[number]["group"], LucideIcon> =
 };
 const days = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
-export function TutorSearchPage({ tutors: initialTutors }: { tutors: Tutor[] }) {
+const subjectParamToCode: Record<string, SubjectCode> = {
+  en: "en",
+  english: "en",
+  ru: "ru",
+  russian: "ru",
+  tr: "tr",
+  turkish: "tr",
+  de: "de",
+  german: "de",
+  fr: "fr",
+  french: "fr",
+  es: "es",
+  spanish: "es",
+  ar: "ar",
+  arabic: "ar",
+  it: "it",
+  italian: "it",
+};
+
+const subjectCodeToOnboarding: Record<SubjectCode, string> = {
+  en: "english",
+  ru: "russian",
+  tr: "turkish",
+  de: "german",
+  fr: "french",
+  es: "spanish",
+  ar: "arabic",
+  it: "italian",
+};
+
+function initialSubjectCode(subject?: string): SubjectCode | null {
+  if (!subject) return null;
+  return subjectParamToCode[subject.toLowerCase()] ?? null;
+}
+
+function hasCompletedSubject(code: SubjectCode) {
+  if (typeof window === "undefined") return false;
+
+  try {
+    const raw = window.localStorage.getItem("dilup_completed_onboarding_subjects");
+    const completed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(completed) && completed.includes(subjectCodeToOnboarding[code]);
+  } catch {
+    return false;
+  }
+}
+
+export function TutorSearchPage({
+  initialSubject,
+  tutors: initialTutors,
+}: {
+  initialSubject?: string;
+  tutors: Tutor[];
+}) {
   const t = useTranslations("tutors");
   const dayLabels = useTranslations("onboarding");
   const { format } = useCurrency();
   const { data: tutors, isError, isFetching, refetch } = useTutorsQuery(initialTutors);
   const { isSaved, toggleSaved } = useSavedTutors();
+  const normalizedInitialSubject = initialSubjectCode(initialSubject);
   const [activeTutorId, setActiveTutorId] = useState(tutors[0]?.id ?? "");
-  const [subject, setSubject] = useState<SubjectCode>("en");
+  const [subject, setSubject] = useState<SubjectCode | null>(normalizedInitialSubject);
+  const [draftSubject, setDraftSubject] = useState<SubjectCode | null>(normalizedInitialSubject);
   const [price, setPrice] = useState([4, 68]);
   const [country, setCountry] = useState<string | null>(null);
   const [selectedSpecialties, setSelectedSpecialties] = useState<SpecialtyCode[]>([]);
@@ -97,6 +153,8 @@ export function TutorSearchPage({ tutors: initialTutors }: { tutors: Tutor[] }) 
   const [sort, setSort] = useState<SortKey>("top");
 
   const filteredTutors = useMemo(() => {
+    if (!subject) return [];
+
     const loweredQuery = query.trim().toLowerCase();
     const result = tutors.filter((tutor) => {
       const inPrice = tutor.price >= price[0] && tutor.price <= price[1];
@@ -108,8 +166,7 @@ export function TutorSearchPage({ tutors: initialTutors }: { tutors: Tutor[] }) 
       const inLanguage =
         selectedLanguages.length === 0 ||
         selectedLanguages.some((item) => tutor.alsoSpeaks.includes(item));
-      const nativeMatch =
-        !nativeOnly || tutor.languages.some((language) => language.code === subject && language.level === "native");
+      const nativeMatch = !nativeOnly || tutor.languages.some((language) => language.code === subject && language.level === "native");
       const professionalMatch = !professionalOnly || tutor.categories.includes("professional");
       const superMatch = !superOnly || tutor.categories.includes("super");
       const queryMatch =
@@ -162,6 +219,18 @@ export function TutorSearchPage({ tutors: initialTutors }: { tutors: Tutor[] }) 
   ]);
 
   const activeTutor = filteredTutors.find((tutor) => tutor.id === activeTutorId) ?? filteredTutors[0] ?? tutors[0];
+  const draftSubjectLabel = draftSubject ? t(`subjects.${draftSubject}`) : t("filters.chooseLanguage");
+  const quizHref = draftSubject ? `/get-started?subject=${subjectCodeToOnboarding[draftSubject]}` : "/get-started";
+
+  function chooseSubject(nextSubject: SubjectCode) {
+    setDraftSubject(nextSubject);
+    if (hasCompletedSubject(nextSubject)) {
+      setSubject(nextSubject);
+      setActiveTutorId(tutors.find((tutor) => tutor.subject === nextSubject)?.id ?? tutors[0]?.id ?? "");
+      return;
+    }
+    setSubject(null);
+  }
 
   function toggleValue<T extends string>(value: T, values: T[], setValues: (next: T[]) => void) {
     setValues(values.includes(value) ? values.filter((item) => item !== value) : [...values, value]);
@@ -176,8 +245,13 @@ export function TutorSearchPage({ tutors: initialTutors }: { tutors: Tutor[] }) 
           <div>
             <p className="text-sm font-bold text-brand-700">{t("eyebrow")}</p>
             <h1 className="mt-2 max-w-4xl text-3xl font-black tracking-normal text-ink sm:text-4xl lg:text-5xl">
-              {t("title", { subject: t(`subjects.${subject}`) })}
+              {subject ? t("title", { subject: t(`subjects.${subject}`) }) : t("chooseTitle")}
             </h1>
+            {!subject ? (
+              <p className="mt-3 max-w-2xl text-base font-semibold leading-7 text-ink-soft">
+                {t("chooseSubtitle")}
+              </p>
+            ) : null}
           </div>
           <div className="flex items-center gap-3">
             {isFetching ? (
@@ -205,14 +279,15 @@ export function TutorSearchPage({ tutors: initialTutors }: { tutors: Tutor[] }) 
 
         <div className="relative z-30 mt-8 bg-white py-3">
           <div className="grid gap-3 lg:grid-cols-4">
-            <Picker label={t("filters.learn")} value={t(`subjects.${subject}`)} className="lg:col-span-1">
+            <Picker label={t("filters.learn")} value={draftSubjectLabel} className="lg:col-span-1">
               <CommandList
                 items={languages.map((value) => ({ value, label: t(`subjects.${value}`), available: value === "en" }))}
-                activeItems={[subject]}
-                onSelect={(item) => setSubject(item as SubjectCode)}
+                activeItems={draftSubject ? [draftSubject] : []}
+                onSelect={(item) => chooseSubject(item as SubjectCode)}
               />
             </Picker>
 
+            {subject ? (
             <Picker label={t("filters.price")} value={`${format(price[0])} - ${format(price[1])}`}>
               <div className="px-2 py-4">
                 <div className="text-center text-2xl font-black text-ink">{format(price[0])} - {format(price[1])}</div>
@@ -226,7 +301,9 @@ export function TutorSearchPage({ tutors: initialTutors }: { tutors: Tutor[] }) 
                 />
               </div>
             </Picker>
+            ) : null}
 
+            {subject ? (
             <Picker label={t("filters.country")} value={country ? t(`countries.${country}`) : t("filters.anyCountry")}>
               <CommandList
                 items={countries.map((value) => ({ value, label: t(`countries.${value}`) }))}
@@ -235,7 +312,9 @@ export function TutorSearchPage({ tutors: initialTutors }: { tutors: Tutor[] }) 
                 onSelect={(item) => setCountry(country === item ? null : item)}
               />
             </Picker>
+            ) : null}
 
+            {subject ? (
             <Picker
               label={t("filters.available")}
               value={selectedTimes.length || selectedDays.length ? t("filters.timesSelected", { count: selectedTimes.length + selectedDays.length }) : t("filters.anyTime")}
@@ -305,8 +384,10 @@ export function TutorSearchPage({ tutors: initialTutors }: { tutors: Tutor[] }) 
                 </button>
               ) : null}
             </Picker>
+            ) : null}
           </div>
 
+          {subject ? (
           <div className="mt-3 flex flex-wrap gap-3">
             <Picker label={t("filters.specialties")} value={selectedSpecialties.length ? `${selectedSpecialties.length}` : ""} compact>
               <CommandList
@@ -352,13 +433,42 @@ export function TutorSearchPage({ tutors: initialTutors }: { tutors: Tutor[] }) 
               ) : null}
             </label>
           </div>
+          ) : null}
         </div>
 
         <div className="mt-4">
+          {!subject ? (
+            <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_410px]">
+              <div className="rounded-2xl border border-line bg-surface p-8">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
+                  <Search className="h-6 w-6" />
+                </div>
+                <h2 className="mt-5 text-2xl font-black text-ink">{t("chooseCardTitle")}</h2>
+                <p className="mt-2 max-w-2xl text-base font-semibold leading-7 text-ink-soft">
+                  {t("chooseCardText")}
+                </p>
+                <Link
+                  href={quizHref}
+                  aria-disabled={!draftSubject}
+                  className={cn(
+                    buttonVariants({ variant: "accent", size: "lg" }),
+                    "mt-6",
+                    !draftSubject && "pointer-events-none opacity-50",
+                  )}
+                >
+                  {t("startMatching")}
+                  <ArrowRight className="h-5 w-5" />
+                </Link>
+              </div>
+              <div className="hidden lg:block" />
+            </div>
+          ) : null}
+          {subject ? (
+          <>
           <div className="mb-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_410px]">
             <div className="flex items-center gap-4 rounded-xl border border-line bg-surface px-4 py-4">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
-                <Sparkles className="h-5 w-5" />
+                <BadgePercent className="h-5 w-5" />
               </span>
               <div>
                 <p className="font-black text-ink">{t("promoTitle")}</p>
@@ -392,6 +502,8 @@ export function TutorSearchPage({ tutors: initialTutors }: { tutors: Tutor[] }) 
               </div>
             ) : null}
           </div>
+          </>
+          ) : null}
         </div>
       </section>
       </main>
@@ -449,7 +561,7 @@ function CommandList({
           <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t("filters.typeSearch")} className="min-w-0 flex-1 bg-transparent text-sm font-semibold outline-none" />
         </label>
       ) : null}
-      <div className="max-h-80 overflow-auto">
+      <div className="max-h-80 overflow-y-auto overflow-x-hidden pr-2 [scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:var(--color-brand-200)_transparent] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-brand-200 [&::-webkit-scrollbar-track]:bg-transparent">
         {visibleItems.map((item) => {
           const active = activeItems.includes(item.value);
           const available = item.available ?? true;
@@ -460,11 +572,11 @@ function CommandList({
               disabled={!available}
               onClick={() => available && onSelect(item.value)}
               className={cn(
-                "flex min-h-12 w-full items-center justify-between gap-4 border-b border-line px-1 text-left text-base font-semibold last:border-0",
+                "flex min-h-12 w-full items-center justify-between gap-4 border-b border-line py-1 pl-1 pr-2 text-left text-base font-semibold last:border-0",
                 available ? "hover:text-brand-700" : "cursor-not-allowed text-muted",
               )}
             >
-              <span className="flex min-w-0 items-center gap-2">
+              <span className="flex min-w-0 flex-1 items-center gap-2 pr-2">
                 <span className="truncate">{item.label}</span>
                 {available ? null : (
                   <span className="shrink-0 rounded-full bg-line px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-muted">

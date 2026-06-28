@@ -202,6 +202,27 @@ function getSessionId() {
   return next;
 }
 
+function completedSubjectsKey() {
+  return "dilup_completed_onboarding_subjects";
+}
+
+function rememberCompletedSubject(subject: string) {
+  if (typeof window === "undefined" || !subject) return;
+
+  try {
+    const raw = window.localStorage.getItem(completedSubjectsKey());
+    const current = raw ? JSON.parse(raw) : [];
+    const subjects = Array.isArray(current)
+      ? current.filter((item): item is string => typeof item === "string")
+      : [];
+    if (!subjects.includes(subject)) {
+      window.localStorage.setItem(completedSubjectsKey(), JSON.stringify([...subjects, subject]));
+    }
+  } catch {
+    window.localStorage.setItem(completedSubjectsKey(), JSON.stringify([subject]));
+  }
+}
+
 function toggleValue(list: string[], value: string, max?: number) {
   if (list.includes(value)) {
     return list.filter((item) => item !== value);
@@ -271,12 +292,21 @@ function previousStepIndex(index: number, answers: Answers) {
   return 0;
 }
 
-export function OnboardingQuiz({ nextPath }: { nextPath?: string }) {
+export function OnboardingQuiz({
+  initialSubject,
+  nextPath,
+}: {
+  initialSubject?: string;
+  nextPath?: string;
+}) {
   const t = useTranslations("onboarding");
   const router = useRouter();
   const [started, setStarted] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
-  const [answers, setAnswers] = useState<Answers>(defaultAnswers);
+  const [answers, setAnswers] = useState<Answers>({
+    ...defaultAnswers,
+    subject: initialSubject ?? defaultAnswers.subject,
+  });
   const [catalog, setCatalog] = useState<CatalogId | null>(null);
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -549,7 +579,7 @@ export function OnboardingQuiz({ nextPath }: { nextPath?: string }) {
 
   async function finish() {
     setLoading(true);
-    const sessionId = getSessionId();
+    const sessionId = `full-${answers.subject}-${getSessionId()}`;
     let signedInUserId: string | null = null;
 
     if (
@@ -590,6 +620,8 @@ export function OnboardingQuiz({ nextPath }: { nextPath?: string }) {
     }
 
     window.localStorage.setItem("dilup_onboarding_answers", JSON.stringify(answers));
+    window.localStorage.setItem(`dilup_onboarding_answers_${answers.subject}`, JSON.stringify(answers));
+    rememberCompletedSubject(answers.subject);
 
     // Already signed in: the quiz answers are linked to the account directly,
     // so skip straight to results.
