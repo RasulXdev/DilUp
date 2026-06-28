@@ -4,9 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 
 /**
  * Links anonymous onboarding quiz answers (saved with a localStorage session id
- * before the user had an account) to the freshly authenticated user. Without
- * this, `hasCompletedStudentSetup` never finds the row and the user is pushed
- * back through setup, losing their quiz answers.
+ * before the user had an account) to the freshly authenticated user.
  *
  * Uses a SECURITY DEFINER RPC (`claim_onboarding_session`) that only claims rows
  * still unowned (`user_id is null`) and assigns them to `auth.uid()`, so it

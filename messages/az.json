@@ -707,19 +707,5 @@
       "viewProfile": "Profilə bax",
       "remove": "Sil"
     }
-  },
-  "quickSetup": {
-    "eyebrow": "1 dəqiqəlik setup",
-    "title": "Sənə uyğun ilk müəllimləri göstərək.",
-    "text": "Uzun quiz deyil — sadəcə ilkin seçimlərini saxlayırıq. İstəsən keçə bilərsən.",
-    "subject": "Nə öyrənmək istəyirsən?",
-    "goal": "Əsas məqsədin nədir?",
-    "schedule": "Dərs üçün hansı vaxt uyğundur?",
-    "continue": "Seçimləri saxla",
-    "skip": "Hələlik keç",
-    "saving": "Saxlanılır...",
-    "saved": "Seçimlərin saxlandı.",
-    "skipped": "Setup keçildi. Sonra yeniləyə bilərsən.",
-    "error": "Setup saxlanmadı. Bir az sonra yenə yoxla."
   }
 }

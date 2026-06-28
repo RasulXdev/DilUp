@@ -707,19 +707,5 @@
       "viewProfile": "View profile",
       "remove": "Remove"
     }
-  },
-  "quickSetup": {
-    "eyebrow": "1-minute setup",
-    "title": "Let us show your first tutor matches.",
-    "text": "This is not the long quiz — we only save your first preferences. You can skip it.",
-    "subject": "What do you want to learn?",
-    "goal": "What is your main goal?",
-    "schedule": "When do lessons usually work for you?",
-    "continue": "Save preferences",
-    "skip": "Skip for now",
-    "saving": "Saving...",
-    "saved": "Your preferences were saved.",
-    "skipped": "Setup skipped. You can update it later.",
-    "error": "We could not save setup. Try again shortly."
   }
 }

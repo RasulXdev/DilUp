@@ -93,8 +93,7 @@ export function RegisterForm({
         await claimOnboardingSession(sessionId);
       }
       const home = await resolvePostAuthPath(supabase, data.session.user.id);
-      const destination =
-        home === "/setup" ? home : safeNext ?? home;
+      const destination = safeNext ?? home;
       toast.success(t("accountCreated"));
       router.push(destination);
       router.refresh();

@@ -56,8 +56,7 @@ export async function GET(
           );
         }
 
-        // Link the anonymous onboarding answers carried through signup metadata,
-        // so a freshly confirmed user is not pushed back through setup.
+        // Link anonymous matching quiz answers carried through signup metadata.
         const onboardingSession = user.user_metadata?.onboarding_session;
         if (typeof onboardingSession === "string" && onboardingSession) {
           await supabase.rpc("claim_onboarding_session" as never, {
@@ -67,12 +66,7 @@ export async function GET(
       }
 
       const fallback = user ? await resolvePostAuthPath(supabase, user.id) : "/";
-      const path =
-        fallback === "/setup"
-          ? fallback
-          : isSafeRedirectPath(next) && next !== "/"
-            ? next
-            : fallback;
+      const path = isSafeRedirectPath(next) && next !== "/" ? next : fallback;
       return NextResponse.redirect(`${origin}/${locale}${path}`);
     }
   }

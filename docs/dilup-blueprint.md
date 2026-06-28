@@ -645,7 +645,7 @@ CREATE TABLE notifications (
 -- ============================================
 -- ONBOARDING QUIZ RESPONSES (analitika + matching üçün)
 -- ============================================
-CREATE TABLE onboarding_responses (
+CREATE TABLE full_onboarding_responses (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES profiles(id) ON DELETE CASCADE, -- qeydiyyatdan əvvəl null ola bilər
     session_id TEXT NOT NULL,         -- anonim sessiya izləmə üçün
@@ -711,7 +711,7 @@ CREATE INDEX idx_notifications_user ON notifications(user_id);
 CREATE INDEX idx_notifications_unread ON notifications(user_id) WHERE is_read = false;
 CREATE INDEX idx_favorites_student ON favorites(student_id);
 CREATE INDEX idx_reviews_tutor ON reviews(tutor_id);
-CREATE INDEX idx_onboarding_session ON onboarding_responses(session_id);
+CREATE INDEX idx_full_onboarding_session ON full_onboarding_responses(session_id);
 
 CREATE INDEX idx_tutor_search ON tutor_profiles USING gin(
     to_tsvector('english', coalesce(headline, '') || ' ' || coalesce(about, '') || ' ' || array_to_string(specializations, ' '))
@@ -734,7 +734,7 @@ ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE favorites ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_languages ENABLE ROW LEVEL SECURITY;
-ALTER TABLE onboarding_responses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE full_onboarding_responses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reports ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Profiles visible to all" ON profiles FOR SELECT USING (true);
@@ -790,8 +790,8 @@ CREATE POLICY "Participants can view conversations" ON conversations FOR SELECT 
     id IN (SELECT conversation_id FROM conversation_participants WHERE user_id = auth.uid())
 );
 
-CREATE POLICY "Anyone can insert onboarding response" ON onboarding_responses FOR INSERT WITH CHECK (true);
-CREATE POLICY "Users view own onboarding response" ON onboarding_responses FOR SELECT USING (user_id = auth.uid() OR user_id IS NULL);
+CREATE POLICY "Anyone can insert full onboarding response" ON full_onboarding_responses FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users view own full onboarding response" ON full_onboarding_responses FOR SELECT USING (user_id = auth.uid() OR user_id IS NULL);
 
 CREATE POLICY "Users can create reports" ON reports FOR INSERT WITH CHECK (reporter_id = auth.uid());
 CREATE POLICY "Users can view own reports" ON reports FOR SELECT USING (reporter_id = auth.uid());
@@ -937,7 +937,7 @@ CREATE POLICY "Tutors can upload own video" ON storage.objects FOR INSERT WITH C
 - Summary/recap ekranı (chip-lər)
 - Loading transition animasiyası
 - Registration wall modal (Google/Facebook/Email)
-- Quiz cavabları `onboarding_responses` table-a yazılır (anonim session_id ilə, sonra user_id ilə bağlanır)
+- Quiz cavabları `full_onboarding_responses` table-a yazılır (anonim session_id ilə, sonra user_id ilə bağlanır)
 
 ### 2.2 Landing Page
 - Hero, Trust stats, Language grid, Social proof carousel, How it works, Guarantee banner, Become a tutor CTA, Footer

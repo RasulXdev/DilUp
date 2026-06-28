@@ -7,7 +7,6 @@ const handleIntl = createIntlMiddleware(routing);
 
 // Routes that require an authenticated session.
 const PROTECTED_PREFIXES = [
-  "/setup",
   "/tutor-dashboard",
   "/admin",
   "/messages",
