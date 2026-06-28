@@ -13,6 +13,7 @@ export const publicRoutes = [
   "privacy",
   "terms",
   "contact",
+  "tutors",
 ] as const;
 
 export function absoluteUrl(path = "") {

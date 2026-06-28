@@ -176,6 +176,224 @@
     "tutorsCount": "{count} müəllim",
     "explore": "Bax"
   },
+  "tutors": {
+    "eyebrow": "Müəllim marketplace",
+    "title": "Danışıq özgüvənini artıran {subject} müəllimləri",
+    "resultCount": "{count} müəllim",
+    "promoTitle": "Trial dərsinə 30% endirim əldə et",
+    "promoText": "Kod lazım deyil. ₼12 və daha yuxarı qiymətli müəllimlərə aiddir.",
+    "emptyTitle": "Bu filterlərə uyğun müəllim hələ yoxdur",
+    "emptyText": "Qiyməti, vaxtı və ya ixtisasları dəyişməyə çalış.",
+    "filters": {
+      "learn": "Öyrənmək istəyirəm",
+      "price": "Dərs qiyməti",
+      "country": "Doğulduğu ölkə",
+      "available": "Mənə uyğun vaxt",
+      "anyCountry": "İstənilən ölkə",
+      "anyTime": "İstənilən vaxt",
+      "times": "Vaxtlar",
+      "days": "Günlər",
+      "specialties": "İxtisaslar",
+      "alsoSpeaks": "Başqa danışdığı dillər",
+      "native": "Ana dili",
+      "nativeText": "Yalnız öyrəndiyin dili ana dili səviyyəsində bilən müəllimləri göstər.",
+      "daytime": "Gündüz",
+      "evening": "Axşam",
+      "morning": "Səhər",
+      "night": "Gecə",
+      "categories": "Müəllim kateqoriyaları",
+      "superTutor": "Super Müəllim",
+      "superText": "Yalnız yüksək reytinqli və etibarlı müəllimləri göstər",
+      "professionalTutor": "Peşəkar Müəllim",
+      "professionalText": "Təsdiqlənmiş sertifikatlı yüksək ixtisaslı müəllimlər",
+      "search": "Ad və ya açar sözlə axtar",
+      "typeSearch": "Axtar...",
+      "clear": "Axtarışı təmizlə"
+    },
+    "subjects": {
+      "en": "İngilis dili",
+      "ru": "Rus dili",
+      "tr": "Türk dili",
+      "de": "Alman dili",
+      "fr": "Fransız dili",
+      "es": "İspan dili",
+      "ar": "Ərəb dili",
+      "it": "İtalyan dili"
+    },
+    "countries": {
+      "AZ": "Azərbaycan",
+      "US": "Amerika Birləşmiş Ştatları",
+      "GB": "Birləşmiş Krallıq",
+      "UA": "Ukrayna",
+      "CA": "Kanada",
+      "FI": "Finlandiya"
+    },
+    "specialties": {
+      "none": "Fərq etməz",
+      "business": "Biznes ingiliscəsi",
+      "conversation": "Danışıq praktikası",
+      "intensive": "İntensiv dərslər",
+      "beginners": "Yeni başlayanlar üçün ingilis dili",
+      "american": "Amerikan ingiliscəsi",
+      "ielts": "IELTS hazırlığı",
+      "grammar": "Qrammatika və dəqiqlik",
+      "travel": "Səyahət üçün ingilis dili",
+      "kids": "Uşaqlar üçün ingilis dili",
+      "conversational": "Danışıq İngiliscəsi",
+      "studyAbroad": "Xaricdə təhsil üçün",
+      "toefl": "TOEFL",
+      "jobInterview": "İş müsahibəsinə hazırlıq",
+      "esl": "ESL",
+      "tefl": "TEFL",
+      "businessWork": "Biznes və iş"
+    },
+    "languages": {
+      "az": "Azərbaycan dili",
+      "en": "İngilis dili",
+      "ru": "Rus dili",
+      "tr": "Türk dili",
+      "fi": "Fin dili",
+      "de": "Alman dili",
+      "fr": "Fransız dili",
+      "es": "İspan dili",
+      "ar": "Ərəb dili",
+      "it": "İtalyan dili"
+    },
+    "levels": {
+      "native": "Ana dili",
+      "proficient": "Yüksək səviyyə",
+      "advanced": "İrəli",
+      "intermediate": "Orta"
+    },
+    "highlightsList": {
+      "goalFocused": "Məqsəd yönümlü",
+      "encouraging": "Həvəsləndirici",
+      "examReady": "İmtahana hazır"
+    },
+    "copy": {
+      "englishTutor": "İngilis dili müəllimi",
+      "certifiedEnglishTeacher": "Sertifikatlı İngilis dili müəllimi",
+      "ieltsBusinessTutor": "IELTS və biznes İngiliscəsi müəllimi",
+      "sueHeadline": "İngilis dilini və danışıq özgüvənini artır.",
+      "neaHeadline": "Aydın praktika ilə sərbəst danışıq qur.",
+      "andrewHeadline": "Peşəkar yönləndirmə ilə İngiliscəni sürətlə inkişaf etdir.",
+      "certificates": {
+        "TEFL": "Xarici dil kimi İngilis dili tədrisi",
+        "CELTA": "İngilis dili tədrisi sertifikatı",
+        "DELTA": "İngilis dili tədrisi diplomu"
+      },
+      "sue-l": {
+        "bio": "Gündəlik söhbətdən iş görüşlərinə qədər İngiliscəni addım-addım inkişaf etdirə bilərsən. İşləyən metodları bilirəm.",
+        "about": "Salam, mən Sue. Tələbələrə real vəziyyətlər üçün praktik İngilis dili qurmaqda kömək etməyi sevirəm. 20 ildən çox marketinq sahəsində çalışmışam və MBA dərəcəm var, buna görə biznes, müsahibə hazırlığı və inamlı danışıq üzrə güclüyəm.",
+        "highlight": "Danışıq praktikası üçün uyğundur. Profildə lüğət və dinləmə üzərində iş vurğulanır.",
+        "reviewSummary": "Tələbələr deyir ki, Sue dərsləri ehtiyaca uyğunlaşdırır, aydın izahlar və vaxtında düzəlişlər verir, dərsləri strukturlaşdırılmış və maraqlı saxlayır.",
+        "reviews": {
+          "0": "Sue əla müəllimdir. Çox peşəkardır və İngilis dili öyrənmək üçün faydalı strategiyalar verir.",
+          "1": "Sue həqiqətən çox yaxşı müəllimdir. Səbirli, ruhlandırıcıdır və tələbələrinə diqqətlə yanaşır.",
+          "2": "Dərslər məlumatlı, fokuslu və izləmək üçün çox rahatdır.",
+          "3": "Möhtəşəm dərslər və hər dərsdən sonra çox faydalı düzəlişlər."
+        }
+      },
+      "nea-p": {
+        "bio": "Salam! Mən Nea, Finlandiyadanam. Praktik dərslər, yumşaq düzəlişlər və aydın məqsədlərlə tələbələrə daha təbii danışmağa kömək edirəm.",
+        "about": "Dərsləri gündəlik həyatına, karyera məqsədlərinə və danışıq özgüvəninə uyğun qururam. Aydın struktur, dostyana feedback və hər dərsdə faydalı praktika alacaqsan.",
+        "highlight": "Səbirli danışıq praktikası istəyən tələbələr üçün güclü seçimdir.",
+        "reviewSummary": "Tələbələr Nea-nı səmimi, strukturlaşdırılmış və gündəlik danışıq özgüvəni üçün çox faydalı kimi təsvir edirlər.",
+        "reviews": {
+          "0": "Çox mehriban, fokuslu və danışmaq üçün rahatdır.",
+          "1": "Artıq işdə İngiliscə danışanda özümü rahat hiss edirəm."
+        }
+      },
+      "andrew-s": {
+        "bio": "IELTS danışıq, yazı və peşəkar kommunikasiya üçün ekspert yönləndirməsi. Trial dərslə başla və növbəti məqsədin üçün plan qur.",
+        "about": "Dərslərim birbaşa, praktik və ölçülə bilən irəliləyiş üzərində qurulur. İmtahan nəticəsi, daha güclü yazı və iş görüşlərində özgüvən istəyən tələbələrlə işləyirəm.",
+        "highlight": "IELTS danışıq və yazı praktikası üçün güclü profildir.",
+        "reviewSummary": "Tələbələr Andrew-un birbaşa feedback-ini, imtahan strategiyasını və çox səliqəli dərs planlarını yüksək qiymətləndirirlər.",
+        "reviews": {
+          "0": "IELTS feedback-i çox aydın və praktikdir.",
+          "1": "Əla struktur və biznes lüğəti üzrə güclü iş."
+        }
+      }
+    },
+    "sort": {
+      "label": "{value} üzrə sırala",
+      "priceLow": "Qiymət: aşağıdan yuxarı",
+      "priceHigh": "Qiymət: yuxarıdan aşağı",
+      "popular": "Populyarlıq",
+      "reviews": "Rəy sayı",
+      "rating": "Ən yaxşı reytinq",
+      "top": "Ən uyğun seçimlər"
+    },
+    "preview": {
+      "play": "Müəllim videosunu oynat",
+      "schedule": "Tam cədvələ bax",
+      "profile": "{name} profilinə bax"
+    },
+    "card": {
+      "photoAlt": "{name} portreti",
+      "superTutor": "Super Müəllim",
+      "professional": "Peşəkar",
+      "speaks": "Danışır: {languages}",
+      "learnMore": "Daha çox",
+      "popular": "Çox populyar. Son vaxtlar {count} dəfə bron edilib",
+      "duration": "{minutes} dəq dərs",
+      "reviews": "{count} rəy",
+      "students": "tələbə",
+      "lessons": "dərs",
+      "book": "Trial dərs bron et",
+      "message": "Mesaj göndər",
+      "save": "Müəllimi yadda saxla"
+    }
+  },
+  "tutorProfile": {
+    "videoAlt": "{name} intro videosu",
+    "photoAlt": "{name} portreti",
+    "playVideo": "Intro videonu oynat",
+    "caption": "Trial dərslə başla və tədris stilinin sənə uyğun olub-olmadığını gör.",
+    "from": "{country} ölkəsindən",
+    "highlights": "Seçilən məqamlar",
+    "highlightsNote": "Müəllim məlumatları və real tələbə rəylərinə əsaslanır",
+    "superTutor": "Super Müəllim",
+    "superTutorText": "{name} yüksək reytinqli və təcrübəli müəllimdir.",
+    "teaches": "Tədris edir",
+    "teachesText": "{subject} dərsləri",
+    "aboutTitle": "Haqqımda",
+    "showMore": "Daha çox",
+    "speakTitle": "Danışdığım dillər",
+    "lessonRating": "Dərs reytinqi",
+    "metrics": {
+      "reassurance": "Rahatlıq",
+      "clarity": "Aydınlıq",
+      "progress": "İrəliləyiş",
+      "preparation": "Hazırlıq"
+    },
+    "anonymousReviews": "{count} anonim tələbə rəyinə əsaslanır",
+    "studentsSay": "Tələbələrim nə deyir",
+    "basedReviews": "{count} tələbə rəyinə əsaslanır",
+    "reviewSummary": "Rəy xülasəsi",
+    "aiGenerated": "Xülasə {name} üçün bütün rəylər əsasında AI tərəfindən yaradılıb",
+    "showAllReviews": "Bütün {count} rəyə bax",
+    "scheduleTitle": "Cədvəl",
+    "scheduleNote": "İlk dərsin üçün vaxt seç. Saatlar sənin lokal saat qurşağına görə göstərilir.",
+    "minutes": "{minutes} dəq",
+    "previousWeek": "Əvvəlki həftə",
+    "nextWeek": "Növbəti həftə",
+    "viewFullSchedule": "Tam cədvələ bax",
+    "resumeTitle": "Rezume",
+    "certificateVerified": "Sertifikat təsdiqlənib",
+    "specialtiesTitle": "İxtisaslarım",
+    "alsoLike": "Bunlar da maraqlı ola bilər",
+    "lessonDuration": "{minutes} dəq dərs",
+    "perLesson": "/ dərs",
+    "reviews": "{count} rəy",
+    "lessons": "dərs",
+    "bookTrial": "Trial dərs bron et",
+    "message": "Müəllimə mesaj",
+    "save": "Yadda saxla",
+    "share": "Paylaş",
+    "notMatch": "Uyğun deyil?",
+    "freeTrials": "Hələ 2 pulsuz trial imkanın var."
+  },
   "howItWorks": {
     "title": "<mark>DilUp</mark> necə işləyir",
     "step1Title": "Müəllimini tap",

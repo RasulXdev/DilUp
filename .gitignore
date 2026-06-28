@@ -35,6 +35,10 @@ yarn-error.log*
 
 # claude code (machine-local)
 .claude/settings.local.json
+.claude/worktrees/
+
+# codex (machine-local)
+.codex/
 
 # vercel
 .vercel

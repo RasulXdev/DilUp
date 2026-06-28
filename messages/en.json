@@ -176,6 +176,224 @@
     "tutorsCount": "{count} tutors",
     "explore": "Explore"
   },
+  "tutors": {
+    "eyebrow": "Tutor marketplace",
+    "title": "{subject} tutors that help build confidence speaking",
+    "resultCount": "{count} tutors",
+    "promoTitle": "Enjoy 30% off your trial lesson",
+    "promoText": "No code needed. Applies to tutors charging ₼12 or more.",
+    "emptyTitle": "No tutors match these filters yet",
+    "emptyText": "Try changing price, availability or specialties.",
+    "filters": {
+      "learn": "I want to learn",
+      "price": "Price per lesson",
+      "country": "Country of birth",
+      "available": "I'm available",
+      "anyCountry": "Any country",
+      "anyTime": "Any time",
+      "times": "Times",
+      "days": "Days",
+      "specialties": "Specialties",
+      "alsoSpeaks": "Also speaks",
+      "native": "Native speaker",
+      "nativeText": "View only tutors with native-level fluency.",
+      "daytime": "Daytime",
+      "evening": "Evening",
+      "morning": "Morning",
+      "night": "Night",
+      "categories": "Tutor categories",
+      "superTutor": "Super Tutor",
+      "superText": "Only show highly rated and reliable tutors",
+      "professionalTutor": "Professional Tutor",
+      "professionalText": "Highly qualified tutors with verified teaching certificates",
+      "search": "Search by name or keyword",
+      "typeSearch": "Type to search...",
+      "clear": "Clear search"
+    },
+    "subjects": {
+      "en": "English",
+      "ru": "Russian",
+      "tr": "Turkish",
+      "de": "German",
+      "fr": "French",
+      "es": "Spanish",
+      "ar": "Arabic",
+      "it": "Italian"
+    },
+    "countries": {
+      "AZ": "Azerbaijan",
+      "US": "United States of America",
+      "GB": "United Kingdom",
+      "UA": "Ukraine",
+      "CA": "Canada",
+      "FI": "Finland"
+    },
+    "specialties": {
+      "none": "No preference",
+      "business": "Business English",
+      "conversation": "Conversation practice",
+      "intensive": "Intensive lessons",
+      "beginners": "English for beginners",
+      "american": "American English",
+      "ielts": "IELTS preparation",
+      "grammar": "Grammar and accuracy",
+      "travel": "English for travel",
+      "kids": "English for kids",
+      "conversational": "Conversational English",
+      "studyAbroad": "For studying abroad",
+      "toefl": "TOEFL",
+      "jobInterview": "English job interview prep",
+      "esl": "ESL",
+      "tefl": "TEFL",
+      "businessWork": "Business & Work"
+    },
+    "languages": {
+      "az": "Azerbaijani",
+      "en": "English",
+      "ru": "Russian",
+      "tr": "Turkish",
+      "fi": "Finnish",
+      "de": "German",
+      "fr": "French",
+      "es": "Spanish",
+      "ar": "Arabic",
+      "it": "Italian"
+    },
+    "levels": {
+      "native": "Native",
+      "proficient": "Proficient",
+      "advanced": "Advanced",
+      "intermediate": "Intermediate"
+    },
+    "highlightsList": {
+      "goalFocused": "Goal-Focused",
+      "encouraging": "Encouraging",
+      "examReady": "Exam-ready"
+    },
+    "copy": {
+      "englishTutor": "English tutor",
+      "certifiedEnglishTeacher": "Certified English teacher",
+      "ieltsBusinessTutor": "IELTS and business English tutor",
+      "sueHeadline": "Boost your English and your confidence.",
+      "neaHeadline": "Build confidence and fluency with clear practice.",
+      "andrewHeadline": "Improve your English quickly with expert guidance.",
+      "certificates": {
+        "TEFL": "Teaching English as a Foreign Language",
+        "CELTA": "Certificate in English Language Teaching",
+        "DELTA": "Diploma in English Language Teaching"
+      },
+      "sue-l": {
+        "bio": "From small talk to boardroom talk, you can improve your English one lesson at a time. I know the techniques and methods that work.",
+        "about": "Hi, I'm Sue. I love helping students build practical English for real situations. I worked in healthcare marketing for more than 20 years and have an MBA, so I am especially strong with business learners, job interview prep and confident everyday speaking.",
+        "highlight": "Perfect for speaking practice. Profile mentions vocabulary and listening.",
+        "reviewSummary": "Students say Sue tailors English lessons, gives clear explanations and timely corrections, and keeps classes well structured and engaging.",
+        "reviews": {
+          "0": "Sue is a great tutor. She is very professional and provides excellent strategies to learn English.",
+          "1": "Sue is a really great teacher. She is patient, encouraging and truly cares about her students.",
+          "2": "The classes are informative, focused and very easy to follow.",
+          "3": "Exceptional lessons and very useful correction after each class."
+        }
+      },
+      "nea-p": {
+        "bio": "Hi! I'm Nea, originally from Finland. I help students speak more naturally through practical lessons, gentle corrections and clear goals.",
+        "about": "I design lessons around your daily life, career goals and speaking confidence. You will get clear structure, friendly feedback and enough practice to make every lesson feel useful.",
+        "highlight": "Strong fit for students who want patient speaking practice.",
+        "reviewSummary": "Students describe Nea as warm, structured and very helpful for building everyday confidence.",
+        "reviews": {
+          "0": "Very kind, focused and easy to talk to.",
+          "1": "I finally feel comfortable speaking at work."
+        }
+      },
+      "andrew-s": {
+        "bio": "Expert guidance for IELTS speaking, writing and professional communication. Take a trial and build a plan for your next milestone.",
+        "about": "My lessons are direct, practical and built around measurable progress. I work with ambitious learners who want exam results, sharper writing and more confident meetings.",
+        "highlight": "Strong profile for IELTS speaking and writing practice.",
+        "reviewSummary": "Students value Andrew's direct feedback, exam strategy and highly organized lesson plans.",
+        "reviews": {
+          "0": "His IELTS feedback is very clear and practical.",
+          "1": "Great structure and strong business vocabulary work."
+        }
+      }
+    },
+    "sort": {
+      "label": "Sort tutors by {value}",
+      "priceLow": "Price: lowest first",
+      "priceHigh": "Price: highest first",
+      "popular": "Popularity",
+      "reviews": "Number of reviews",
+      "rating": "Best rating",
+      "top": "Our top picks"
+    },
+    "preview": {
+      "play": "Play tutor video",
+      "schedule": "View full schedule",
+      "profile": "See {name}'s profile"
+    },
+    "card": {
+      "photoAlt": "Portrait of {name}",
+      "superTutor": "Super Tutor",
+      "professional": "Professional",
+      "speaks": "Speaks {languages}",
+      "learnMore": "Learn more",
+      "popular": "Very popular. Booked {count} times recently",
+      "duration": "{minutes}-min lesson",
+      "reviews": "{count} reviews",
+      "students": "students",
+      "lessons": "lessons",
+      "book": "Book trial lesson",
+      "message": "Send message",
+      "save": "Save tutor"
+    }
+  },
+  "tutorProfile": {
+    "videoAlt": "Intro video by {name}",
+    "photoAlt": "Portrait of {name}",
+    "playVideo": "Play intro video",
+    "caption": "Start with a trial lesson and see if the teaching style fits you.",
+    "from": "From {country}",
+    "highlights": "Highlights",
+    "highlightsNote": "Based on tutor data and real student reviews",
+    "superTutor": "Super Tutor",
+    "superTutorText": "{name} is a highly rated and experienced tutor.",
+    "teaches": "Teaches",
+    "teachesText": "{subject} lessons",
+    "aboutTitle": "About me",
+    "showMore": "Show more",
+    "speakTitle": "I speak",
+    "lessonRating": "Lesson rating",
+    "metrics": {
+      "reassurance": "Reassurance",
+      "clarity": "Clarity",
+      "progress": "Progress",
+      "preparation": "Preparation"
+    },
+    "anonymousReviews": "Based on {count} anonymous student reviews",
+    "studentsSay": "What my students say",
+    "basedReviews": "Based on {count} student reviews",
+    "reviewSummary": "Reviews summary",
+    "aiGenerated": "Summary is AI generated using all of {name}'s reviews",
+    "showAllReviews": "Show all {count} reviews",
+    "scheduleTitle": "Schedule",
+    "scheduleNote": "Choose the time for your first lesson. The timings are displayed in your local timezone.",
+    "minutes": "{minutes} mins",
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week",
+    "viewFullSchedule": "View full schedule",
+    "resumeTitle": "Resume",
+    "certificateVerified": "Certificate verified",
+    "specialtiesTitle": "My specialties",
+    "alsoLike": "You might also like",
+    "lessonDuration": "{minutes}-min lesson",
+    "perLesson": "/ lesson",
+    "reviews": "{count} reviews",
+    "lessons": "lessons",
+    "bookTrial": "Book trial lesson",
+    "message": "Message tutor",
+    "save": "Save tutor",
+    "share": "Share tutor",
+    "notMatch": "Not a match?",
+    "freeTrials": "You still have 2 free tutor trials."
+  },
   "howItWorks": {
     "title": "How <mark>DilUp</mark> works",
     "step1Title": "Find your tutor",
