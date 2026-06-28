@@ -345,7 +345,7 @@ export function TutorSearchPage() {
 
           <div className="space-y-5">
             {filteredTutors.map((tutor) => (
-              <div key={tutor.id} className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px] lg:min-h-[390px] xl:grid-cols-[minmax(0,1fr)_410px]">
+              <div key={tutor.id} className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px] lg:min-h-[312px] xl:grid-cols-[minmax(0,1fr)_410px]">
                 <TutorCard
                   tutor={tutor}
                   active={activeTutor.id === tutor.id}
@@ -578,13 +578,15 @@ function TutorPreview({ tutor }: { tutor: Tutor }) {
             <Play className="h-7 w-7 fill-current" />
           </button>
         </div>
-        <Link href={`/tutors/${tutor.id}`} className={cn(buttonVariants({ variant: "outline", size: "lg" }), "mt-4 w-full")}>
-          <CalendarDays className="h-5 w-5" />
-          {t("preview.schedule")}
-        </Link>
-        <Link href={`/tutors/${tutor.id}`} className={cn(buttonVariants({ variant: "outline", size: "lg" }), "mt-3 w-full")}>
-          {t("preview.profile", { name: tutor.name })}
-        </Link>
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <Link href={`/tutors/${tutor.id}`} className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full px-2")}>
+            <CalendarDays className="h-5 w-5 shrink-0" />
+            {t("preview.schedule")}
+          </Link>
+          <Link href={`/tutors/${tutor.id}`} className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full truncate px-2")}>
+            {t("preview.profile", { name: tutor.name })}
+          </Link>
+        </div>
       </div>
     </aside>
   );
@@ -616,7 +618,7 @@ function TutorCard({ active, onActivate, tutor }: { active: boolean; onActivate:
           </span>
           <span>{tutor.flag}</span>
         </div>
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm font-bold text-ink-soft">
+        <div className="mt-2 flex flex-wrap items-center gap-2 text-sm font-bold text-ink-soft">
           {tutor.categories.includes("super") ? (
             <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-amber-800">
               <Trophy className="h-3.5 w-3.5" />
@@ -630,25 +632,27 @@ function TutorCard({ active, onActivate, tutor }: { active: boolean; onActivate:
             </span>
           ) : null}
         </div>
-        <p className="mt-3 flex min-w-0 items-center gap-2 text-base font-semibold text-ink-soft">
+        <p className="mt-2 flex min-w-0 items-center gap-2 text-base font-semibold text-ink-soft">
           <BookOpen className="h-4 w-4 shrink-0 text-brand-600" />
           {t(`subjects.${tutor.subject}`)}
         </p>
-        <p className="mt-2 flex min-w-0 items-start gap-2 text-base font-semibold text-ink-soft">
-          <Languages className="mt-1 h-4 w-4 shrink-0 text-brand-600" />
-          {t("card.speaks", {
-            languages: tutor.languages.map((language) => `${t(`languages.${language.code}`)} (${t(`levels.${language.level}`)})`).join(", "),
-          })}
+        <p className="mt-1.5 flex min-w-0 items-center gap-2 truncate text-base font-semibold text-ink-soft">
+          <Languages className="h-4 w-4 shrink-0 text-brand-600" />
+          <span className="truncate">
+            {t("card.speaks", {
+              languages: tutor.languages.map((language) => `${t(`languages.${language.code}`)} (${t(`levels.${language.level}`)})`).join(", "),
+            })}
+          </span>
         </p>
-        <p className="mt-4 line-clamp-3 text-base font-semibold leading-7 text-ink">
-          <span className="block font-black">{t(`copy.${tutor.headline}`)}</span>
+        <p className="mt-2.5 line-clamp-2 text-base font-semibold leading-7 text-ink">
+          <span className="font-black">{t(`copy.${tutor.headline}`)}</span>{" "}
           <span className="text-ink-soft">{t(`copy.${tutor.id}.bio`)}</span>
         </p>
-        <Link href={`/tutors/${tutor.id}`} className="mt-2 inline-block text-sm font-black text-brand-700 underline underline-offset-4 hover:text-brand-800">
+        <Link href={`/tutors/${tutor.id}`} className="mt-1.5 inline-block text-sm font-black text-brand-700 underline underline-offset-4 hover:text-brand-800">
           {t("card.learnMore")}
         </Link>
         {tutor.recentlyBooked > 20 ? (
-          <p className="mt-4 flex items-center gap-2 text-sm font-bold text-brand-700">
+          <p className="mt-2.5 flex items-center gap-2 text-sm font-bold text-brand-700">
             <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-600">
               <Flame className="h-3.5 w-3.5 fill-current" />
             </span>
