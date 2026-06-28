@@ -345,7 +345,7 @@ export function TutorSearchPage() {
 
           <div className="space-y-5">
             {filteredTutors.map((tutor) => (
-              <div key={tutor.id} className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_410px]">
+              <div key={tutor.id} className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px] lg:min-h-[390px] xl:grid-cols-[minmax(0,1fr)_410px]">
                 <TutorCard
                   tutor={tutor}
                   active={activeTutor.id === tutor.id}
