@@ -122,6 +122,15 @@
     font-family: var(--font-display);
     letter-spacing: -0.02em;
   }
+  /* Onest is missing a properly weighted "ə" glyph (renders thin/mismatched at bold
+     weights), so Azerbaijani headings fall back to the body font, which covers it. */
+  :lang(az) h1,
+  :lang(az) h2,
+  :lang(az) h3,
+  :lang(az) h4,
+  :lang(az) h5 {
+    font-family: var(--font-sans);
+  }
   ::selection {
     background: var(--color-brand-200);
     color: var(--color-brand-900);

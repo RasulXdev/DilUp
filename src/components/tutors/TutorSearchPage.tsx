@@ -179,7 +179,7 @@ export function TutorSearchPage() {
           <div className="grid gap-3 lg:grid-cols-4">
             <Picker label={t("filters.learn")} value={t(`subjects.${subject}`)} className="lg:col-span-1">
               <CommandList
-                items={languages.map((value) => ({ value, label: t(`subjects.${value}`) }))}
+                items={languages.map((value) => ({ value, label: t(`subjects.${value}`), available: value === "en" }))}
                 activeItems={[subject]}
                 onSelect={(item) => setSubject(item as SubjectCode)}
               />
@@ -402,11 +402,12 @@ function CommandList({
   searchable = false,
 }: {
   activeItems: string[];
-  items: { label: string; value: string }[];
+  items: { available?: boolean; label: string; value: string }[];
   onSelect: (item: string) => void;
   searchable?: boolean;
 }) {
   const t = useTranslations("tutors");
+  const onboardingT = useTranslations("onboarding");
   const [search, setSearch] = useState("");
   const visibleItems = items.filter((item) => item.label.toLowerCase().includes(search.toLowerCase()));
 
@@ -421,10 +422,27 @@ function CommandList({
       <div className="max-h-80 overflow-auto">
         {visibleItems.map((item) => {
           const active = activeItems.includes(item.value);
+          const available = item.available ?? true;
           return (
-            <button key={item.value} type="button" onClick={() => onSelect(item.value)} className="flex min-h-12 w-full items-center justify-between gap-4 border-b border-line px-1 text-left text-base font-semibold last:border-0 hover:text-brand-700">
-        <span className="min-w-0 truncate">{item.label}</span>
-              <span className={cn("flex h-6 w-6 items-center justify-center rounded-md border border-line", active && "border-brand-600 bg-brand-600 text-white")}>
+            <button
+              key={item.value}
+              type="button"
+              disabled={!available}
+              onClick={() => available && onSelect(item.value)}
+              className={cn(
+                "flex min-h-12 w-full items-center justify-between gap-4 border-b border-line px-1 text-left text-base font-semibold last:border-0",
+                available ? "hover:text-brand-700" : "cursor-not-allowed text-muted",
+              )}
+            >
+              <span className="flex min-w-0 items-center gap-2">
+                <span className="truncate">{item.label}</span>
+                {available ? null : (
+                  <span className="shrink-0 rounded-full bg-line px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-muted">
+                    {onboardingT("subjects.comingSoon")}
+                  </span>
+                )}
+              </span>
+              <span className={cn("flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-line", active && "border-brand-600 bg-brand-600 text-white")}>
                 {active ? <BadgeCheck className="h-4 w-4" /> : null}
               </span>
             </button>
