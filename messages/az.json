@@ -352,7 +352,8 @@
       "message": "Mesaj göndər",
       "save": "Müəllimi yadda saxla",
       "unsave": "Yadda saxlanılanlardan çıxar"
-    }
+    },
+    "messageSoon": "Mesajlaşma tezliklə aktiv olacaq"
   },
   "tutorProfile": {
     "videoAlt": "{name} intro videosu",

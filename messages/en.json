@@ -352,7 +352,8 @@
       "message": "Send message",
       "save": "Save tutor",
       "unsave": "Remove saved tutor"
-    }
+    },
+    "messageSoon": "Messaging is coming soon"
   },
   "tutorProfile": {
     "videoAlt": "Intro video by {name}",

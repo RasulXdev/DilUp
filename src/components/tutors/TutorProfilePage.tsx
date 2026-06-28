@@ -64,15 +64,19 @@ function formatLongDate(locale: string, date: Date, withYear: boolean) {
   }).format(date);
 }
 
-const weekDays = [
-  { key: "Sun", day: "28" },
-  { key: "Mon", day: "29" },
-  { key: "Tue", day: "30" },
-  { key: "Wed", day: "1" },
-  { key: "Thu", day: "2" },
-  { key: "Fri", day: "3" },
-  { key: "Sat", day: "4" },
-];
+const DAY_KEYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+function getCurrentWeekDays() {
+  const now = new Date();
+  const day = now.getDay();
+  const sunday = new Date(now);
+  sunday.setDate(now.getDate() - day);
+  return DAY_KEYS.map((key, i) => {
+    const d = new Date(sunday);
+    d.setDate(sunday.getDate() + i);
+    return { key, day: String(d.getDate()), date: d };
+  });
+}
 
 const timezones = [
   { name: "Pacific/Auckland", gmt: "GMT +13:00" },
@@ -121,7 +125,10 @@ export function TutorProfilePage({ tutor, allTutors }: { tutor: Tutor; allTutors
   const [timezone, setTimezone] = useState("Asia/Baku");
   const activeTimezone = timezones.find((item) => item.name === timezone) ?? timezones[0];
   const recommendations = (allTutors ?? tutors).filter((item) => item.id !== tutor.id).slice(0, 4);
-  const weekRange = `${formatLongDate(locale, new Date("2026-06-28"), false)} - ${formatLongDate(locale, new Date("2026-07-04"), false)}, 2026`;
+  const weekDays = getCurrentWeekDays();
+  const weekStart = weekDays[0].date;
+  const weekEnd = weekDays[6].date;
+  const weekRange = `${formatLongDate(locale, weekStart, false)} - ${formatLongDate(locale, weekEnd, false)}, ${weekEnd.getFullYear()}`;
 
   return (
     <>

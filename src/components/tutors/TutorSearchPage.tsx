@@ -32,6 +32,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { useCurrency } from "@/components/shared/CurrencyProvider";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { toast } from "sonner";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
@@ -737,7 +738,7 @@ function TutorCard({
           <CalendarDays className="h-5 w-5" />
           {t("card.book")}
         </Link>
-        <Button variant="outline" size="lg" className="w-full">
+        <Button variant="outline" size="lg" className="w-full" onClick={() => toast.info(t("messageSoon"))}>
           <MessageSquare className="h-5 w-5" />
           {t("card.message")}
         </Button>
