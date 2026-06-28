@@ -370,6 +370,7 @@
     "studentsSay": "Что говорят мои студенты",
     "basedReviews": "На основе {count} отзывов студентов",
     "reviewSummary": "Краткое содержание отзывов",
+    "ratingStars": "{rating} звёзд",
     "aiGenerated": "Сводка создана AI на основе всех отзывов {name}",
     "showAllReviews": "Показать все {count} отзывов",
     "scheduleTitle": "Расписание",

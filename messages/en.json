@@ -370,6 +370,7 @@
     "studentsSay": "What my students say",
     "basedReviews": "Based on {count} student reviews",
     "reviewSummary": "Reviews summary",
+    "ratingStars": "{rating} stars",
     "aiGenerated": "Summary is AI generated using all of {name}'s reviews",
     "showAllReviews": "Show all {count} reviews",
     "scheduleTitle": "Schedule",

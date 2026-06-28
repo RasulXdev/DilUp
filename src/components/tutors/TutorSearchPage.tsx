@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   SlidersHorizontal,
   Sparkles,
+  Star,
   Sun,
   Sunrise,
   Sunset,
@@ -68,10 +69,11 @@ const timeGroupIcons: Record<(typeof timeRanges)[number]["group"], LucideIcon> =
   evening: Sunset,
   morning: Sunrise,
 };
-const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const days = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
 export function TutorSearchPage() {
   const t = useTranslations("tutors");
+  const dayLabels = useTranslations("onboarding");
   const [activeTutorId, setActiveTutorId] = useState(tutors[0]?.id ?? "");
   const [subject, setSubject] = useState<SubjectCode>("en");
   const [price, setPrice] = useState([4, 68]);
@@ -224,7 +226,7 @@ export function TutorSearchPage() {
                 <FilterGroup title={t("filters.days")}>
                   {days.map((item) => (
                     <button key={item} type="button" className="h-11 rounded-xl border border-line bg-white text-sm font-black text-ink-soft transition hover:border-brand-500 hover:bg-brand-50 hover:text-brand-800">
-                      {item}
+                      {dayLabels(`days.${item}`)}
                     </button>
                   ))}
                 </FilterGroup>
@@ -529,43 +531,52 @@ function TutorCard({ active, onActivate, tutor }: { active: boolean; onActivate:
     >
       <Link href={`/tutors/${tutor.id}`} className="relative aspect-square overflow-hidden rounded-xl bg-surface sm:aspect-[4/5]">
         <Image src={tutor.photo} alt={t("card.photoAlt", { name: tutor.name })} fill className="object-cover" sizes="190px" />
-        <span className="absolute bottom-3 right-3 h-4 w-4 rounded-sm border-2 border-white bg-muted" />
+        <span className="absolute bottom-3 right-3 h-4 w-4 rounded-full border-2 border-white bg-emerald-500" />
       </Link>
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
           <Link href={`/tutors/${tutor.id}`} className="text-2xl font-black text-ink hover:text-brand-700">
             {tutor.name}
           </Link>
-          <ShieldCheck className="h-5 w-5 text-ink" />
+          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-600 text-white">
+            <ShieldCheck className="h-3 w-3" />
+          </span>
           <span>{tutor.flag}</span>
         </div>
-        <div className="mt-3 flex flex-wrap items-center gap-3 text-sm font-bold text-ink-soft">
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm font-bold text-ink-soft">
           {tutor.categories.includes("super") ? (
-            <span className="inline-flex items-center gap-1"><Trophy className="h-4 w-4 text-brand-700" />{t("card.superTutor")}</span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-amber-800">
+              <Trophy className="h-3.5 w-3.5" />
+              {t("card.superTutor")}
+            </span>
           ) : null}
           {tutor.categories.includes("professional") ? (
-            <span className="inline-flex items-center gap-1"><UserRoundCheck className="h-4 w-4 text-brand-700" />{t("card.professional")}</span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-2.5 py-1 text-brand-800">
+              <UserRoundCheck className="h-3.5 w-3.5" />
+              {t("card.professional")}
+            </span>
           ) : null}
         </div>
         <p className="mt-3 flex min-w-0 items-center gap-2 text-base font-semibold text-ink-soft">
-          <BookOpen className="h-4 w-4 shrink-0" />
+          <BookOpen className="h-4 w-4 shrink-0 text-brand-600" />
           {t(`subjects.${tutor.subject}`)}
         </p>
         <p className="mt-2 flex min-w-0 items-start gap-2 text-base font-semibold text-ink-soft">
-          <Languages className="mt-1 h-4 w-4 shrink-0" />
+          <Languages className="mt-1 h-4 w-4 shrink-0 text-brand-600" />
           {t("card.speaks", {
             languages: tutor.languages.map((language) => `${t(`languages.${language.code}`)} (${t(`levels.${language.level}`)})`).join(", "),
           })}
         </p>
         <p className="mt-4 line-clamp-3 text-base font-semibold leading-7 text-ink">
-          <strong>{t(`copy.${tutor.headline}`)}</strong> {t(`copy.${tutor.id}.bio`)}
+          <span className="block font-black">{t(`copy.${tutor.headline}`)}</span>
+          <span className="text-ink-soft">{t(`copy.${tutor.id}.bio`)}</span>
         </p>
-        <Link href={`/tutors/${tutor.id}`} className="mt-2 inline-block text-sm font-black text-ink underline underline-offset-4 hover:text-brand-700">
+        <Link href={`/tutors/${tutor.id}`} className="mt-2 inline-block text-sm font-black text-brand-700 underline underline-offset-4 hover:text-brand-800">
           {t("card.learnMore")}
         </Link>
         {tutor.recentlyBooked > 20 ? (
-          <p className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-ink-soft">
-            <Sparkles className="h-4 w-4 text-brand-700" />
+          <p className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-brand-700">
+            <Sparkles className="h-4 w-4" />
             {t("card.popular", { count: tutor.recentlyBooked })}
           </p>
         ) : null}
@@ -581,12 +592,12 @@ function TutorCard({ active, onActivate, tutor }: { active: boolean; onActivate:
             </div>
             <p className="text-sm font-semibold text-muted">{t("card.duration", { minutes: tutor.lessonDuration })}</p>
           </div>
-          <button type="button" aria-label={t("card.save")} className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-brand-50">
+          <button type="button" aria-label={t("card.save")} className="flex h-11 w-11 items-center justify-center rounded-full border border-line text-ink-soft hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700">
             <Heart className="h-5 w-5" />
           </button>
         </div>
         <div className="grid grid-cols-3 gap-3">
-          <CardStat value={`${tutor.rating} ★`} label={t("card.reviews", { count: tutor.reviewsCount })} />
+          <CardStat value={tutor.rating} icon={<Star className="h-4 w-4 fill-amber-500 text-amber-500" />} label={t("card.reviews", { count: tutor.reviewsCount })} />
           <CardStat value={`${tutor.students}`} label={t("card.students")} />
           <CardStat value={`${tutor.lessons}`} label={t("card.lessons")} />
         </div>
@@ -603,10 +614,13 @@ function TutorCard({ active, onActivate, tutor }: { active: boolean; onActivate:
   );
 }
 
-function CardStat({ label, value }: { label: string; value: string }) {
+function CardStat({ icon, label, value }: { icon?: React.ReactNode; label: string; value: string | number }) {
   return (
     <div className="min-w-0">
-      <p className="truncate text-xl font-black text-ink">{value}</p>
+      <p className="flex items-center gap-1.5 truncate text-xl font-black text-ink">
+        {value}
+        {icon}
+      </p>
       <p className="text-xs font-semibold leading-4 text-muted">{label}</p>
     </div>
   );

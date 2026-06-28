@@ -370,6 +370,7 @@
     "studentsSay": "Tələbələrim nə deyir",
     "basedReviews": "{count} tələbə rəyinə əsaslanır",
     "reviewSummary": "Rəy xülasəsi",
+    "ratingStars": "{rating} ulduz",
     "aiGenerated": "Xülasə {name} üçün bütün rəylər əsasında AI tərəfindən yaradılıb",
     "showAllReviews": "Bütün {count} rəyə bax",
     "scheduleTitle": "Cədvəl",

@@ -123,25 +123,25 @@ export const tutors: Tutor[] = [
     reviews: [
       {
         author: "Jenny",
-        date: "March 4, 2026",
+        date: "2026-03-04",
         rating: 5,
         text: "Sue is a great tutor. She is very professional and provides excellent strategies to learn English.",
       },
       {
         author: "Nuno",
-        date: "January 22, 2026",
+        date: "2026-01-22",
         rating: 5,
         text: "Sue is a really great teacher. She is patient, encouraging and truly cares about her students.",
       },
       {
         author: "Katrina",
-        date: "February 5, 2026",
+        date: "2026-02-05",
         rating: 5,
         text: "The classes are informative, focused and very easy to follow.",
       },
       {
         author: "Andres",
-        date: "January 12, 2026",
+        date: "2026-01-12",
         rating: 5,
         text: "Exceptional lessons and very useful correction after each class.",
       },
@@ -194,8 +194,8 @@ export const tutors: Tutor[] = [
     reviewSummary:
       "Students describe Nea as warm, structured and very helpful for building everyday confidence.",
     reviews: [
-      { author: "Aylin", date: "May 8, 2026", rating: 5, text: "Very kind, focused and easy to talk to." },
-      { author: "Murat", date: "April 19, 2026", rating: 5, text: "I finally feel comfortable speaking at work." },
+      { author: "Aylin", date: "2026-05-08", rating: 5, text: "Very kind, focused and easy to talk to." },
+      { author: "Murat", date: "2026-04-19", rating: 5, text: "I finally feel comfortable speaking at work." },
     ],
     schedule: {
       Tue: ["14:00", "14:30", "18:00"],
@@ -237,8 +237,8 @@ export const tutors: Tutor[] = [
     reviewSummary:
       "Students value Andrew's direct feedback, exam strategy and highly organized lesson plans.",
     reviews: [
-      { author: "Leyla", date: "June 2, 2026", rating: 5, text: "His IELTS feedback is very clear and practical." },
-      { author: "Samir", date: "May 14, 2026", rating: 5, text: "Great structure and strong business vocabulary work." },
+      { author: "Leyla", date: "2026-06-02", rating: 5, text: "His IELTS feedback is very clear and practical." },
+      { author: "Samir", date: "2026-05-14", rating: 5, text: "Great structure and strong business vocabulary work." },
     ],
     schedule: {
       Mon: ["12:00", "12:30"],

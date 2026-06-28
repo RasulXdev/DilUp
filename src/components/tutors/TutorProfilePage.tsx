@@ -21,7 +21,7 @@ import {
   Target,
   Trophy,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
@@ -81,10 +81,15 @@ const timezones = [
 export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
   const t = useTranslations("tutorProfile");
   const labels = useTranslations("tutors");
+  const dayLabels = useTranslations("onboarding");
+  const locale = useLocale();
   const [lessonLength, setLessonLength] = useState<25 | 50>(50);
   const [timezone, setTimezone] = useState("Asia/Baku");
   const activeTimezone = timezones.find((item) => item.name === timezone) ?? timezones[0];
   const recommendations = tutors.filter((item) => item.id !== tutor.id).slice(0, 4);
+  const dateFormatter = new Intl.DateTimeFormat(locale, { day: "numeric", month: "long" });
+  const weekRange = `${dateFormatter.format(new Date("2026-06-28"))} - ${dateFormatter.format(new Date("2026-07-04"))}, 2026`;
+  const reviewDateFormatter = new Intl.DateTimeFormat(locale, { day: "numeric", month: "long", year: "numeric" });
 
   return (
     <>
@@ -106,11 +111,11 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
           <div className="mt-8 flex gap-5">
             <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-surface">
               <Image src={tutor.photo} alt={t("photoAlt", { name: tutor.name })} fill className="object-cover" sizes="96px" />
-              <span className="absolute bottom-2 right-2 h-4 w-4 rounded-sm border-2 border-white bg-muted" />
+              <span className="absolute bottom-2 right-2 h-4 w-4 rounded-full border-2 border-white bg-emerald-500" />
             </div>
             <div className="min-w-0">
               <h1 className="text-5xl font-black tracking-normal text-ink">{tutor.name}</h1>
-              <p className="mt-2 flex flex-wrap items-center gap-2 text-base font-black text-ink">
+              <p className="mt-2 flex flex-wrap items-center gap-2 text-base font-black text-ink-soft">
                 {labels(`copy.${tutor.title}`)}
                 <span className="text-muted">·</span>
                 {t("from", { country: labels(`countries.${tutor.countryCode}`) })}
@@ -119,14 +124,17 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
             </div>
           </div>
 
-          <p className="mt-6 max-w-3xl text-lg font-semibold leading-8 text-ink">
-            {labels(`copy.${tutor.headline}`)} {labels(`copy.${tutor.id}.bio`)}
+          <p className="mt-6 max-w-3xl text-lg leading-8">
+            <span className="block font-black text-ink">{labels(`copy.${tutor.headline}`)}</span>
+            <span className="font-semibold text-ink-soft">{labels(`copy.${tutor.id}.bio`)}</span>
           </p>
 
           <section className="mt-7 space-y-6">
             <div>
-              <h2 className="flex items-center gap-2 text-lg font-black text-ink">
-                <Sparkles className="h-5 w-5" />
+              <h2 className="flex items-center gap-2.5 text-lg font-black text-ink">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
+                  <Sparkles className="h-4 w-4" />
+                </span>
                 {t("highlights")}
               </h2>
               <p className="mt-1 text-sm font-semibold text-muted">{t("highlightsNote")}</p>
@@ -143,13 +151,13 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
               </div>
             </div>
 
-            <InfoRow icon={<Trophy className="h-5 w-5 text-brand-700" />} title={t("superTutor")} text={t("superTutorText", { name: tutor.name })} accent />
-            <InfoRow icon={<BookOpen className="h-5 w-5 text-ink-soft" />} title={t("teaches")} text={t("teachesText", { subject: labels(`subjects.${tutor.subject}`) })} />
+            <InfoRow icon={<Trophy className="h-5 w-5" />} iconClass="bg-amber-50 text-amber-600" title={t("superTutor")} text={t("superTutorText", { name: tutor.name })} accent />
+            <InfoRow icon={<BookOpen className="h-5 w-5" />} iconClass="bg-brand-50 text-brand-700" title={t("teaches")} text={t("teachesText", { subject: labels(`subjects.${tutor.subject}`) })} />
           </section>
 
           <Section title={t("aboutTitle")}>
             <p className="max-w-3xl text-base font-semibold leading-8 text-ink">{labels(`copy.${tutor.id}.about`)}</p>
-            <button type="button" className="mt-3 text-sm font-black text-ink underline underline-offset-4">{t("showMore")}</button>
+            <button type="button" className="mt-3 text-sm font-black text-brand-700 underline underline-offset-4 hover:text-brand-800">{t("showMore")}</button>
           </Section>
 
           <Section title={t("speakTitle")}>
@@ -165,10 +173,10 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
 
           <Section title={t("lessonRating")}>
             <div className="grid gap-3 sm:grid-cols-4">
-              <RatingMetric value={tutor.lessonRating.reassurance} label={t("metrics.reassurance")} icon={<ShieldCheck />} />
-              <RatingMetric value={tutor.lessonRating.clarity} label={t("metrics.clarity")} icon={<MessageSquare />} />
-              <RatingMetric value={tutor.lessonRating.progress} label={t("metrics.progress")} icon={<Target />} />
-              <RatingMetric value={tutor.lessonRating.preparation} label={t("metrics.preparation")} icon={<PencilLine />} />
+              <RatingMetric value={tutor.lessonRating.reassurance} label={t("metrics.reassurance")} icon={<ShieldCheck />} iconClass="bg-emerald-50 text-emerald-600" />
+              <RatingMetric value={tutor.lessonRating.clarity} label={t("metrics.clarity")} icon={<MessageSquare />} iconClass="bg-sky-50 text-sky-600" />
+              <RatingMetric value={tutor.lessonRating.progress} label={t("metrics.progress")} icon={<Target />} iconClass="bg-brand-50 text-brand-700" />
+              <RatingMetric value={tutor.lessonRating.preparation} label={t("metrics.preparation")} icon={<PencilLine />} iconClass="bg-amber-50 text-amber-600" />
             </div>
             <p className="mt-4 text-sm font-semibold text-muted">{t("anonymousReviews", { count: tutor.lessonRating.reviews })}</p>
           </Section>
@@ -182,8 +190,10 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
             </div>
             <p className="mt-2 text-sm font-semibold text-muted">{t("basedReviews", { count: tutor.reviewsCount })}</p>
             <div className="mt-5 rounded-xl border border-brand-200 bg-white p-5 shadow-soft">
-              <h3 className="flex items-center gap-2 font-black text-ink">
-                <Sparkles className="h-5 w-5 text-brand-700" />
+              <h3 className="flex items-center gap-2.5 font-black text-ink">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
+                  <Sparkles className="h-4 w-4" />
+                </span>
                 {t("reviewSummary")}
               </h3>
               <p className="mt-3 text-base font-semibold leading-7 text-ink">{labels(`copy.${tutor.id}.reviewSummary`)}</p>
@@ -198,10 +208,10 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
                     </div>
                     <div>
                       <p className="font-black text-ink">{review.author}</p>
-                      <p className="text-sm font-semibold text-muted">{review.date}</p>
+                      <p className="text-sm font-semibold text-muted">{reviewDateFormatter.format(new Date(review.date))}</p>
                     </div>
                   </div>
-                  <div className="mt-4 flex gap-1" aria-label={`${review.rating} stars`}>
+                  <div className="mt-4 flex gap-1" aria-label={t("ratingStars", { rating: review.rating })}>
                     {Array.from({ length: 5 }).map((_, index) => (
                       <Star key={index} className="h-5 w-5 fill-ink text-ink" />
                     ))}
@@ -242,7 +252,7 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
                 <button type="button" aria-label={t("nextWeek")} className="flex h-11 w-11 items-center justify-center rounded-xl bg-surface">
                   <ChevronRight className="h-5 w-5" />
                 </button>
-                <p className="font-black text-ink">Jun 28 - Jul 4, 2026</p>
+                <p className="font-black text-ink">{weekRange}</p>
               </div>
               <Popover>
                 <PopoverTrigger asChild>
@@ -272,7 +282,7 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
                 {weekDays.map((day) => (
                   <div key={day.key} className="min-h-80 rounded-xl bg-white text-center">
                     <div className="border-b border-line pb-3">
-                      <p className="text-sm font-black text-ink-soft">{day.key}</p>
+                      <p className="text-sm font-black text-ink-soft">{dayLabels(`days.${day.key.toLowerCase()}`)}</p>
                       <p className="mt-1 text-base font-black text-ink">{day.day}</p>
                     </div>
                     <div className="mt-5 flex flex-col gap-3">
@@ -334,7 +344,10 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
                       {item.name} {item.flag}
                     </div>
                   </div>
-                  <p className="mt-3 font-black text-ink">★ {item.rating} ({item.reviewsCount})</p>
+                  <p className="mt-3 flex items-center gap-1.5 font-black text-ink">
+                    <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
+                    {item.rating} ({item.reviewsCount})
+                  </p>
                   <p className="mt-1 line-clamp-2 text-sm font-semibold leading-6 text-ink-soft">{labels(`copy.${item.headline}`)}</p>
                   <p className="mt-2 text-lg font-black text-ink">
                     ₼{item.price} <span className="text-sm font-semibold text-muted">{t("perLesson")}</span>
@@ -402,13 +415,13 @@ function IconButton({ icon, label }: { icon: React.ReactNode; label: string }) {
   );
 }
 
-function InfoRow({ accent = false, icon, text, title }: { accent?: boolean; icon: React.ReactNode; text: string; title: string }) {
+function InfoRow({ accent = false, icon, iconClass, text, title }: { accent?: boolean; icon: React.ReactNode; iconClass?: string; text: string; title: string }) {
   return (
-    <div className="grid gap-4 sm:grid-cols-[32px_1fr]">
-      <div>{icon}</div>
+    <div className="grid gap-4 sm:grid-cols-[40px_1fr]">
+      <span className={cn("flex h-10 w-10 items-center justify-center rounded-xl", iconClass ?? "bg-brand-50 text-brand-700")}>{icon}</span>
       <div>
         <h3 className={cn("font-black text-ink", accent && "text-brand-700")}>{title}</h3>
-        <p className="mt-2 text-base font-semibold leading-7 text-ink">{text}</p>
+        <p className="mt-2 text-base font-semibold leading-7 text-ink-soft">{text}</p>
       </div>
     </div>
   );
@@ -423,12 +436,12 @@ function Section({ children, title }: { children: React.ReactNode; title: string
   );
 }
 
-function RatingMetric({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) {
+function RatingMetric({ icon, iconClass, label, value }: { icon: React.ReactNode; iconClass: string; label: string; value: number }) {
   return (
     <div className="rounded-xl bg-surface p-4">
       <div className="flex items-start justify-between">
         <p className="text-2xl font-black text-ink">{value}</p>
-        <span className="text-ink [&_svg]:h-6 [&_svg]:w-6">{icon}</span>
+        <span className={cn("flex h-9 w-9 items-center justify-center rounded-lg [&_svg]:h-5 [&_svg]:w-5", iconClass)}>{icon}</span>
       </div>
       <p className="mt-3 font-black text-ink">{label}</p>
     </div>
