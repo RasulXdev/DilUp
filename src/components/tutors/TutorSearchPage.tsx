@@ -30,6 +30,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { useCurrency } from "@/components/shared/CurrencyProvider";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Slider } from "@/components/ui/slider";
@@ -75,6 +76,7 @@ const days = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 export function TutorSearchPage() {
   const t = useTranslations("tutors");
   const dayLabels = useTranslations("onboarding");
+  const { format } = useCurrency();
   const [activeTutorId, setActiveTutorId] = useState(tutors[0]?.id ?? "");
   const [subject, setSubject] = useState<SubjectCode>("en");
   const [price, setPrice] = useState([4, 68]);
@@ -186,9 +188,9 @@ export function TutorSearchPage() {
               />
             </Picker>
 
-            <Picker label={t("filters.price")} value={`₼${price[0]} - ₼${price[1]}`}>
+            <Picker label={t("filters.price")} value={`${format(price[0])} - ${format(price[1])}`}>
               <div className="px-2 py-4">
-                <div className="text-center text-2xl font-black text-ink">₼{price[0]} - ₼{price[1]}</div>
+                <div className="text-center text-2xl font-black text-ink">{format(price[0])} - {format(price[1])}</div>
                 <Slider
                   min={4}
                   max={68}
@@ -590,6 +592,7 @@ function TutorPreview({ tutor }: { tutor: Tutor }) {
 
 function TutorCard({ active, onActivate, tutor }: { active: boolean; onActivate: () => void; tutor: Tutor }) {
   const t = useTranslations("tutors");
+  const { format } = useCurrency();
   return (
     <article
       onMouseEnter={onActivate}
@@ -657,9 +660,9 @@ function TutorCard({ active, onActivate, tutor }: { active: boolean; onActivate:
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-black text-ink">₼{tutor.price}</span>
+              <span className="text-3xl font-black text-ink">{format(tutor.price)}</span>
               {tutor.originalPrice ? (
-                <span className="text-base font-bold text-red-700 line-through">₼{tutor.originalPrice}</span>
+                <span className="text-base font-bold text-red-700 line-through">{format(tutor.originalPrice)}</span>
               ) : null}
             </div>
             <p className="text-sm font-semibold text-muted">{t("card.duration", { minutes: tutor.lessonDuration })}</p>

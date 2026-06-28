@@ -4,16 +4,10 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Check, ChevronDown, Globe2 } from "lucide-react";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import { useCurrency } from "@/components/shared/CurrencyProvider";
 import { UI_LOCALES } from "@/lib/constants";
+import { CURRENCIES } from "@/lib/currency";
 import { cn } from "@/lib/utils";
-
-const CURRENCIES = ["AZN", "USD", "EUR"] as const;
-
-const LOCALE_CURRENCY: Record<string, (typeof CURRENCIES)[number]> = {
-  az: "AZN",
-  en: "USD",
-  ru: "EUR",
-};
 
 export function LocaleCurrencySwitcher({ className }: { className?: string }) {
   const t = useTranslations("nav");
@@ -21,9 +15,7 @@ export function LocaleCurrencySwitcher({ className }: { className?: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [currency, setCurrency] = useState<(typeof CURRENCIES)[number]>(
-    () => LOCALE_CURRENCY[locale] ?? "AZN",
-  );
+  const { currency, setCurrency } = useCurrency();
   const [isPending, startTransition] = useTransition();
   const ref = useRef<HTMLDivElement>(null);
 

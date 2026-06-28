@@ -26,6 +26,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { useCurrency } from "@/components/shared/CurrencyProvider";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -112,6 +113,7 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
   const labels = useTranslations("tutors");
   const dayLabels = useTranslations("onboarding");
   const locale = useLocale();
+  const { format } = useCurrency();
   const [lessonLength, setLessonLength] = useState<25 | 50>(50);
   const [timezone, setTimezone] = useState("Asia/Baku");
   const activeTimezone = timezones.find((item) => item.name === timezone) ?? timezones[0];
@@ -377,7 +379,7 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
                   </p>
                   <p className="mt-1 line-clamp-2 text-sm font-semibold leading-6 text-ink-soft">{labels(`copy.${item.headline}`)}</p>
                   <p className="mt-2 text-lg font-black text-ink">
-                    ₼{item.price} <span className="text-sm font-semibold text-muted">{t("perLesson")}</span>
+                    {format(item.price)} <span className="text-sm font-semibold text-muted">{t("perLesson")}</span>
                   </p>
                 </Link>
               ))}
@@ -397,11 +399,12 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
 
 function BookingCard({ tutor }: { tutor: Tutor }) {
   const t = useTranslations("tutorProfile");
+  const { format } = useCurrency();
   return (
     <div className="sticky top-28 rounded-2xl border border-line bg-white p-5 shadow-card">
       <div className="flex items-baseline gap-2">
-        <span className="text-4xl font-black text-ink">₼{tutor.price}</span>
-        {tutor.originalPrice ? <span className="text-lg font-bold text-red-700 line-through">₼{tutor.originalPrice}</span> : null}
+        <span className="text-4xl font-black text-ink">{format(tutor.price)}</span>
+        {tutor.originalPrice ? <span className="text-lg font-bold text-red-700 line-through">{format(tutor.originalPrice)}</span> : null}
         <span className="font-semibold text-muted">{t("lessonDuration", { minutes: tutor.lessonDuration })}</span>
       </div>
       <div className="mt-6 grid grid-cols-2 gap-4">
