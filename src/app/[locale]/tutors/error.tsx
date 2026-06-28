@@ -10,7 +10,7 @@ export default function TutorsError({ reset }: { reset: () => void }) {
 
   return (
     <>
-      <Navbar />
+      <Navbar className="static bg-white" />
       <main className="min-h-dvh bg-white">
         <section className="mx-auto flex min-h-[60vh] w-full max-w-2xl flex-col items-center justify-center px-5 text-center">
           <h1 className="text-3xl font-black text-ink">{t("errorTitle")}</h1>

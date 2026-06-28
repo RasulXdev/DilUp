@@ -273,7 +273,7 @@ export function TutorSearchPage({
 
   return (
     <>
-      <Navbar />
+      <Navbar className="static bg-white" />
       <main className="min-h-dvh bg-white">
       <section className="mx-auto w-full max-w-[1500px] px-5 pb-16 pt-8 [overflow-anchor:none] sm:px-7 lg:px-10">
         {subject && !showMatchingHeader ? (

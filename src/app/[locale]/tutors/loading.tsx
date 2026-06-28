@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function TutorsLoading() {
   return (
     <>
-      <Navbar />
+      <Navbar className="static bg-white" />
       <main className="min-h-dvh bg-white">
         <section className="mx-auto w-full max-w-[1500px] px-5 pb-16 pt-8 sm:px-7 lg:px-10">
           <Skeleton className="h-5 w-40" />

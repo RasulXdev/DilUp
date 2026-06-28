@@ -91,7 +91,7 @@ type AccountItem =
       icon: typeof Home;
     };
 
-export function Navbar() {
+export function Navbar({ className }: { className?: string }) {
   const t = useTranslations("nav");
   const locale = useLocale();
   const router = useRouter();
@@ -201,7 +201,7 @@ export function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-40 bg-brand-300">
+    <header className={cn("sticky top-0 z-40 bg-brand-300", className)}>
       {showEmailBanner ? (
         <div className="flex min-h-14 items-center justify-between gap-4 bg-brand-50 px-5 py-3 text-sm font-semibold text-ink sm:px-7 lg:px-8 xl:px-10">
           <p>{t("emailConfirm.text", { email: user?.email ?? "" })}</p>
