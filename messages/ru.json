@@ -192,6 +192,8 @@
       "anyCountry": "Любая страна",
       "anyTime": "Любое время",
       "times": "Время",
+      "timesSelected": "{count} выбрано",
+      "clearTimes": "Очистить время",
       "days": "Дни",
       "specialties": "Специализации",
       "alsoSpeaks": "Также говорит",

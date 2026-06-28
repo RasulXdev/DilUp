@@ -192,6 +192,8 @@
       "anyCountry": "Any country",
       "anyTime": "Any time",
       "times": "Times",
+      "timesSelected": "{count} selected",
+      "clearTimes": "Clear times",
       "days": "Days",
       "specialties": "Specialties",
       "alsoSpeaks": "Also speaks",

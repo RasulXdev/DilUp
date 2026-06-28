@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import {
+  Award,
   BadgeCheck,
   BookOpen,
   CalendarDays,
@@ -14,9 +15,9 @@ import {
   MessageSquare,
   PencilLine,
   Play,
+  Quote,
   Share2,
   ShieldCheck,
-  Sparkles,
   Star,
   Target,
   Trophy,
@@ -30,6 +31,34 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 import type { Tutor } from "@/lib/tutors";
 import { tutors } from "@/lib/tutors";
+
+const azMonths = [
+  "yanvar",
+  "fevral",
+  "mart",
+  "aprel",
+  "may",
+  "iyun",
+  "iyul",
+  "avqust",
+  "sentyabr",
+  "oktyabr",
+  "noyabr",
+  "dekabr",
+];
+
+function formatLongDate(locale: string, date: Date, withYear: boolean) {
+  if (locale === "az") {
+    const day = date.getDate();
+    const month = azMonths[date.getMonth()];
+    return withYear ? `${day} ${month} ${date.getFullYear()}` : `${day} ${month}`;
+  }
+  return new Intl.DateTimeFormat(locale, {
+    day: "numeric",
+    month: "long",
+    ...(withYear ? { year: "numeric" as const } : {}),
+  }).format(date);
+}
 
 const weekDays = [
   { key: "Sun", day: "28" },
@@ -87,9 +116,7 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
   const [timezone, setTimezone] = useState("Asia/Baku");
   const activeTimezone = timezones.find((item) => item.name === timezone) ?? timezones[0];
   const recommendations = tutors.filter((item) => item.id !== tutor.id).slice(0, 4);
-  const dateFormatter = new Intl.DateTimeFormat(locale, { day: "numeric", month: "long" });
-  const weekRange = `${dateFormatter.format(new Date("2026-06-28"))} - ${dateFormatter.format(new Date("2026-07-04"))}, 2026`;
-  const reviewDateFormatter = new Intl.DateTimeFormat(locale, { day: "numeric", month: "long", year: "numeric" });
+  const weekRange = `${formatLongDate(locale, new Date("2026-06-28"), false)} - ${formatLongDate(locale, new Date("2026-07-04"), false)}, 2026`;
 
   return (
     <>
@@ -133,7 +160,7 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
             <div>
               <h2 className="flex items-center gap-2.5 text-lg font-black text-ink">
                 <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
-                  <Sparkles className="h-4 w-4" />
+                  <Award className="h-4 w-4" />
                 </span>
                 {t("highlights")}
               </h2>
@@ -192,7 +219,7 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
             <div className="mt-5 rounded-xl border border-brand-200 bg-white p-5 shadow-soft">
               <h3 className="flex items-center gap-2.5 font-black text-ink">
                 <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
-                  <Sparkles className="h-4 w-4" />
+                  <Quote className="h-4 w-4" />
                 </span>
                 {t("reviewSummary")}
               </h3>
@@ -208,7 +235,7 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
                     </div>
                     <div>
                       <p className="font-black text-ink">{review.author}</p>
-                      <p className="text-sm font-semibold text-muted">{reviewDateFormatter.format(new Date(review.date))}</p>
+                      <p className="text-sm font-semibold text-muted">{formatLongDate(locale, new Date(review.date), true)}</p>
                     </div>
                   </div>
                   <div className="mt-4 flex gap-1" aria-label={t("ratingStars", { rating: review.rating })}>

@@ -80,6 +80,8 @@ export function TutorSearchPage() {
   const [country, setCountry] = useState<string | null>(null);
   const [selectedSpecialties, setSelectedSpecialties] = useState<SpecialtyCode[]>([]);
   const [selectedLanguages, setSelectedLanguages] = useState<SpokenLanguage[]>([]);
+  const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [nativeOnly, setNativeOnly] = useState(false);
   const [professionalOnly, setProfessionalOnly] = useState(false);
   const [superOnly, setSuperOnly] = useState(false);
@@ -206,31 +208,74 @@ export function TutorSearchPage() {
               />
             </Picker>
 
-            <Picker label={t("filters.available")} value={t("filters.anyTime")}>
+            <Picker
+              label={t("filters.available")}
+              value={selectedTimes.length || selectedDays.length ? t("filters.timesSelected", { count: selectedTimes.length + selectedDays.length }) : t("filters.anyTime")}
+            >
               <div className="space-y-5">
                 <FilterGroup icon={timeGroupIcons.daytime} title={t("filters.daytime")}>
                   {timeRanges.filter((item) => item.group === "daytime").map((item) => (
-                    <TimeButton key={item.value} value={item.value} />
+                    <TimeButton
+                      key={item.value}
+                      value={item.value}
+                      active={selectedTimes.includes(item.value)}
+                      onClick={() => toggleValue(item.value, selectedTimes, setSelectedTimes)}
+                    />
                   ))}
                 </FilterGroup>
                 <FilterGroup icon={timeGroupIcons.evening} title={t("filters.evening")}>
                   {timeRanges.filter((item) => item.group === "evening").map((item) => (
-                    <TimeButton key={item.value} value={item.value} />
+                    <TimeButton
+                      key={item.value}
+                      value={item.value}
+                      active={selectedTimes.includes(item.value)}
+                      onClick={() => toggleValue(item.value, selectedTimes, setSelectedTimes)}
+                    />
                   ))}
                 </FilterGroup>
                 <FilterGroup icon={timeGroupIcons.morning} title={t("filters.morning")}>
                   {timeRanges.filter((item) => item.group === "morning").map((item) => (
-                    <TimeButton key={item.value} value={item.value} />
+                    <TimeButton
+                      key={item.value}
+                      value={item.value}
+                      active={selectedTimes.includes(item.value)}
+                      onClick={() => toggleValue(item.value, selectedTimes, setSelectedTimes)}
+                    />
                   ))}
                 </FilterGroup>
                 <FilterGroup title={t("filters.days")}>
-                  {days.map((item) => (
-                    <button key={item} type="button" className="h-11 rounded-xl border border-line bg-white text-sm font-black text-ink-soft transition hover:border-brand-500 hover:bg-brand-50 hover:text-brand-800">
-                      {dayLabels(`days.${item}`)}
-                    </button>
-                  ))}
+                  {days.map((item) => {
+                    const active = selectedDays.includes(item);
+                    return (
+                      <button
+                        key={item}
+                        type="button"
+                        onClick={() => toggleValue(item, selectedDays, setSelectedDays)}
+                        className={cn(
+                          "h-11 rounded-xl border text-sm font-black transition",
+                          active
+                            ? "border-brand-600 bg-brand-600 text-white"
+                            : "border-line bg-white text-ink-soft hover:border-brand-500 hover:bg-brand-50 hover:text-brand-800",
+                        )}
+                      >
+                        {dayLabels(`days.${item}`)}
+                      </button>
+                    );
+                  })}
                 </FilterGroup>
               </div>
+              {selectedTimes.length || selectedDays.length ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedTimes([]);
+                    setSelectedDays([]);
+                  }}
+                  className="mt-4 w-full rounded-lg border border-line py-2.5 text-sm font-bold text-ink-soft hover:border-brand-400 hover:text-brand-700"
+                >
+                  {t("filters.clearTimes")}
+                </button>
+              ) : null}
             </Picker>
           </div>
 
@@ -477,11 +522,17 @@ function FilterGroup({ children, icon: Icon, title }: { children: React.ReactNod
   );
 }
 
-function TimeButton({ value }: { value: string }) {
+function TimeButton({ active, onClick, value }: { active: boolean; onClick: () => void; value: string }) {
   return (
     <button
       type="button"
-      className="flex h-12 items-center justify-center gap-2 rounded-xl border border-line bg-white px-2 text-sm font-black text-ink-soft transition hover:border-brand-500 hover:bg-brand-50 hover:text-brand-800"
+      onClick={onClick}
+      className={cn(
+        "flex h-12 items-center justify-center gap-2 rounded-xl border px-2 text-sm font-black transition",
+        active
+          ? "border-brand-600 bg-brand-600 text-white"
+          : "border-line bg-white text-ink-soft hover:border-brand-500 hover:bg-brand-50 hover:text-brand-800",
+      )}
     >
       <Clock3 className="h-4 w-4 shrink-0" />
       <span>{value}</span>

@@ -192,6 +192,8 @@
       "anyCountry": "İstənilən ölkə",
       "anyTime": "İstənilən vaxt",
       "times": "Vaxtlar",
+      "timesSelected": "{count} seçildi",
+      "clearTimes": "Vaxtları təmizlə",
       "days": "Günlər",
       "specialties": "İxtisaslar",
       "alsoSpeaks": "Başqa danışdığı dillər",
