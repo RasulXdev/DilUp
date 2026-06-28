@@ -909,11 +909,11 @@ function TutorPreview({ tutor }: { tutor: Tutor }) {
           </button>
         </div>
         <div className="mt-3 grid grid-cols-2 gap-2">
-          <Link href={`/tutors/${tutor.id}`} className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full px-2")}>
+          <Link href={`/tutors/${tutor.id}`} className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full rounded-xl border-2 px-2")}>
             <CalendarDays className="h-5 w-5 shrink-0" />
             {t("preview.schedule")}
           </Link>
-          <Link href={`/tutors/${tutor.id}`} className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full truncate px-2")}>
+          <Link href={`/tutors/${tutor.id}`} className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full truncate rounded-xl border-2 px-2")}>
             {t("preview.profile", { name: tutor.name })}
           </Link>
         </div>
