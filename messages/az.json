@@ -264,7 +264,10 @@
       "native": "Ana dili",
       "proficient": "Yüksək səviyyə",
       "advanced": "İrəli",
-      "intermediate": "Orta"
+      "intermediate": "Orta",
+      "beginner": "Başlanğıc",
+      "elementary": "Elementar",
+      "upper_intermediate": "Orta-irəli"
     },
     "highlightsList": {
       "goalFocused": "Məqsəd yönümlü",
@@ -275,44 +278,44 @@
       "englishTutor": "İngilis dili müəllimi",
       "certifiedEnglishTeacher": "Sertifikatlı İngilis dili müəllimi",
       "ieltsBusinessTutor": "IELTS və biznes İngiliscəsi müəllimi",
-      "sueHeadline": "İngilis dilini və danışıq özgüvənini artır.",
-      "neaHeadline": "Aydın praktika ilə sərbəst danışıq qur.",
-      "andrewHeadline": "Peşəkar yönləndirmə ilə İngiliscəni sürətlə inkişaf etdir.",
+      "sueHeadline": "İngiliscəni və danışıq özgüvənini inkişaf etdir — iclaslarda, müsahibələrdə, gündəlik həyatda.",
+      "neaHeadline": "Öz tempində, addım-addım real danışıq özgüvəni qur.",
+      "andrewHeadline": "Real nəticə verən IELTS və biznes İngiliscəsi təlimi.",
       "certificates": {
         "TEFL": "Xarici dil kimi İngilis dili tədrisi",
         "CELTA": "İngilis dili tədrisi sertifikatı",
         "DELTA": "İngilis dili tədrisi diplomu"
       },
       "sue-l": {
-        "bio": "Gündəlik söhbətdən iş görüşlərinə qədər İngiliscəni addım-addım inkişaf etdirə bilərsən. İşləyən metodları bilirəm.",
-        "about": "Salam, mən Sue. Tələbələrə real vəziyyətlər üçün praktik İngilis dili qurmaqda kömək etməyi sevirəm. 20 ildən çox marketinq sahəsində çalışmışam və MBA dərəcəm var, buna görə biznes, müsahibə hazırlığı və inamlı danışıq üzrə güclüyəm.",
-        "highlight": "Danışıq praktikası üçün uyğundur. Profildə lüğət və dinləmə üzərində iş vurğulanır.",
-        "reviewSummary": "Tələbələr deyir ki, Sue dərsləri ehtiyaca uyğunlaşdırır, aydın izahlar və vaxtında düzəlişlər verir, dərsləri strukturlaşdırılmış və maraqlı saxlayır.",
+        "bio": "Salam, mən Sue! Ana dilim İngilis dilidir, biznesdə 20+ illik təcrübəm var. Səni təbii danışmağa, peşəkar səslənməyə və başında tərcümə etməyi dayandırmağa kömək edəcəyəm.",
+        "about": "Salam! Mən Sue, ABŞ-dan ana dili İngilis dili olan, MBA dərəcəsi və 20+ illik səhiyyə marketinqi təcrübəsi olan bir müəlliməm. Biznes İngiliscəsi, iş müsahibəsinə hazırlıq və gündəlik danışıq üzrə ixtisaslaşmışam. Dərslərim sərbəst, amma fokuslanmışdır — dərslik dialoqları yox, real qarşılaşdığın situasiyalar üzərində işləyəcəyik. Gəl səni inamla danışdıraq!",
+        "highlight": "Danışıq praktikası üçün əladır — lüğət, dinləmə və real həyat İngiliscəsinə güclü fokus.",
+        "reviewSummary": "Tələbələr Sue-nun hər dərsi öz məqsədlərinə uyğunlaşdırmasını sevir. Aydın izah edir, səhvləri yerində düzəldir və dərsləri maraqlı, strukturlu saxlayır.",
         "reviews": {
-          "0": "Sue əla müəllimdir. Çox peşəkardır və İngilis dili öyrənmək üçün faydalı strategiyalar verir.",
-          "1": "Sue həqiqətən çox yaxşı müəllimdir. Səbirli, ruhlandırıcıdır və tələbələrinə diqqətlə yanaşır.",
-          "2": "Dərslər məlumatlı, fokuslu və izləmək üçün çox rahatdır.",
-          "3": "Möhtəşəm dərslər və hər dərsdən sonra çox faydalı düzəlişlər."
+          "0": "Sue heyrətamiz müəllimdir! Çox peşəkardır və həmişə inkişaf etmək üçün əla strategiyaları var.",
+          "1": "Həqiqətən gördüyüm ən yaxşı müəllimlərdən biridir — səbirli, ruhlandırıcı və inkişafına həqiqətən diqqət yetirir.",
+          "2": "Dərslər yaxşı strukturlaşdırılıb, izləməsi asandır və heç vaxt darıxdırıcı deyil.",
+          "3": "Hər dəfə yeni şey öyrənirəm, hər dərsdən sonrakı feedback çox faydalıdır."
         }
       },
       "nea-p": {
-        "bio": "Salam! Mən Nea, Finlandiyadanam. Praktik dərslər, yumşaq düzəlişlər və aydın məqsədlərlə tələbələrə daha təbii danışmağa kömək edirəm.",
-        "about": "Dərsləri gündəlik həyatına, karyera məqsədlərinə və danışıq özgüvəninə uyğun qururam. Aydın struktur, dostyana feedback və hər dərsdə faydalı praktika alacaqsan.",
-        "highlight": "Səbirli danışıq praktikası istəyən tələbələr üçün güclü seçimdir.",
-        "reviewSummary": "Tələbələr Nea-nı səmimi, strukturlaşdırılmış və gündəlik danışıq özgüvəni üçün çox faydalı kimi təsvir edirlər.",
+        "bio": "Salam, mən Finlandiyadan Nea! Dostyana düzəlişlər, aydın məqsədlər və çoxlu danışıq praktikası ilə daha təbii danışmağa kömək edirəm.",
+        "about": "Salam! Mən Nea, Finlandiyadan CELTA sertifikatlı İngilis dili müəllimiyəm. Yeni başlayanlarla və İngiliscə danışmaqdan utanan hər kəslə işləməyi sevirəm. Dərslərim sərbəst və həvəsləndiricidir — sənə həqiqətən lazım olan şeyə fokuslanırıq: gündəlik danışıq, səyahət İngiliscəsi və ya sadəcə düşünmədən danışmaq üçün özgüvən.",
+        "highlight": "Səbirli, mühakimə etmədən danışıq praktikası istəyirsənsə, əla seçimdir.",
+        "reviewSummary": "Tələbələr Nea-nı isti, səbirli və danışmaq üçün çox rahat təsvir edir. Gündəlik özgüvən qurmaq istəyirsənsə, əla seçimdir.",
         "reviews": {
-          "0": "Çox mehriban, fokuslu və danışmaq üçün rahatdır.",
-          "1": "Artıq işdə İngiliscə danışanda özümü rahat hiss edirəm."
+          "0": "Nea çox mehribandır və danışmağı asanlaşdırır — səhv etdiyin üçün özünü heç vaxt pis hiss etmirsən.",
+          "1": "Nea sayəsində artıq işdə İngiliscə danışanda özümü rahat hiss edirəm!"
         }
       },
       "andrew-s": {
-        "bio": "IELTS danışıq, yazı və peşəkar kommunikasiya üçün ekspert yönləndirməsi. Trial dərslə başla və növbəti məqsədin üçün plan qur.",
-        "about": "Dərslərim birbaşa, praktik və ölçülə bilən irəliləyiş üzərində qurulur. İmtahan nəticəsi, daha güclü yazı və iş görüşlərində özgüvən istəyən tələbələrlə işləyirəm.",
-        "highlight": "IELTS danışıq və yazı praktikası üçün güclü profildir.",
-        "reviewSummary": "Tələbələr Andrew-un birbaşa feedback-ini, imtahan strategiyasını və çox səliqəli dərs planlarını yüksək qiymətləndirirlər.",
+        "bio": "IELTS danışıq, yazı və peşəkar kommunikasiya üzrə ekspert dəstək. Trial dərslə başla, planını birlikdə quraq.",
+        "about": "Mən Andrew, Birləşmiş Krallıqdan DELTA dərəcəli İngilis dili müəllimiyəm. Dərslərim birbaşa, praktik və ölçülə bilən irəliləyişə fokuslanır — IELTS-ə hazırlaşırsansa, biznes yazını gücləndirmək istəyirsənsə və ya görüşlərdə daha inamlı səslənmək istəyirsənsə, əla seçimdir.",
+        "highlight": "IELTS danışıq və yazı praktikası üçün güclü seçim.",
+        "reviewSummary": "Tələbələr Andrew-un birbaşa feedback-ini, ağıllı imtahan strategiyalarını və səliqəli dərslərini yüksək qiymətləndirir.",
         "reviews": {
-          "0": "IELTS feedback-i çox aydın və praktikdir.",
-          "1": "Əla struktur və biznes lüğəti üzrə güclü iş."
+          "0": "Andrew-un IELTS feedback-i çox aydındır və həqiqətən faydalıdır.",
+          "1": "Əla struktur, biznes lüğətim çox inkişaf etdi."
         }
       }
     },

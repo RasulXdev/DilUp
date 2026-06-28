@@ -110,7 +110,7 @@ const timezones = [
   { name: "America/Los_Angeles", gmt: "GMT -8:00" },
 ];
 
-export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
+export function TutorProfilePage({ tutor, allTutors }: { tutor: Tutor; allTutors?: Tutor[] }) {
   const t = useTranslations("tutorProfile");
   const labels = useTranslations("tutors");
   const dayLabels = useTranslations("onboarding");
@@ -119,7 +119,7 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
   const [lessonLength, setLessonLength] = useState<25 | 50>(50);
   const [timezone, setTimezone] = useState("Asia/Baku");
   const activeTimezone = timezones.find((item) => item.name === timezone) ?? timezones[0];
-  const recommendations = tutors.filter((item) => item.id !== tutor.id).slice(0, 4);
+  const recommendations = (allTutors ?? tutors).filter((item) => item.id !== tutor.id).slice(0, 4);
   const weekRange = `${formatLongDate(locale, new Date("2026-06-28"), false)} - ${formatLongDate(locale, new Date("2026-07-04"), false)}, 2026`;
 
   return (
@@ -142,12 +142,17 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
           <div className="mt-8 flex gap-5">
             <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-surface">
               <Image src={tutor.photo} alt={t("photoAlt", { name: tutor.name })} fill className="object-cover" sizes="96px" />
-              <span className="absolute bottom-2 right-2 h-4 w-4 rounded-full border-2 border-white bg-emerald-500" />
+              <span
+                className={cn(
+                  "absolute bottom-2 right-2 h-4 w-4 rounded-full border-2 border-white",
+                  tutor.online ? "bg-emerald-500" : "bg-gray-400",
+                )}
+              />
             </div>
             <div className="min-w-0">
               <h1 className="text-5xl font-black tracking-normal text-ink">{tutor.name}</h1>
               <p className="mt-2 flex flex-wrap items-center gap-2 text-base font-black text-ink-soft">
-                {labels(`copy.${tutor.title}`)}
+                {tutor.source === "db" ? tutor.title : labels(`copy.${tutor.title}`)}
                 <span className="text-muted">·</span>
                 {t("from", { country: labels(`countries.${tutor.countryCode}`) })}
                 <span>{tutor.flag}</span>
@@ -156,38 +161,40 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
           </div>
 
           <p className="mt-6 max-w-3xl text-lg leading-8">
-            <span className="block font-black text-ink">{labels(`copy.${tutor.headline}`)}</span>
-            <span className="font-semibold text-ink-soft">{labels(`copy.${tutor.id}.bio`)}</span>
+            <span className="block font-black text-ink">{tutor.source === "db" ? tutor.headline : labels(`copy.${tutor.headline}`)}</span>
+            <span className="font-semibold text-ink-soft">{tutor.source === "db" ? tutor.bio : labels(`copy.${tutor.id}.bio`)}</span>
           </p>
 
-          <section className="mt-7 space-y-6">
-            <div>
-              <h2 className="flex items-center gap-2.5 text-lg font-black text-ink">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
-                  <Award className="h-4 w-4" />
-                </span>
-                {t("highlights")}
-              </h2>
-              <p className="mt-1 text-sm font-semibold text-muted">{t("highlightsNote")}</p>
-              <div className="mt-4 space-y-3">
-                {tutor.highlights.map((highlight) => (
-                  <div key={highlight.title} className="rounded-xl border border-line bg-surface p-5">
-                    <span className="inline-flex items-center gap-2 rounded-lg bg-brand-50 px-3 py-1 text-sm font-black text-brand-800">
-                      <Target className="h-4 w-4" />
-                      {labels(`highlightsList.${highlight.title}`)}
-                    </span>
-                    <p className="mt-4 font-bold text-ink">{labels(`copy.${tutor.id}.highlight`)}</p>
-                  </div>
-                ))}
+          {tutor.highlights.length > 0 ? (
+            <section className="mt-7 space-y-6">
+              <div>
+                <h2 className="flex items-center gap-2.5 text-lg font-black text-ink">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
+                    <Award className="h-4 w-4" />
+                  </span>
+                  {t("highlights")}
+                </h2>
+                <p className="mt-1 text-sm font-semibold text-muted">{t("highlightsNote")}</p>
+                <div className="mt-4 space-y-3">
+                  {tutor.highlights.map((highlight) => (
+                    <div key={highlight.title} className="rounded-xl border border-line bg-surface p-5">
+                      <span className="inline-flex items-center gap-2 rounded-lg bg-brand-50 px-3 py-1 text-sm font-black text-brand-800">
+                        <Target className="h-4 w-4" />
+                        {labels(`highlightsList.${highlight.title}`)}
+                      </span>
+                      <p className="mt-4 font-bold text-ink">{labels(`copy.${tutor.id}.highlight`)}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            <InfoRow icon={<Trophy className="h-5 w-5" />} iconClass="bg-amber-50 text-amber-600" title={t("superTutor")} text={t("superTutorText", { name: tutor.name })} accent />
-            <InfoRow icon={<BookOpen className="h-5 w-5" />} iconClass="bg-brand-50 text-brand-700" title={t("teaches")} text={t("teachesText", { subject: labels(`subjects.${tutor.subject}`) })} />
-          </section>
+              <InfoRow icon={<Trophy className="h-5 w-5" />} iconClass="bg-amber-50 text-amber-600" title={t("superTutor")} text={t("superTutorText", { name: tutor.name })} accent />
+              <InfoRow icon={<BookOpen className="h-5 w-5" />} iconClass="bg-brand-50 text-brand-700" title={t("teaches")} text={t("teachesText", { subject: labels(`subjects.${tutor.subject}`) })} />
+            </section>
+          ) : null}
 
           <Section title={t("aboutTitle")}>
-            <p className="max-w-3xl text-base font-semibold leading-8 text-ink">{labels(`copy.${tutor.id}.about`)}</p>
+            <p className="max-w-3xl text-base font-semibold leading-8 text-ink">{tutor.source === "db" ? tutor.about : labels(`copy.${tutor.id}.about`)}</p>
             <button type="button" className="mt-3 text-sm font-black text-brand-700 underline underline-offset-4 hover:text-brand-800">{t("showMore")}</button>
           </Section>
 
@@ -220,16 +227,18 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
               </span>
             </div>
             <p className="mt-2 text-sm font-semibold text-muted">{t("basedReviews", { count: tutor.reviewsCount })}</p>
-            <div className="mt-5 rounded-xl border border-brand-200 bg-white p-5 shadow-soft">
-              <h3 className="flex items-center gap-2.5 font-black text-ink">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
-                  <Quote className="h-4 w-4" />
-                </span>
-                {t("reviewSummary")}
-              </h3>
-              <p className="mt-3 text-base font-semibold leading-7 text-ink">{labels(`copy.${tutor.id}.reviewSummary`)}</p>
-              <p className="mt-3 text-sm font-semibold text-muted">{t("aiGenerated", { name: tutor.name })}</p>
-            </div>
+            {tutor.source === "mock" || tutor.reviewSummary ? (
+              <div className="mt-5 rounded-xl border border-brand-200 bg-white p-5 shadow-soft">
+                <h3 className="flex items-center gap-2.5 font-black text-ink">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
+                    <Quote className="h-4 w-4" />
+                  </span>
+                  {t("reviewSummary")}
+                </h3>
+                <p className="mt-3 text-base font-semibold leading-7 text-ink">{tutor.source === "db" ? tutor.reviewSummary : labels(`copy.${tutor.id}.reviewSummary`)}</p>
+                <p className="mt-3 text-sm font-semibold text-muted">{t("aiGenerated", { name: tutor.name })}</p>
+              </div>
+            ) : null}
             <div className="mt-6 grid gap-6 sm:grid-cols-2">
               {tutor.reviews.map((review, index) => (
                 <article key={`${review.author}-${review.date}`}>
@@ -247,7 +256,7 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
                       <Star key={index} className="h-5 w-5 fill-ink text-ink" />
                     ))}
                   </div>
-                  <p className="mt-3 text-base font-semibold leading-7 text-ink">{labels(`copy.${tutor.id}.reviews.${index}`)}</p>
+                  <p className="mt-3 text-base font-semibold leading-7 text-ink">{tutor.source === "db" ? review.text : labels(`copy.${tutor.id}.reviews.${index}`)}</p>
                 </article>
               ))}
             </div>
@@ -342,7 +351,9 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
                 <p className="font-semibold text-muted">{certificate.years}</p>
                 <div>
                   <p className="font-black text-ink">{certificate.title}</p>
-                  <p className="mt-2 font-semibold text-ink-soft">{labels(`copy.certificates.${certificate.title}`)}</p>
+                  {tutor.source === "db" ? null : (
+                    <p className="mt-2 font-semibold text-ink-soft">{labels(`copy.certificates.${certificate.title}`)}</p>
+                  )}
                   {certificate.verified ? (
                     <p className="mt-3 inline-flex items-center gap-2 text-sm font-black text-emerald-700">
                       <BadgeCheck className="h-4 w-4" />
@@ -358,7 +369,7 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
             <div className="divide-y divide-line border-y border-line">
               {tutor.specialties.map((specialty) => (
                 <button key={specialty} type="button" className="flex min-h-16 w-full items-center justify-between text-left font-black text-ink">
-                  {labels(`specialties.${specialty}`)}
+                  {tutor.source === "db" ? specialty : labels(`specialties.${specialty}`)}
                   <ChevronDown className="h-5 w-5" />
                 </button>
               ))}
@@ -379,7 +390,7 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
                     <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
                     {item.rating} ({item.reviewsCount})
                   </p>
-                  <p className="mt-1 line-clamp-2 text-sm font-semibold leading-6 text-ink-soft">{labels(`copy.${item.headline}`)}</p>
+                  <p className="mt-1 line-clamp-2 text-sm font-semibold leading-6 text-ink-soft">{item.source === "db" ? item.headline : labels(`copy.${item.headline}`)}</p>
                   <p className="mt-2 text-lg font-black text-ink">
                     {format(item.price)} <span className="text-sm font-semibold text-muted">{t("perLesson")}</span>
                   </p>

@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { CurrencyProvider } from "@/components/shared/CurrencyProvider";
+import { TutorPresenceBeacon } from "@/components/shared/TutorPresenceBeacon";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -19,7 +20,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CurrencyProvider>{children}</CurrencyProvider>
+      <CurrencyProvider>
+        <TutorPresenceBeacon />
+        {children}
+      </CurrencyProvider>
     </QueryClientProvider>
   );
 }

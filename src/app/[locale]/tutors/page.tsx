@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { TutorSearchPage } from "@/components/tutors/TutorSearchPage";
 import { pageMetadata } from "@/lib/seo";
+import { tutors as mockTutors } from "@/lib/tutors";
+import { getTutors } from "@/lib/tutors/db";
 
 const tutorsMeta = {
   az: {
@@ -44,6 +46,9 @@ export default async function TutorsPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  return <TutorSearchPage />;
+  const dbTutors = await getTutors();
+  const tutors = dbTutors.length > 0 ? dbTutors : mockTutors;
+
+  return <TutorSearchPage tutors={tutors} />;
 }
 

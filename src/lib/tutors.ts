@@ -1,4 +1,11 @@
-export type TutorLanguageLevel = "native" | "proficient" | "advanced" | "intermediate";
+export type TutorLanguageLevel =
+  | "native"
+  | "proficient"
+  | "advanced"
+  | "upper_intermediate"
+  | "intermediate"
+  | "elementary"
+  | "beginner";
 export type SubjectCode = "en" | "ru" | "tr" | "de" | "fr" | "es" | "ar" | "it";
 export type SpecialtyCode =
   | "none"
@@ -27,8 +34,11 @@ export type TutorReview = {
 };
 
 export type Tutor = {
+  /** "mock" = static demo data with i18n copy keys; "db" = real Supabase row with plain text content. */
+  source: "mock" | "db";
   id: string;
   name: string;
+  online: boolean;
   country: string;
   countryCode: string;
   flag: string;
@@ -41,7 +51,7 @@ export type Tutor = {
   subject: SubjectCode;
   languages: { code: SubjectCode | "fi"; level: TutorLanguageLevel }[];
   alsoSpeaks: (SubjectCode | "az" | "fi")[];
-  specialties: SpecialtyCode[];
+  specialties: string[];
   categories: ("super" | "professional")[];
   price: number;
   originalPrice?: number;
@@ -50,7 +60,7 @@ export type Tutor = {
   students: number;
   lessons: number;
   recentlyBooked: number;
-  lessonDuration: 50;
+  lessonDuration: number;
   highlights: { title: string; text: string }[];
   lessonRating: {
     reassurance: number;
@@ -67,8 +77,10 @@ export type Tutor = {
 
 export const tutors: Tutor[] = [
   {
+    source: "mock",
     id: "sue-l",
     name: "Sue L.",
+    online: true,
     country: "United States of America",
     countryCode: "US",
     flag: "🇺🇸",
@@ -76,9 +88,9 @@ export const tutors: Tutor[] = [
     videoImage: "/images/footer/dilup-tutor-live-lesson.jpg",
     title: "englishTutor",
     headline: "sueHeadline",
-    bio: "From small talk to boardroom talk, you can improve your English one lesson at a time. I know the techniques and methods that work.",
+    bio: "Hi, I'm Sue! Native English speaker with 20+ years in business. I'll help you speak naturally, sound professional, and stop translating in your head.",
     about:
-      "Hi, I'm Sue. I love helping students build practical English for real situations. I worked in healthcare marketing for more than 20 years and have an MBA, so I am especially strong with business learners, job interview prep and confident everyday speaking.",
+      "Hey there! I'm Sue, a native English speaker from the US with an MBA and 20+ years of experience in healthcare marketing. I specialize in business English, job interview prep, and everyday conversation. My lessons are relaxed but focused — we'll work on real situations you actually face, not just textbook dialogues. Let's get you talking with confidence!",
     subject: "en",
     languages: [{ code: "en", level: "native" }],
     alsoSpeaks: ["en"],
@@ -161,8 +173,10 @@ export const tutors: Tutor[] = [
     ],
   },
   {
+    source: "mock",
     id: "nea-p",
     name: "Nea P.",
+    online: false,
     country: "Finland",
     countryCode: "FI",
     flag: "🇫🇮",
@@ -170,9 +184,9 @@ export const tutors: Tutor[] = [
     videoImage: "/images/footer/how-it-works-students-2.jpg",
     title: "certifiedEnglishTeacher",
     headline: "neaHeadline",
-    bio: "Hi! I'm Nea, originally from Finland. I help students speak more naturally through practical lessons, gentle corrections and clear goals.",
+    bio: "Hi, I'm Nea from Finland! I help students speak more naturally with friendly corrections, clear goals, and lots of speaking practice.",
     about:
-      "I design lessons around your daily life, career goals and speaking confidence. You will get clear structure, friendly feedback and enough practice to make every lesson feel useful.",
+      "Hi! I'm Nea, a CELTA-certified English teacher from Finland. I love working with beginners and anyone who feels nervous speaking English. My lessons are relaxed and encouraging — we'll focus on what you actually need: daily conversation, travel English, or just building the confidence to speak without overthinking.",
     subject: "en",
     languages: [
       { code: "en", level: "proficient" },
@@ -207,8 +221,10 @@ export const tutors: Tutor[] = [
     ],
   },
   {
+    source: "mock",
     id: "andrew-s",
     name: "Andrew S.",
+    online: true,
     country: "United Kingdom",
     countryCode: "GB",
     flag: "🇬🇧",
@@ -216,9 +232,9 @@ export const tutors: Tutor[] = [
     videoImage: "/images/footer/how-it-works-students-1.jpg",
     title: "ieltsBusinessTutor",
     headline: "andrewHeadline",
-    bio: "Expert guidance for IELTS speaking, writing and professional communication. Take a trial and build a plan for your next milestone.",
+    bio: "Expert IELTS and business English coaching — speaking, writing, and professional communication. Book a trial and let's build your plan.",
     about:
-      "My lessons are direct, practical and built around measurable progress. I work with ambitious learners who want exam results, sharper writing and more confident meetings.",
+      "I'm Andrew, a DELTA-qualified English teacher from the UK. My lessons are direct, practical, and focused on measurable progress — perfect if you're preparing for IELTS, want sharper business writing, or need to sound more confident in meetings and interviews.",
     subject: "en",
     languages: [{ code: "en", level: "native" }],
     alsoSpeaks: ["en"],

@@ -3,10 +3,21 @@ import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { TutorProfilePage } from "@/components/tutors/TutorProfilePage";
 import { pageMetadata } from "@/lib/seo";
-import { tutorById, tutors } from "@/lib/tutors";
+import { tutorById, tutors as mockTutors } from "@/lib/tutors";
+import { getTutors } from "@/lib/tutors/db";
 
 export function generateStaticParams() {
-  return tutors.map((tutor) => ({ id: tutor.id }));
+  return mockTutors.map((tutor) => ({ id: tutor.id }));
+}
+
+async function loadTutors() {
+  const dbTutors = await getTutors();
+  return dbTutors.length > 0 ? dbTutors : mockTutors;
+}
+
+async function findTutor(id: string) {
+  const tutors = await loadTutors();
+  return tutors.find((tutor) => tutor.id === id) ?? tutorById(id);
 }
 
 export async function generateMetadata({
@@ -15,7 +26,7 @@ export async function generateMetadata({
   params: Promise<{ id: string; locale: string }>;
 }): Promise<Metadata> {
   const { id, locale } = await params;
-  const tutor = tutorById(id);
+  const tutor = await findTutor(id);
   if (!tutor) {
     return {};
   }
@@ -35,10 +46,11 @@ export default async function TutorProfileRoute({
 }) {
   const { id, locale } = await params;
   setRequestLocale(locale);
-  const tutor = tutorById(id);
+  const tutors = await loadTutors();
+  const tutor = tutors.find((item) => item.id === id) ?? tutorById(id);
 
   if (!tutor) notFound();
 
-  return <TutorProfilePage tutor={tutor} />;
+  return <TutorProfilePage tutor={tutor} allTutors={tutors} />;
 }
 

@@ -264,7 +264,10 @@
       "native": "Native",
       "proficient": "Proficient",
       "advanced": "Advanced",
-      "intermediate": "Intermediate"
+      "intermediate": "Intermediate",
+      "beginner": "Beginner",
+      "elementary": "Elementary",
+      "upper_intermediate": "Upper-intermediate"
     },
     "highlightsList": {
       "goalFocused": "Goal-Focused",
@@ -275,44 +278,44 @@
       "englishTutor": "English tutor",
       "certifiedEnglishTeacher": "Certified English teacher",
       "ieltsBusinessTutor": "IELTS and business English tutor",
-      "sueHeadline": "Boost your English and your confidence.",
-      "neaHeadline": "Build confidence and fluency with clear practice.",
-      "andrewHeadline": "Improve your English quickly with expert guidance.",
+      "sueHeadline": "Speak English with confidence — in meetings, interviews, and everyday life.",
+      "neaHeadline": "Build real confidence speaking English, step by step, at your pace.",
+      "andrewHeadline": "IELTS and business English coaching that gets real results.",
       "certificates": {
         "TEFL": "Teaching English as a Foreign Language",
         "CELTA": "Certificate in English Language Teaching",
         "DELTA": "Diploma in English Language Teaching"
       },
       "sue-l": {
-        "bio": "From small talk to boardroom talk, you can improve your English one lesson at a time. I know the techniques and methods that work.",
-        "about": "Hi, I'm Sue. I love helping students build practical English for real situations. I worked in healthcare marketing for more than 20 years and have an MBA, so I am especially strong with business learners, job interview prep and confident everyday speaking.",
-        "highlight": "Perfect for speaking practice. Profile mentions vocabulary and listening.",
-        "reviewSummary": "Students say Sue tailors English lessons, gives clear explanations and timely corrections, and keeps classes well structured and engaging.",
+        "bio": "Hi, I'm Sue! Native English speaker with 20+ years in business. I'll help you speak naturally, sound professional, and stop translating in your head.",
+        "about": "Hey there! I'm Sue, a native English speaker from the US with an MBA and 20+ years of experience in healthcare marketing. I specialize in business English, job interview prep, and everyday conversation. My lessons are relaxed but focused — we'll work on real situations you actually face, not just textbook dialogues. Let's get you talking with confidence!",
+        "highlight": "Great for conversation practice — strong focus on vocabulary, listening, and real-life English.",
+        "reviewSummary": "Students love how Sue tailors every lesson to their goals. She explains things clearly, corrects mistakes on the spot, and keeps lessons fun and well-organized.",
         "reviews": {
-          "0": "Sue is a great tutor. She is very professional and provides excellent strategies to learn English.",
-          "1": "Sue is a really great teacher. She is patient, encouraging and truly cares about her students.",
-          "2": "The classes are informative, focused and very easy to follow.",
-          "3": "Exceptional lessons and very useful correction after each class."
+          "0": "Sue is an amazing tutor! Super professional and always has great strategies to help you improve.",
+          "1": "Honestly one of the best teachers I've had — patient, encouraging, and genuinely cares about your progress.",
+          "2": "Lessons are well-structured, easy to follow, and never boring.",
+          "3": "I always learn something new, and the feedback after each lesson is super helpful."
         }
       },
       "nea-p": {
-        "bio": "Hi! I'm Nea, originally from Finland. I help students speak more naturally through practical lessons, gentle corrections and clear goals.",
-        "about": "I design lessons around your daily life, career goals and speaking confidence. You will get clear structure, friendly feedback and enough practice to make every lesson feel useful.",
-        "highlight": "Strong fit for students who want patient speaking practice.",
-        "reviewSummary": "Students describe Nea as warm, structured and very helpful for building everyday confidence.",
+        "bio": "Hi, I'm Nea from Finland! I help students speak more naturally with friendly corrections, clear goals, and lots of speaking practice.",
+        "about": "Hi! I'm Nea, a CELTA-certified English teacher from Finland. I love working with beginners and anyone who feels nervous speaking English. My lessons are relaxed and encouraging — we'll focus on what you actually need: daily conversation, travel English, or just building the confidence to speak without overthinking.",
+        "highlight": "Great match if you want patient, judgment-free speaking practice.",
+        "reviewSummary": "Students describe Nea as warm, patient, and incredibly easy to talk to. A great pick if you want to build everyday confidence.",
         "reviews": {
-          "0": "Very kind, focused and easy to talk to.",
-          "1": "I finally feel comfortable speaking at work."
+          "0": "Nea is so kind and easy to talk to — never makes you feel embarrassed about mistakes.",
+          "1": "I finally feel comfortable speaking English at work, thanks to Nea!"
         }
       },
       "andrew-s": {
-        "bio": "Expert guidance for IELTS speaking, writing and professional communication. Take a trial and build a plan for your next milestone.",
-        "about": "My lessons are direct, practical and built around measurable progress. I work with ambitious learners who want exam results, sharper writing and more confident meetings.",
-        "highlight": "Strong profile for IELTS speaking and writing practice.",
-        "reviewSummary": "Students value Andrew's direct feedback, exam strategy and highly organized lesson plans.",
+        "bio": "Expert IELTS and business English coaching — speaking, writing, and professional communication. Book a trial and let's build your plan.",
+        "about": "I'm Andrew, a DELTA-qualified English teacher from the UK. My lessons are direct, practical, and focused on measurable progress — perfect if you're preparing for IELTS, want sharper business writing, or need to sound more confident in meetings and interviews.",
+        "highlight": "Strong choice for IELTS speaking and writing practice.",
+        "reviewSummary": "Students praise Andrew's direct feedback, smart exam strategies, and well-organized lessons.",
         "reviews": {
-          "0": "His IELTS feedback is very clear and practical.",
-          "1": "Great structure and strong business vocabulary work."
+          "0": "Andrew's IELTS feedback is incredibly clear and actually useful.",
+          "1": "Great structure, and my business vocabulary has improved so much."
         }
       }
     },

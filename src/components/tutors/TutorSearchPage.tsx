@@ -35,7 +35,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { tutors, type SpecialtyCode, type SubjectCode, type Tutor } from "@/lib/tutors";
+import { type SpecialtyCode, type SubjectCode, type Tutor } from "@/lib/tutors";
 import { cn } from "@/lib/utils";
 
 type SortKey = "top" | "priceLow" | "priceHigh" | "popular" | "reviews" | "rating";
@@ -73,7 +73,7 @@ const timeGroupIcons: Record<(typeof timeRanges)[number]["group"], LucideIcon> =
 };
 const days = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
-export function TutorSearchPage() {
+export function TutorSearchPage({ tutors }: { tutors: Tutor[] }) {
   const t = useTranslations("tutors");
   const dayLabels = useTranslations("onboarding");
   const { format } = useCurrency();
@@ -111,10 +111,10 @@ export function TutorSearchPage() {
         !loweredQuery ||
         [
           tutor.name,
-          t(`copy.${tutor.headline}`),
+          tutor.source === "db" ? tutor.headline : t(`copy.${tutor.headline}`),
           tutor.bio,
           t(`countries.${tutor.countryCode}`),
-          ...tutor.specialties.map((specialty) => t(`specialties.${specialty}`)),
+          ...tutor.specialties.map((specialty) => (tutor.source === "db" ? specialty : t(`specialties.${specialty}`))),
         ]
           .join(" ")
           .toLowerCase()
@@ -153,6 +153,7 @@ export function TutorSearchPage() {
     subject,
     superOnly,
     t,
+    tutors,
   ]);
 
   const activeTutor = filteredTutors.find((tutor) => tutor.id === activeTutorId) ?? filteredTutors[0] ?? tutors[0];
@@ -606,7 +607,12 @@ function TutorCard({ active, onActivate, tutor }: { active: boolean; onActivate:
     >
       <Link href={`/tutors/${tutor.id}`} className="relative aspect-square overflow-hidden rounded-xl bg-surface sm:aspect-[4/5]">
         <Image src={tutor.photo} alt={t("card.photoAlt", { name: tutor.name })} fill className="object-cover" sizes="190px" />
-        <span className="absolute bottom-3 right-3 h-4 w-4 rounded-full border-2 border-white bg-emerald-500" />
+        <span
+          className={cn(
+            "absolute bottom-3 right-3 h-4 w-4 rounded-full border-2 border-white",
+            tutor.online ? "bg-emerald-500" : "bg-gray-400",
+          )}
+        />
       </Link>
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
@@ -645,8 +651,8 @@ function TutorCard({ active, onActivate, tutor }: { active: boolean; onActivate:
           </span>
         </p>
         <p className="mt-2.5 line-clamp-2 text-base font-semibold leading-7 text-ink">
-          <span className="font-black">{t(`copy.${tutor.headline}`)}</span>{" "}
-          <span className="text-ink-soft">{t(`copy.${tutor.id}.bio`)}</span>
+          <span className="font-black">{tutor.source === "db" ? tutor.headline : t(`copy.${tutor.headline}`)}</span>{" "}
+          <span className="text-ink-soft">{tutor.source === "db" ? tutor.bio : t(`copy.${tutor.id}.bio`)}</span>
         </p>
         <Link href={`/tutors/${tutor.id}`} className="mt-1.5 inline-block text-sm font-black text-brand-700 underline underline-offset-4 hover:text-brand-800">
           {t("card.learnMore")}
