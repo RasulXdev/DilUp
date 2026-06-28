@@ -25,19 +25,23 @@ export async function GET(
         roleParam ?? user?.user_metadata?.intended_role,
       );
 
-      if (user && intendedRole) {
-        await supabase
-          .from("profiles")
-          .update({
-            role: intendedRole,
+      if (user) {
+        // Belt-and-suspenders alongside the handle_new_user() DB trigger:
+        // guarantees a profile row exists even if the trigger was skipped/removed.
+        await supabase.from("profiles").upsert(
+          {
+            id: user.id,
+            email: user.email ?? "",
+            ...(intendedRole ? { role: intendedRole } : {}),
             full_name:
               user.user_metadata?.full_name ??
               user.user_metadata?.name ??
               user.email?.split("@")[0] ??
               "DilUp user",
             avatar_url: user.user_metadata?.avatar_url ?? null,
-          })
-          .eq("id", user.id);
+          },
+          { onConflict: "id" },
+        );
 
         if (intendedRole === "tutor") {
           await supabase.from("tutor_profiles").upsert(
