@@ -9,13 +9,21 @@ import { cn } from "@/lib/utils";
 
 const CURRENCIES = ["AZN", "USD", "EUR"] as const;
 
+const LOCALE_CURRENCY: Record<string, (typeof CURRENCIES)[number]> = {
+  az: "AZN",
+  en: "USD",
+  ru: "EUR",
+};
+
 export function LocaleCurrencySwitcher({ className }: { className?: string }) {
   const t = useTranslations("nav");
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [currency, setCurrency] = useState<(typeof CURRENCIES)[number]>("AZN");
+  const [currency, setCurrency] = useState<(typeof CURRENCIES)[number]>(
+    () => LOCALE_CURRENCY[locale] ?? "AZN",
+  );
   const [isPending, startTransition] = useTransition();
   const ref = useRef<HTMLDivElement>(null);
 

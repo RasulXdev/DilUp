@@ -8,6 +8,7 @@ import {
   CalendarDays,
   ChevronDown,
   Clock3,
+  Flame,
   Heart,
   Languages,
   MessageSquare,
@@ -644,8 +645,10 @@ function TutorCard({ active, onActivate, tutor }: { active: boolean; onActivate:
           {t("card.learnMore")}
         </Link>
         {tutor.recentlyBooked > 20 ? (
-          <p className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-brand-700">
-            <Sparkles className="h-4 w-4" />
+          <p className="mt-4 flex items-center gap-2 text-sm font-bold text-brand-700">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-600">
+              <Flame className="h-3.5 w-3.5 fill-current" />
+            </span>
             {t("card.popular", { count: tutor.recentlyBooked })}
           </p>
         ) : null}
