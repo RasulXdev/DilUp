@@ -39,6 +39,7 @@ import { toast } from "sonner";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { type SpecialtyCode, type SubjectCode, type Tutor } from "@/lib/tutors";
 import { useSavedTutors } from "@/lib/tutors/useSavedTutors";
 import { useTutorsQuery } from "@/lib/tutors/useTutorsQuery";
@@ -938,126 +939,167 @@ function TutorCard({
   const t = useTranslations("tutors");
   const { format } = useCurrency();
   return (
-    <article
-      onMouseEnter={onActivate}
-      onFocus={onActivate}
-      className={cn(
-        "grid min-w-0 gap-5 rounded-2xl border bg-white p-4 transition-shadow sm:grid-cols-[190px_minmax(0,1fr)_260px]",
-        active ? "border-ink shadow-card" : "border-line hover:border-brand-300 hover:shadow-card",
-      )}
-    >
-      <Link href={`/tutors/${tutor.id}`} className="relative aspect-square overflow-hidden rounded-xl bg-surface sm:aspect-[4/5]">
-        <Image src={tutor.photo} alt={t("card.photoAlt", { name: tutor.name })} fill className="object-cover" sizes="190px" />
-        <span
-          className={cn(
-            "absolute bottom-3 right-3 h-4 w-4 rounded-full border-2 border-white",
-            tutor.online ? "bg-emerald-500" : "bg-gray-400",
-          )}
-        />
-      </Link>
-      <div className="min-w-0">
-        <div className="flex flex-wrap items-center gap-2">
-          <Link href={`/tutors/${tutor.id}`} className="text-2xl font-black text-ink hover:text-brand-700">
-            {tutor.name}
-          </Link>
-          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-600 text-white">
-            <ShieldCheck className="h-3 w-3" />
-          </span>
-          <span>{tutor.flag}</span>
-        </div>
-        <div className="mt-2 flex flex-wrap items-center gap-2 text-sm font-bold text-ink-soft">
-          {tutor.categories.includes("super") ? (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-amber-800">
-              <Trophy className="h-3.5 w-3.5" />
-              {t("card.superTutor")}
-            </span>
-          ) : null}
-          {tutor.categories.includes("professional") ? (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-2.5 py-1 text-brand-800">
-              <UserRoundCheck className="h-3.5 w-3.5" />
-              {t("card.professional")}
-            </span>
-          ) : null}
-        </div>
-        <p className="mt-2 flex min-w-0 items-center gap-2 text-base font-semibold text-ink-soft">
-          <BookOpen className="h-4 w-4 shrink-0 text-brand-600" />
-          {t(`subjects.${tutor.subject}`)}
-        </p>
-        <p className="mt-1.5 flex min-w-0 items-center gap-2 truncate text-base font-semibold text-ink-soft">
-          <Languages className="h-4 w-4 shrink-0 text-brand-600" />
-          <span className="truncate">
-            {t("card.speaks", {
-              languages: tutor.languages.map((language) => `${t(`languages.${language.code}`)} (${t(`levels.${language.level}`)})`).join(", "),
-            })}
-          </span>
-        </p>
-        <p className="mt-2.5 line-clamp-2 text-base font-semibold leading-7 text-ink">
-          <span className="font-black">{tutor.source === "db" ? tutor.headline : t(`copy.${tutor.headline}`)}</span>{" "}
-          <span className="text-ink-soft">{tutor.source === "db" ? tutor.bio : t(`copy.${tutor.id}.bio`)}</span>
-        </p>
-        <Link href={`/tutors/${tutor.id}`} className="mt-1.5 inline-block text-sm font-black text-brand-700 underline underline-offset-4 hover:text-brand-800">
-          {t("card.learnMore")}
+    <TooltipProvider>
+      <article
+        onMouseEnter={onActivate}
+        onFocus={onActivate}
+        className={cn(
+          "grid min-w-0 gap-5 rounded-2xl border bg-white p-5 transition-all duration-200 sm:grid-cols-[180px_minmax(0,1fr)_260px]",
+          active ? "border-brand-400 shadow-card" : "border-line hover:border-brand-200 hover:shadow-soft",
+        )}
+      >
+        {/* — Photo — */}
+        <Link href={`/tutors/${tutor.id}`} className="group relative aspect-square overflow-hidden rounded-xl bg-surface sm:aspect-[4/5]">
+          <Image src={tutor.photo} alt={t("card.photoAlt", { name: tutor.name })} fill className="object-cover transition-transform duration-300 group-hover:scale-[1.03]" sizes="180px" />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span
+                className={cn(
+                  "absolute bottom-2.5 right-2.5 flex h-5 w-5 items-center justify-center rounded-full border-[2.5px] border-white shadow-sm",
+                  tutor.online ? "bg-emerald-500" : "bg-gray-300",
+                )}
+              >
+                {tutor.online ? <span className="absolute h-full w-full animate-ping rounded-full bg-emerald-400 opacity-40" /> : null}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="top" sideOffset={6}>
+              {tutor.online ? t("card.onlineTooltip") : t("card.offlineTooltip")}
+            </TooltipContent>
+          </Tooltip>
         </Link>
-        {tutor.recentlyBooked > 20 ? (
-          <p className="mt-2.5 flex items-center gap-2 text-sm font-bold text-brand-700">
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-600">
-              <Flame className="h-3.5 w-3.5 fill-current" />
-            </span>
-            {t("card.popular", { count: tutor.recentlyBooked })}
-          </p>
-        ) : null}
-      </div>
-      <div className="flex flex-col gap-4 sm:items-stretch">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-black text-ink">{format(tutor.price)}</span>
-              {tutor.originalPrice ? (
-                <span className="text-base font-bold text-red-700 line-through">{format(tutor.originalPrice)}</span>
-              ) : null}
-            </div>
-            <p className="text-sm font-semibold text-muted">{t("card.duration", { minutes: tutor.lessonDuration })}</p>
+
+        {/* — Details — */}
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <Link href={`/tutors/${tutor.id}`} className="text-[1.4rem] font-black leading-tight text-ink hover:text-brand-700">
+              {tutor.name}
+            </Link>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-brand-600 text-white">
+                  <ShieldCheck className="h-3.5 w-3.5" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="top" sideOffset={6}>
+                {t("card.verifiedTooltip")}
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="cursor-default text-lg leading-none">{tutor.flag}</span>
+              </TooltipTrigger>
+              <TooltipContent side="top" sideOffset={6}>
+                {t("card.countryTooltip", { country: t(`countries.${tutor.countryCode}`) })}
+              </TooltipContent>
+            </Tooltip>
           </div>
-          <button
-            type="button"
-            aria-label={saved ? t("card.unsave") : t("card.save")}
-            onClick={onToggleSaved}
-            className={cn(
-              "flex h-11 w-11 items-center justify-center rounded-full border transition",
-              saved
-                ? "border-brand-300 bg-brand-50 text-brand-700"
-                : "border-line text-ink-soft hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700",
-            )}
-          >
-            <Heart className={cn("h-5 w-5", saved && "fill-current")} />
-          </button>
+
+          <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[13px] font-bold">
+            {tutor.categories.includes("super") ? (
+              <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-[3px] text-amber-800 ring-1 ring-amber-200/60">
+                <Trophy className="h-3 w-3" />
+                {t("card.superTutor")}
+              </span>
+            ) : null}
+            {tutor.categories.includes("professional") ? (
+              <span className="inline-flex items-center gap-1 rounded-md bg-brand-50 px-2 py-[3px] text-brand-800 ring-1 ring-brand-200/60">
+                <UserRoundCheck className="h-3 w-3" />
+                {t("card.professional")}
+              </span>
+            ) : null}
+          </div>
+
+          <div className="mt-2.5 space-y-1">
+            <p className="flex min-w-0 items-center gap-2 text-[15px] font-semibold text-ink-soft">
+              <BookOpen className="h-4 w-4 shrink-0 text-brand-600" />
+              {t(`subjects.${tutor.subject}`)}
+            </p>
+            <p className="flex min-w-0 items-center gap-2 text-[15px] font-semibold text-ink-soft">
+              <Languages className="h-4 w-4 shrink-0 text-brand-600" />
+              <span className="truncate">
+                {t("card.speaks", {
+                  languages: tutor.languages.map((language) => `${t(`languages.${language.code}`)} (${t(`levels.${language.level}`)})`).join(", "),
+                })}
+              </span>
+            </p>
+          </div>
+
+          <p className="mt-3 line-clamp-2 text-[15px] font-medium leading-[1.65] text-ink-soft">
+            <span className="font-black text-ink">{tutor.source === "db" ? tutor.headline : t(`copy.${tutor.headline}`)}</span>
+            {" — "}
+            <span>{tutor.source === "db" ? tutor.bio : t(`copy.${tutor.id}.bio`)}</span>
+          </p>
+          <Link href={`/tutors/${tutor.id}`} className="mt-1.5 inline-block text-sm font-black text-brand-700 underline underline-offset-4 hover:text-brand-800">
+            {t("card.learnMore")}
+          </Link>
+
+          {tutor.recentlyBooked > 20 ? (
+            <p className="mt-2.5 flex items-center gap-2 text-[13px] font-bold text-ink-soft">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-600">
+                <Flame className="h-3 w-3 fill-current" />
+              </span>
+              {t("card.popular", { count: tutor.recentlyBooked })}
+            </p>
+          ) : null}
         </div>
-        <div className="grid grid-cols-3 gap-3">
-          <CardStat value={tutor.rating} icon={<Star className="h-4 w-4 fill-amber-500 text-amber-500" />} label={t("card.reviews", { count: tutor.reviewsCount })} />
-          <CardStat value={`${tutor.students}`} label={t("card.students")} />
-          <CardStat value={`${tutor.lessons}`} label={t("card.lessons")} />
+
+        {/* — Price / Stats / Actions — */}
+        <div className="flex flex-col gap-3 sm:items-stretch">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-[1.7rem] font-black leading-none text-ink">{format(tutor.price)}</span>
+                {tutor.originalPrice ? (
+                  <span className="text-sm font-bold text-red-600/80 line-through">{format(tutor.originalPrice)}</span>
+                ) : null}
+              </div>
+              <p className="mt-0.5 text-[13px] font-semibold text-muted">{t("card.duration", { minutes: tutor.lessonDuration })}</p>
+            </div>
+            <button
+              type="button"
+              aria-label={saved ? t("card.unsave") : t("card.save")}
+              onClick={onToggleSaved}
+              className={cn(
+                "flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-150",
+                saved
+                  ? "border-brand-300 bg-brand-50 text-brand-700"
+                  : "border-line text-muted hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700",
+              )}
+            >
+              <Heart className={cn("h-[18px] w-[18px]", saved && "fill-current")} />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-0 rounded-lg bg-surface px-3 py-2.5">
+            <CardStat value={tutor.rating} icon={<Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />} label={t("card.reviews", { count: tutor.reviewsCount })} />
+            <span className="mx-3 h-8 w-px bg-line" />
+            <CardStat value={`${tutor.students}`} label={t("card.students")} />
+            <span className="mx-3 h-8 w-px bg-line" />
+            <CardStat value={`${tutor.lessons}`} label={t("card.lessons")} />
+          </div>
+
+          <Link href={`/tutors/${tutor.id}`} className={cn(buttonVariants({ variant: "accent", size: "lg" }), "w-full")}>
+            <CalendarDays className="h-5 w-5" />
+            {t("card.book")}
+          </Link>
+          <Button variant="outline" size="lg" className="w-full" onClick={() => toast.info(t("messageSoon"))}>
+            <MessageSquare className="h-5 w-5" />
+            {t("card.message")}
+          </Button>
         </div>
-        <Link href={`/tutors/${tutor.id}`} className={cn(buttonVariants({ variant: "accent", size: "lg" }), "w-full")}>
-          <CalendarDays className="h-5 w-5" />
-          {t("card.book")}
-        </Link>
-        <Button variant="outline" size="lg" className="w-full" onClick={() => toast.info(t("messageSoon"))}>
-          <MessageSquare className="h-5 w-5" />
-          {t("card.message")}
-        </Button>
-      </div>
-    </article>
+      </article>
+    </TooltipProvider>
   );
 }
 
 function CardStat({ icon, label, value }: { icon?: React.ReactNode; label: string; value: string | number }) {
   return (
-    <div className="min-w-0">
-      <p className="flex items-center gap-1.5 truncate text-xl font-black text-ink">
+    <div className="min-w-0 flex-1">
+      <p className="flex items-center gap-1 truncate text-lg font-black leading-tight text-ink">
         {value}
         {icon}
       </p>
-      <p className="text-xs font-semibold leading-4 text-muted">{label}</p>
+      <p className="mt-0.5 text-[11px] font-semibold leading-none text-muted">{label}</p>
     </div>
   );
 }

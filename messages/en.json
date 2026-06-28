@@ -363,7 +363,11 @@
       "book": "Book trial lesson",
       "message": "Send message",
       "save": "Save tutor",
-      "unsave": "Remove saved tutor"
+      "unsave": "Remove saved tutor",
+      "countryTooltip": "Country: {country}",
+      "verifiedTooltip": "Identity verified",
+      "onlineTooltip": "Online now",
+      "offlineTooltip": "Offline"
     },
     "messageSoon": "Messaging is coming soon"
   },

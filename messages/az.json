@@ -363,7 +363,11 @@
       "book": "Trial dərs bron et",
       "message": "Mesaj göndər",
       "save": "Müəllimi yadda saxla",
-      "unsave": "Yadda saxlanılanlardan çıxar"
+      "unsave": "Yadda saxlanılanlardan çıxar",
+      "countryTooltip": "Ölkə: {country}",
+      "verifiedTooltip": "Müəllimin şəxsiyyəti təsdiqlənib",
+      "onlineTooltip": "İndi onlayndır",
+      "offlineTooltip": "Oflayn"
     },
     "messageSoon": "Mesajlaşma tezliklə aktiv olacaq"
   },
