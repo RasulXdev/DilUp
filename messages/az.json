@@ -181,32 +181,15 @@
     "title": "Danışıq özgüvənini artıran {subject} müəllimləri",
     "resultCount": "{count} müəllim",
     "guided": {
-      "eyebrow": "Şəxsi müəllim seçimi",
       "title": "Məqsədlərinə uyğun online dil dərsləri",
       "titleWithSubject": "Məqsədlərinə uyğun online {subject} dərsləri",
       "text": "Bir neçə fokuslu suala cavab ver ki, DilUp səviyyənə, vaxtına, büdcənə və öyrənmə stilinə görə müəllim nəticələrini formalaşdırsın.",
       "quickLabel": "Şəxsi müəllim seçiminə çatmaq üçün bir neçə qısa suala cavab ver",
       "findTutor": "Müəllimini tap",
       "showTutors": "{count} müəllimi göstər",
-      "liveBadge": "Canlı dərs",
-      "liveText": "Real feedback ilə təkbətək praktika",
       "tutorName": "Ryan C.",
       "tutorMeta": "Peşəkar müəllim · 200 dərs",
-      "tutorSignal": "Matching quiz-dən sonra daha dəqiq işləyir",
-      "steps": {
-        "goal": {
-          "title": "Məqsəd",
-          "text": "Karyera, imtahan, uşaq və ya səyahət"
-        },
-        "schedule": {
-          "title": "Vaxt",
-          "text": "Sənə uyğun günlər və saatlar"
-        },
-        "budget": {
-          "title": "Büdcə",
-          "text": "Dərs üçün qiymət aralığın"
-        }
-      }
+      "tutorSignal": "Matching quiz-dən sonra daha dəqiq işləyir"
     },
     "promoTitle": "Trial dərsinə 30% endirim əldə et",
     "promoText": "Kod lazım deyil. ₼12 və daha yuxarı qiymətli müəllimlərə aiddir.",

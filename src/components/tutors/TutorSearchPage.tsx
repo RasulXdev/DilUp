@@ -658,9 +658,13 @@ function TutorMatchingHeader({
                 {t("guided.findTutor")}
                 <ArrowRight className="h-5 w-5" />
               </Link>
-              <p className="flex h-12 w-full items-center justify-center rounded-[10px] border-2 border-line bg-white px-5 text-center text-base font-black text-ink transition-colors hover:border-ink hover:bg-surface">
+              <button
+                type="button"
+                onClick={onFindTutorClick}
+                className="flex h-12 w-full items-center justify-center rounded-[10px] border-2 border-line bg-white px-5 text-center text-base font-black text-ink transition-colors hover:border-ink hover:bg-surface"
+              >
                 {t("guided.showTutors", { count: resultCount })}
-              </p>
+              </button>
             </div>
           </div>
         </div>
