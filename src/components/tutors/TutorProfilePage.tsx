@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
   Award,
@@ -29,6 +29,8 @@ import { Navbar } from "@/components/layout/Navbar";
 import { useCurrency } from "@/components/shared/CurrencyProvider";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { resolveTutorsGateHref } from "@/lib/auth/redirects";
+import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import type { Tutor } from "@/lib/tutors";
 import { tutors } from "@/lib/tutors";
@@ -400,6 +402,24 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
 function BookingCard({ tutor }: { tutor: Tutor }) {
   const t = useTranslations("tutorProfile");
   const { format } = useCurrency();
+  const dest = `/checkout/${tutor.id}`;
+  const [bookHref, setBookHref] = useState(`/get-started?next=${encodeURIComponent(dest)}`);
+
+  useEffect(() => {
+    let active = true;
+    const supabase = createClient();
+
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      resolveTutorsGateHref(supabase, user?.id ?? null, dest).then((href) => {
+        if (active) setBookHref(href);
+      });
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [dest]);
+
   return (
     <div className="sticky top-28 rounded-2xl border border-line bg-white p-5 shadow-card">
       <div className="flex items-baseline gap-2">
@@ -417,7 +437,7 @@ function BookingCard({ tutor }: { tutor: Tutor }) {
           <p className="text-sm font-semibold text-muted">{t("lessons")}</p>
         </div>
       </div>
-      <Link href={`/checkout/${tutor.id}`} className={cn(buttonVariants({ variant: "accent", size: "lg" }), "mt-7 w-full")}>
+      <Link href={bookHref} className={cn(buttonVariants({ variant: "accent", size: "lg" }), "mt-7 w-full")}>
         <CalendarDays className="h-5 w-5" />
         {t("bookTrial")}
       </Link>

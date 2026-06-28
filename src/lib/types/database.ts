@@ -203,6 +203,86 @@ export type Database = {
           },
         ]
       }
+      full_onboarding_responses: {
+        Row: {
+          also_speaks: string[] | null
+          available_days: string[] | null
+          available_times: string[] | null
+          budget_max: number | null
+          budget_min: number | null
+          career_industry: string | null
+          career_role: string | null
+          career_skills: string[] | null
+          converted_to_signup: boolean | null
+          country_of_birth: string | null
+          created_at: string | null
+          free_text: string | null
+          future_subjects: string[] | null
+          goal: string | null
+          goal_achievement_period: string | null
+          id: string
+          level: string | null
+          session_id: string
+          specialties: string[] | null
+          tutor_style: string[] | null
+          user_id: string | null
+        }
+        Insert: {
+          also_speaks?: string[] | null
+          available_days?: string[] | null
+          available_times?: string[] | null
+          budget_max?: number | null
+          budget_min?: number | null
+          career_industry?: string | null
+          career_role?: string | null
+          career_skills?: string[] | null
+          converted_to_signup?: boolean | null
+          country_of_birth?: string | null
+          created_at?: string | null
+          free_text?: string | null
+          future_subjects?: string[] | null
+          goal?: string | null
+          goal_achievement_period?: string | null
+          id?: string
+          level?: string | null
+          session_id: string
+          specialties?: string[] | null
+          tutor_style?: string[] | null
+          user_id?: string | null
+        }
+        Update: {
+          also_speaks?: string[] | null
+          available_days?: string[] | null
+          available_times?: string[] | null
+          budget_max?: number | null
+          budget_min?: number | null
+          career_industry?: string | null
+          career_role?: string | null
+          career_skills?: string[] | null
+          converted_to_signup?: boolean | null
+          country_of_birth?: string | null
+          created_at?: string | null
+          free_text?: string | null
+          future_subjects?: string[] | null
+          goal?: string | null
+          goal_achievement_period?: string | null
+          id?: string
+          level?: string | null
+          session_id?: string
+          specialties?: string[] | null
+          tutor_style?: string[] | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "full_onboarding_responses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       languages: {
         Row: {
           code: string
@@ -1056,6 +1136,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_onboarding_session: {
+        Args: { p_session_id: string }
+        Returns: undefined
+      }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
       tutor_search_doc: {
         Args: {
           p_about: string

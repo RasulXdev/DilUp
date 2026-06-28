@@ -6,13 +6,6 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-function isQuickSetupResponse(response: { free_text: string | null }) {
-  return (
-    response.free_text === "quick_setup_completed" ||
-    response.free_text === "quick_setup_skipped"
-  );
-}
-
 export function OnboardingGate({
   children,
   nextPath = "/tutors",
@@ -40,12 +33,13 @@ export function OnboardingGate({
 
       if (user) {
         const { data } = await supabase
-          .from("onboarding_responses")
-          .select("id, free_text")
+          .from("full_onboarding_responses")
+          .select("id")
           .eq("user_id", user.id)
-          .limit(20);
+          .limit(1)
+          .maybeSingle();
 
-        if (data?.some((response) => !isQuickSetupResponse(response))) {
+        if (data?.id) {
           router.replace(nextPath);
           return;
         }

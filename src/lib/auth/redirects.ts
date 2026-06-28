@@ -17,13 +17,6 @@ export function isSafeRedirectPath(path: string | null) {
   return !!path && path.startsWith("/") && !path.startsWith("//");
 }
 
-function isQuickSetupResponse(response: { free_text: string | null }) {
-  return (
-    response.free_text === "quick_setup_completed" ||
-    response.free_text === "quick_setup_skipped"
-  );
-}
-
 export async function resolveUserHome(
   supabase: SupabaseClient<Database>,
   userId: string,
@@ -56,12 +49,34 @@ export async function hasCompletedFullOnboarding(
   userId: string,
 ) {
   const { data } = await supabase
-    .from("onboarding_responses")
-    .select("id, free_text")
+    .from("full_onboarding_responses")
+    .select("id")
     .eq("user_id", userId)
-    .limit(20);
+    .limit(1)
+    .maybeSingle();
 
-  return Boolean(data?.some((response) => !isQuickSetupResponse(response)));
+  return Boolean(data?.id);
+}
+
+/** Resolves where a "find tutors" / "book" link should go: straight to `dest`
+ * if the user is a tutor/admin or already finished the long quiz, otherwise
+ * through `/get-started` first so they only ever see it once. */
+export async function resolveTutorsGateHref(
+  supabase: SupabaseClient<Database>,
+  userId: string | null,
+  dest: string,
+) {
+  if (!userId) return `/get-started?next=${encodeURIComponent(dest)}`;
+
+  const { data } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", userId)
+    .maybeSingle();
+  if ((data?.role ?? "student") !== "student") return dest;
+
+  const completed = await hasCompletedFullOnboarding(supabase, userId);
+  return completed ? dest : `/get-started?next=${encodeURIComponent(dest)}`;
 }
 
 export async function resolvePostAuthPath(

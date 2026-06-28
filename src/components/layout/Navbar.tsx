@@ -41,6 +41,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { resolveTutorsGateHref } from "@/lib/auth/redirects";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -96,6 +97,7 @@ export function Navbar() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [findTutorsHref, setFindTutorsHref] = useState("/get-started?next=%2Ftutors");
   const [panel, setPanel] = useState<Panel | null>(null);
   const [messageTab, setMessageTab] = useState<MessageTab>("all");
   const [showConfirmBanner, setShowConfirmBanner] = useState(true);
@@ -120,13 +122,26 @@ export function Navbar() {
     };
   }, []);
 
+  useEffect(() => {
+    let active = true;
+    const supabase = createClient();
+
+    resolveTutorsGateHref(supabase, user?.id ?? null, "/tutors").then((href) => {
+      if (active) setFindTutorsHref(href);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [user]);
+
   const userName = displayName(user);
   const userAvatar = avatarUrl(user);
   const emailNeedsConfirmation = Boolean(user?.email && !user.email_confirmed_at);
   const showEmailBanner = Boolean(user && emailNeedsConfirmation && showConfirmBanner);
 
   const links = [
-    { href: "/tutors", label: t("findTutors") },
+    { href: findTutorsHref, label: t("findTutors") },
     { href: "/become-tutor", label: t("becomeTutor") },
     { href: "/how-it-works", label: t("howItWorks") },
     { href: "/how-it-works#results", label: t("outcomes") },

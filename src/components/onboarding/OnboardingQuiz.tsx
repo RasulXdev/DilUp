@@ -563,7 +563,7 @@ export function OnboardingQuiz({ nextPath }: { nextPath?: string }) {
         } = await supabase.auth.getUser();
         signedInUserId = user?.id ?? null;
 
-        await supabase.from("onboarding_responses").insert({
+        await supabase.from("full_onboarding_responses").insert({
           session_id: sessionId,
           user_id: signedInUserId,
           converted_to_signup: Boolean(signedInUserId),
