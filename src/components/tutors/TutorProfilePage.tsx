@@ -11,6 +11,8 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  Clock3,
+  GraduationCap,
   Heart,
   MessageSquare,
   PencilLine,
@@ -21,6 +23,7 @@ import {
   Star,
   Target,
   Trophy,
+  Users,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
@@ -66,16 +69,25 @@ function formatLongDate(locale: string, date: Date, withYear: boolean) {
 
 const DAY_KEYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-function getCurrentWeekDays() {
+function getWeekDays(weekOffset = 0) {
   const now = new Date();
   const day = now.getDay();
   const sunday = new Date(now);
   sunday.setDate(now.getDate() - day);
+  sunday.setDate(sunday.getDate() + weekOffset * 7);
   return DAY_KEYS.map((key, i) => {
     const d = new Date(sunday);
     d.setDate(sunday.getDate() + i);
     return { key, day: String(d.getDate()), date: d };
   });
+}
+
+function formatShortDate(locale: string, date: Date) {
+  if (locale === "az") {
+    return `${date.getDate()} ${azMonths[date.getMonth()].slice(0, 3)}`;
+  }
+
+  return new Intl.DateTimeFormat(locale, { day: "numeric", month: "short" }).format(date);
 }
 
 const timezones = [
@@ -123,31 +135,52 @@ export function TutorProfilePage({ tutor, allTutors }: { tutor: Tutor; allTutors
   const { format } = useCurrency();
   const [lessonLength, setLessonLength] = useState<25 | 50>(50);
   const [timezone, setTimezone] = useState("Asia/Baku");
+  const [weekOffset, setWeekOffset] = useState(0);
+  const [selectedSlot, setSelectedSlot] = useState<{ dayKey: string; dayLabel: string; slot: string } | null>(null);
+  const [aboutExpanded, setAboutExpanded] = useState(false);
+  const [showAllReviews, setShowAllReviews] = useState(false);
+  const [showFullSchedule, setShowFullSchedule] = useState(false);
+  const [resumeTab, setResumeTab] = useState<"education" | "certificates">("education");
+  const [openSpecialty, setOpenSpecialty] = useState<string | null>(tutor.specialties[0] ?? null);
   const activeTimezone = timezones.find((item) => item.name === timezone) ?? timezones[0];
   const recommendations = (allTutors ?? tutors).filter((item) => item.id !== tutor.id).slice(0, 4);
-  const weekDays = getCurrentWeekDays();
+  const weekDays = getWeekDays(weekOffset);
   const weekStart = weekDays[0].date;
   const weekEnd = weekDays[6].date;
   const weekRange = `${formatLongDate(locale, weekStart, false)} - ${formatLongDate(locale, weekEnd, false)}, ${weekEnd.getFullYear()}`;
+  const title = tutor.source === "db" ? tutor.title : labels(`copy.${tutor.title}`);
+  const headline = tutor.source === "db" ? tutor.headline : labels(`copy.${tutor.headline}`);
+  const bio = tutor.source === "db" ? tutor.bio : labels(`copy.${tutor.id}.bio`);
+  const about = tutor.source === "db" ? tutor.about : labels(`copy.${tutor.id}.about`);
+  const visibleAbout = aboutExpanded || about.length < 300 ? about : `${about.slice(0, 300)}...`;
+  const visibleReviews = showAllReviews ? tutor.reviews : tutor.reviews.slice(0, 2);
+  const totalSlots = DAY_KEYS.reduce((sum, day) => sum + (tutor.schedule[day]?.length ?? 0), 0);
+  const maxVisibleSlots = showFullSchedule ? Number.POSITIVE_INFINITY : 3;
 
   return (
     <>
       <Navbar />
       <main className="min-h-dvh bg-white">
-      <section className="mx-auto grid w-full max-w-[1240px] gap-10 px-5 pb-20 pt-8 sm:px-7 lg:grid-cols-[minmax(0,1fr)_360px] lg:px-10">
+      <section className="mx-auto grid w-full max-w-[1240px] gap-10 px-5 pb-28 pt-8 sm:px-7 lg:grid-cols-[minmax(0,1fr)_360px] lg:px-10">
         <div className="min-w-0">
           <div className="relative aspect-video overflow-hidden rounded-xl border border-line bg-surface shadow-card">
             <Image src={tutor.videoImage} alt={t("videoAlt", { name: tutor.name })} fill priority className="object-cover" sizes="(min-width: 1024px) 760px, 100vw" />
-            <div className="absolute inset-0 bg-ink/15" />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(9,18,40,0.02),rgba(9,18,40,0.42))]" />
             <button type="button" aria-label={t("playVideo")} className="absolute left-1/2 top-1/2 flex h-20 w-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-accent-400 text-ink shadow-accent">
               <Play className="h-9 w-9 fill-current" />
             </button>
-            <div className="absolute bottom-4 left-4 max-w-md rounded-lg bg-ink/80 px-3 py-2 text-sm font-semibold leading-5 text-white">
-              {t("caption")}
+            <div className="absolute bottom-4 left-4 right-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div className="max-w-md rounded-lg bg-ink/80 px-3 py-2 text-sm font-semibold leading-5 text-white">
+                {t("caption")}
+              </div>
+              <span className="inline-flex w-fit items-center gap-2 rounded-full bg-white px-3 py-2 text-xs font-black text-brand-800 shadow-soft">
+                <Clock3 className="h-4 w-4" />
+                {t("trialReady", { minutes: lessonLength })}
+              </span>
             </div>
           </div>
 
-          <div className="mt-8 flex gap-5">
+          <div className="mt-8 flex flex-col gap-5 sm:flex-row">
             <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-surface">
               <Image src={tutor.photo} alt={t("photoAlt", { name: tutor.name })} fill className="object-cover" sizes="96px" />
               <span
@@ -158,19 +191,32 @@ export function TutorProfilePage({ tutor, allTutors }: { tutor: Tutor; allTutors
               />
             </div>
             <div className="min-w-0">
-              <h1 className="text-5xl font-black tracking-normal text-ink">{tutor.name}</h1>
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-4xl font-black tracking-normal text-ink sm:text-5xl">{tutor.name}</h1>
+                {tutor.categories.includes("professional") ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-lg bg-brand-50 px-2.5 py-1 text-sm font-black text-brand-800">
+                    <BadgeCheck className="h-4 w-4" />
+                    {t("professionalBadge")}
+                  </span>
+                ) : null}
+              </div>
               <p className="mt-2 flex flex-wrap items-center gap-2 text-base font-black text-ink-soft">
-                {tutor.source === "db" ? tutor.title : labels(`copy.${tutor.title}`)}
+                {title}
                 <span className="text-muted">·</span>
                 {t("from", { country: labels(`countries.${tutor.countryCode}`) })}
                 <span>{tutor.flag}</span>
               </p>
+              <div className="mt-4 grid gap-2 sm:grid-cols-3">
+                <ProfileStat icon={<Star />} value={String(tutor.rating)} label={t("reviews", { count: tutor.reviewsCount })} />
+                <ProfileStat icon={<Users />} value={String(tutor.students)} label={t("students")} />
+                <ProfileStat icon={<BookOpen />} value={String(tutor.lessons)} label={t("lessons")} />
+              </div>
             </div>
           </div>
 
           <p className="mt-6 max-w-3xl text-lg leading-8">
-            <span className="block font-black text-ink">{tutor.source === "db" ? tutor.headline : labels(`copy.${tutor.headline}`)}</span>
-            <span className="font-semibold text-ink-soft">{tutor.source === "db" ? tutor.bio : labels(`copy.${tutor.id}.bio`)}</span>
+            <span className="block font-black text-ink">{headline}</span>
+            <span className="font-semibold text-ink-soft">{bio}</span>
           </p>
 
           {tutor.highlights.length > 0 ? (
@@ -202,8 +248,12 @@ export function TutorProfilePage({ tutor, allTutors }: { tutor: Tutor; allTutors
           ) : null}
 
           <Section title={t("aboutTitle")}>
-            <p className="max-w-3xl text-base font-semibold leading-8 text-ink">{tutor.source === "db" ? tutor.about : labels(`copy.${tutor.id}.about`)}</p>
-            <button type="button" className="mt-3 text-sm font-black text-brand-700 underline underline-offset-4 hover:text-brand-800">{t("showMore")}</button>
+            <p className="max-w-3xl text-base font-semibold leading-8 text-ink">{visibleAbout}</p>
+            {about.length >= 300 ? (
+              <button type="button" onClick={() => setAboutExpanded((value) => !value)} className="mt-3 text-sm font-black text-brand-700 underline underline-offset-4 hover:text-brand-800">
+                {aboutExpanded ? t("showLess") : t("showMore")}
+              </button>
+            ) : null}
           </Section>
 
           <Section title={t("speakTitle")}>
@@ -228,13 +278,23 @@ export function TutorProfilePage({ tutor, allTutors }: { tutor: Tutor; allTutors
           </Section>
 
           <Section title={t("studentsSay")}>
-            <div className="flex items-end gap-3">
-              <span className="text-6xl font-black text-ink">{tutor.rating}</span>
-              <span className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-full bg-accent-300 text-ink">
-                <Star className="h-7 w-7 fill-current" />
-              </span>
+            <div className="flex flex-col gap-5 rounded-2xl border border-line bg-surface p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <div className="flex items-end gap-3">
+                  <span className="text-6xl font-black text-ink">{tutor.rating}</span>
+                  <span className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-full bg-accent-300 text-ink">
+                    <Star className="h-7 w-7 fill-current" />
+                  </span>
+                </div>
+                <p className="mt-2 text-sm font-semibold text-muted">{t("basedReviews", { count: tutor.reviewsCount })}</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3 text-sm font-black text-ink sm:min-w-72">
+                <ReviewSignal label={t("metrics.reassurance")} value={tutor.lessonRating.reassurance} />
+                <ReviewSignal label={t("metrics.clarity")} value={tutor.lessonRating.clarity} />
+                <ReviewSignal label={t("metrics.progress")} value={tutor.lessonRating.progress} />
+                <ReviewSignal label={t("metrics.preparation")} value={tutor.lessonRating.preparation} />
+              </div>
             </div>
-            <p className="mt-2 text-sm font-semibold text-muted">{t("basedReviews", { count: tutor.reviewsCount })}</p>
             {tutor.source === "mock" || tutor.reviewSummary ? (
               <div className="mt-5 rounded-xl border border-brand-200 bg-white p-5 shadow-soft">
                 <h3 className="flex items-center gap-2.5 font-black text-ink">
@@ -248,8 +308,8 @@ export function TutorProfilePage({ tutor, allTutors }: { tutor: Tutor; allTutors
               </div>
             ) : null}
             <div className="mt-6 grid gap-6 sm:grid-cols-2">
-              {tutor.reviews.map((review, index) => (
-                <article key={`${review.author}-${review.date}`}>
+              {visibleReviews.map((review, index) => (
+                <article key={`${review.author}-${review.date}`} className="rounded-xl border border-line bg-white p-5 shadow-soft">
                   <div className="flex items-center gap-3">
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface text-lg font-black text-brand-700">
                       {review.author[0]}
@@ -268,14 +328,16 @@ export function TutorProfilePage({ tutor, allTutors }: { tutor: Tutor; allTutors
                 </article>
               ))}
             </div>
-            <Button variant="outline" size="lg" className="mt-8">
-              {t("showAllReviews", { count: tutor.reviewsCount })}
-            </Button>
+            {tutor.reviews.length > 2 ? (
+              <Button type="button" variant="outline" size="lg" className="mt-8" onClick={() => setShowAllReviews((value) => !value)}>
+                {showAllReviews ? t("showLess") : t("showAllReviews", { count: tutor.reviewsCount })}
+              </Button>
+            ) : null}
           </Section>
 
           <Section title={t("scheduleTitle")}>
             <div className="rounded-xl bg-brand-50 p-4 text-base font-semibold leading-7 text-brand-950">
-              {t("scheduleNote")}
+              {t("scheduleNote")} <span className="font-black">{t("availableSlots", { count: totalSlots })}</span>
             </div>
             <div className="mt-5 grid grid-cols-2 rounded-xl border border-line bg-surface p-1">
               {[25, 50].map((minutes) => (
@@ -294,10 +356,26 @@ export function TutorProfilePage({ tutor, allTutors }: { tutor: Tutor; allTutors
             </div>
             <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
-                <button type="button" aria-label={t("previousWeek")} className="flex h-11 w-11 items-center justify-center rounded-xl bg-surface">
+                <button
+                  type="button"
+                  aria-label={t("previousWeek")}
+                  onClick={() => {
+                    setWeekOffset((value) => value - 1);
+                    setSelectedSlot(null);
+                  }}
+                  className="flex h-11 w-11 items-center justify-center rounded-xl bg-surface hover:bg-brand-50 hover:text-brand-700"
+                >
                   <ChevronLeft className="h-5 w-5" />
                 </button>
-                <button type="button" aria-label={t("nextWeek")} className="flex h-11 w-11 items-center justify-center rounded-xl bg-surface">
+                <button
+                  type="button"
+                  aria-label={t("nextWeek")}
+                  onClick={() => {
+                    setWeekOffset((value) => value + 1);
+                    setSelectedSlot(null);
+                  }}
+                  className="flex h-11 w-11 items-center justify-center rounded-xl bg-surface hover:bg-brand-50 hover:text-brand-700"
+                >
                   <ChevronRight className="h-5 w-5" />
                 </button>
                 <p className="font-black text-ink">{weekRange}</p>
@@ -325,62 +403,154 @@ export function TutorProfilePage({ tutor, allTutors }: { tutor: Tutor; allTutors
                 </PopoverContent>
               </Popover>
             </div>
-            <div className="mt-5 overflow-x-auto border-t-4 border-brand-300 pt-5">
-              <div className="grid min-w-[700px] grid-cols-7 gap-3">
-                {weekDays.map((day) => (
-                  <div key={day.key} className="min-h-80 rounded-xl bg-white text-center">
-                    <div className="border-b border-line pb-3">
-                      <p className="text-sm font-black text-ink-soft">{dayLabels(`days.${day.key.toLowerCase()}`)}</p>
-                      <p className="mt-1 text-base font-black text-ink">{day.day}</p>
+            <div className="mt-5 border-t-4 border-brand-300 pt-5">
+              <div className="grid grid-cols-7 gap-1 sm:gap-2 lg:gap-3">
+                {weekDays.map((day) => {
+                  const slots = tutor.schedule[day.key] ?? [];
+                  const visibleSlots = slots.slice(0, maxVisibleSlots);
+                  const hiddenSlots = Math.max(slots.length - visibleSlots.length, 0);
+                  return (
+                  <div key={day.key} className="min-w-0 rounded-xl bg-white text-center">
+                    <div className="border-b border-line pb-2 sm:pb-3">
+                      <p className="truncate text-[10px] font-black text-ink-soft sm:text-xs lg:text-sm">{dayLabels(`days.${day.key.toLowerCase()}`)}</p>
+                      <p className="mt-1 truncate text-[11px] font-black text-ink sm:text-sm lg:text-base">{formatShortDate(locale, day.date)}</p>
                     </div>
-                    <div className="mt-5 flex flex-col gap-3">
-                      {(tutor.schedule[day.key] ?? []).map((slot) => (
+                    <div className="mt-3 flex flex-col gap-1.5 sm:mt-4 sm:gap-2 lg:mt-5 lg:gap-3">
+                      {visibleSlots.length > 0 ? visibleSlots.map((slot) => {
+                        const active = selectedSlot?.dayKey === day.key && selectedSlot.slot === slot;
+                        return (
                         <button
                           key={`${day.key}-${slot}`}
                           type="button"
-                          className="mx-auto flex h-10 min-w-20 items-center justify-center rounded-lg border border-line bg-surface px-3 text-sm font-black text-ink transition hover:border-brand-500 hover:bg-brand-50 hover:text-brand-800"
+                          onClick={() => setSelectedSlot({ dayKey: day.key, dayLabel: dayLabels(`days.${day.key.toLowerCase()}`), slot })}
+                          className={cn(
+                            "flex h-9 w-full min-w-0 items-center justify-center rounded-lg border px-0.5 text-[10px] font-black transition sm:h-10 sm:px-1 sm:text-xs lg:px-3 lg:text-sm",
+                            active
+                              ? "border-brand-700 bg-brand-700 text-white shadow-soft"
+                              : "border-line bg-surface text-ink hover:border-brand-500 hover:bg-brand-50 hover:text-brand-800",
+                          )}
                         >
                           {slot}
                         </button>
-                      ))}
+                        );
+                      }) : (
+                        <span className="rounded-lg bg-surface px-1 py-2 text-[9px] font-bold text-muted sm:text-[11px] lg:text-xs">{t("noSlots")}</span>
+                      )}
+                      {hiddenSlots > 0 ? (
+                        <button
+                          type="button"
+                          onClick={() => setShowFullSchedule(true)}
+                          className="rounded-lg bg-brand-50 px-1 py-2 text-[9px] font-black text-brand-800 hover:bg-brand-100 sm:text-[11px] lg:text-xs"
+                        >
+                          {t("moreSlots", { count: hiddenSlots })}
+                        </button>
+                      ) : null}
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
-            <Button variant="outline" size="lg" className="mx-auto mt-6 flex">
-              {t("viewFullSchedule")}
+            {selectedSlot ? (
+              <div className="mt-5 flex flex-col gap-3 rounded-xl border border-brand-200 bg-brand-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <p className="font-bold text-brand-950">
+                  {t("selectedSlot", {
+                    day: selectedSlot.dayLabel,
+                    time: selectedSlot.slot,
+                    timezone: activeTimezone.name,
+                  })}
+                </p>
+                <Button type="button" variant="primary" onClick={() => setSelectedSlot(null)}>
+                  {t("changeSlot")}
+                </Button>
+              </div>
+            ) : null}
+            <Button type="button" variant="outline" size="lg" className="mx-auto mt-6 flex" onClick={() => setShowFullSchedule((value) => !value)}>
+              {showFullSchedule ? t("showLess") : t("viewFullSchedule")}
             </Button>
           </Section>
 
           <Section title={t("resumeTitle")}>
-            {tutor.certificates.map((certificate) => (
-              <div key={certificate.title} className="grid gap-4 border-t-4 border-brand-300 pt-6 sm:grid-cols-[130px_1fr]">
-                <p className="font-semibold text-muted">{certificate.years}</p>
-                <div>
-                  <p className="font-black text-ink">{certificate.title}</p>
-                  {tutor.source === "db" ? null : (
-                    <p className="mt-2 font-semibold text-ink-soft">{labels(`copy.certificates.${certificate.title}`)}</p>
+            <div className="mb-6 inline-grid rounded-xl border border-line bg-surface p-1 sm:grid-cols-2">
+              {(["education", "certificates"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setResumeTab(tab)}
+                  className={cn(
+                    "h-11 rounded-lg px-5 text-sm font-black transition",
+                    resumeTab === tab ? "bg-white text-ink shadow-soft" : "text-ink-soft hover:text-brand-700",
                   )}
-                  {certificate.verified ? (
-                    <p className="mt-3 inline-flex items-center gap-2 text-sm font-black text-emerald-700">
-                      <BadgeCheck className="h-4 w-4" />
-                      {t("certificateVerified")}
-                    </p>
-                  ) : null}
+                >
+                  {t(`resumeTabs.${tab}`)}
+                </button>
+              ))}
+            </div>
+            {resumeTab === "education" ? (
+              <div className="grid gap-4 border-t-4 border-brand-300 pt-6 sm:grid-cols-[130px_1fr]">
+                <p className="font-semibold text-muted">{t("educationYears")}</p>
+                <div>
+                  <p className="flex items-center gap-2 font-black text-ink">
+                    <GraduationCap className="h-5 w-5 text-brand-700" />
+                    {t("educationTitle")}
+                  </p>
+                  <p className="mt-2 font-semibold text-ink-soft">{t("educationText", { subject: labels(`subjects.${tutor.subject}`) })}</p>
                 </div>
               </div>
-            ))}
+            ) : (
+              <div className="space-y-6">
+                {tutor.certificates.map((certificate) => (
+                  <div key={certificate.title} className="grid gap-4 border-t-4 border-brand-300 pt-6 sm:grid-cols-[130px_1fr]">
+                    <p className="font-semibold text-muted">{certificate.years}</p>
+                    <div>
+                      <p className="font-black text-ink">{certificate.title}</p>
+                      {tutor.source === "db" ? null : (
+                        <p className="mt-2 font-semibold text-ink-soft">{labels(`copy.certificates.${certificate.title}`)}</p>
+                      )}
+                      {certificate.verified ? (
+                        <p className="mt-3 inline-flex items-center gap-2 text-sm font-black text-emerald-700">
+                          <BadgeCheck className="h-4 w-4" />
+                          {t("certificateVerified")}
+                        </p>
+                      ) : null}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </Section>
 
           <Section title={t("specialtiesTitle")}>
             <div className="divide-y divide-line border-y border-line">
-              {tutor.specialties.map((specialty) => (
-                <button key={specialty} type="button" className="flex min-h-16 w-full items-center justify-between text-left font-black text-ink">
-                  {tutor.source === "db" ? specialty : labels(`specialties.${specialty}`)}
-                  <ChevronDown className="h-5 w-5" />
-                </button>
-              ))}
+              {tutor.specialties.map((specialty) => {
+                const specialtyLabel = tutor.source === "db" ? specialty : labels(`specialties.${specialty}`);
+                const open = openSpecialty === specialty;
+
+                return (
+                  <div key={specialty}>
+                    <button
+                      type="button"
+                      aria-expanded={open}
+                      onClick={() => setOpenSpecialty(open ? null : specialty)}
+                      className="flex min-h-16 w-full items-center justify-between gap-4 text-left font-black text-ink transition hover:text-brand-700"
+                    >
+                      <span>{specialtyLabel}</span>
+                      <ChevronDown className={cn("h-5 w-5 shrink-0 transition-transform", open && "rotate-180 text-brand-700")} />
+                    </button>
+                    {open ? (
+                      <div className="pb-5 pr-8">
+                        <p className="max-w-2xl text-base font-semibold leading-7 text-ink-soft">
+                          {t("specialtyDetail", {
+                            name: tutor.name,
+                            specialty: specialtyLabel,
+                            subject: labels(`subjects.${tutor.subject}`),
+                          })}
+                        </p>
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              })}
             </div>
           </Section>
 
@@ -409,16 +579,25 @@ export function TutorProfilePage({ tutor, allTutors }: { tutor: Tutor; allTutors
         </div>
 
         <aside className="lg:pt-20">
-          <BookingCard tutor={tutor} />
+          <BookingCard tutor={tutor} lessonLength={lessonLength} />
         </aside>
       </section>
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 p-3 shadow-[0_-8px_24px_rgba(13,21,48,0.08)] backdrop-blur lg:hidden">
+        <BookingBar tutor={tutor} lessonLength={lessonLength} />
+      </div>
       </main>
       <Footer />
     </>
   );
 }
 
-function BookingCard({ tutor }: { tutor: Tutor }) {
+function BookingCard({
+  lessonLength,
+  tutor,
+}: {
+  lessonLength: 25 | 50;
+  tutor: Tutor;
+}) {
   const t = useTranslations("tutorProfile");
   const { format } = useCurrency();
   const { isSaved, toggleSaved } = useSavedTutors();
@@ -442,11 +621,11 @@ function BookingCard({ tutor }: { tutor: Tutor }) {
   }, [dest]);
 
   return (
-    <div className="sticky top-28 rounded-2xl border border-line bg-white p-5 shadow-card">
+    <div className="sticky top-28 hidden rounded-2xl border border-line bg-white p-5 shadow-card lg:block">
       <div className="flex items-baseline gap-2">
         <span className="text-4xl font-black text-ink">{format(tutor.price)}</span>
         {tutor.originalPrice ? <span className="text-lg font-bold text-red-700 line-through">{format(tutor.originalPrice)}</span> : null}
-        <span className="font-semibold text-muted">{t("lessonDuration", { minutes: tutor.lessonDuration })}</span>
+        <span className="font-semibold text-muted">{t("lessonDuration", { minutes: lessonLength })}</span>
       </div>
       <div className="mt-6 grid grid-cols-2 gap-4">
         <div>
@@ -479,6 +658,69 @@ function BookingCard({ tutor }: { tutor: Tutor }) {
           <p className="mt-1 text-sm font-semibold">{t("freeTrials")}</p>
         </div>
       </div>
+    </div>
+  );
+}
+
+function BookingBar({
+  lessonLength,
+  tutor,
+}: {
+  lessonLength: 25 | 50;
+  tutor: Tutor;
+}) {
+  const t = useTranslations("tutorProfile");
+  const { format } = useCurrency();
+  const dest = `/checkout/${tutor.id}`;
+  const [bookHref, setBookHref] = useState(`/get-started?next=${encodeURIComponent(dest)}`);
+
+  useEffect(() => {
+    let active = true;
+    const supabase = createClient();
+
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      resolveTutorsGateHref(supabase, user?.id ?? null, dest).then((href) => {
+        if (active) setBookHref(href);
+      });
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [dest]);
+
+  return (
+    <div className="mx-auto flex max-w-[1240px] items-center gap-3">
+      <div className="min-w-0 flex-1">
+        <p className="text-lg font-black text-ink">
+          {format(tutor.price)} <span className="text-xs font-bold text-muted">{t("lessonDuration", { minutes: lessonLength })}</span>
+        </p>
+      </div>
+      <Link href={bookHref} className={cn(buttonVariants({ variant: "accent", size: "lg" }), "shrink-0 px-4")}>
+        <CalendarDays className="h-5 w-5" />
+        {t("bookTrialShort")}
+      </Link>
+    </div>
+  );
+}
+
+function ProfileStat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-line bg-surface px-3 py-2">
+      <p className="flex items-center gap-1.5 text-lg font-black text-ink">
+        <span className="text-brand-700 [&_svg]:h-4 [&_svg]:w-4">{icon}</span>
+        {value}
+      </p>
+      <p className="mt-0.5 truncate text-xs font-bold text-muted">{label}</p>
+    </div>
+  );
+}
+
+function ReviewSignal({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-xl bg-white px-3 py-2 shadow-soft">
+      <p className="text-lg font-black text-ink">{value}</p>
+      <p className="text-xs font-bold text-muted">{label}</p>
     </div>
   );
 }

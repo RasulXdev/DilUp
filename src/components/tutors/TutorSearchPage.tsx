@@ -29,7 +29,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { Logo } from "@/components/shared/Logo";
@@ -79,6 +79,15 @@ const timeGroupIcons: Record<(typeof timeRanges)[number]["group"], LucideIcon> =
   morning: Sunrise,
 };
 const days = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+const scheduleDayByFilter: Record<string, string> = {
+  mon: "Mon",
+  tue: "Tue",
+  wed: "Wed",
+  thu: "Thu",
+  fri: "Fri",
+  sat: "Sat",
+  sun: "Sun",
+};
 
 const subjectParamToCode: Record<string, SubjectCode> = {
   en: "en",
@@ -127,6 +136,30 @@ function readCompletedSubjects() {
 function initialSubjectCode(subject?: string): SubjectCode | null {
   if (!subject) return null;
   return subjectParamToCode[subject.toLowerCase()] ?? null;
+}
+
+function tutorMatchesAvailability(tutor: Tutor, selectedDays: string[], selectedTimes: string[]) {
+  if (selectedDays.length === 0 && selectedTimes.length === 0) return true;
+
+  const daysToCheck = selectedDays.length > 0
+    ? selectedDays.map((day) => scheduleDayByFilter[day]).filter(Boolean)
+    : Object.keys(tutor.schedule);
+
+  return daysToCheck.some((day) => {
+    const slots = tutor.schedule[day] ?? [];
+    if (selectedTimes.length === 0) return slots.length > 0;
+
+    return slots.some((slot) => {
+      const hour = Number(slot.split(":")[0]);
+      if (Number.isNaN(hour)) return false;
+
+      return selectedTimes.some((range) => {
+        const [start, end] = range.split("-").map(Number);
+        if (Number.isNaN(start) || Number.isNaN(end)) return false;
+        return start < end ? hour >= start && hour < end : hour >= start || hour < end;
+      });
+    });
+  });
 }
 
 export function TutorSearchPage({
@@ -180,6 +213,7 @@ export function TutorSearchPage({
         tutor.languages.some((language) => language.code === subject && language.level === "native");
       const professionalMatch = !professionalOnly || tutor.categories.includes("professional");
       const superMatch = !superOnly || tutor.categories.includes("super");
+      const availabilityMatch = tutorMatchesAvailability(tutor, selectedDays, selectedTimes);
       const queryMatch =
         !loweredQuery ||
         [
@@ -202,6 +236,7 @@ export function TutorSearchPage({
         nativeMatch &&
         professionalMatch &&
         superMatch &&
+        availabilityMatch &&
         queryMatch
       );
     });
@@ -222,6 +257,8 @@ export function TutorSearchPage({
     query,
     selectedLanguages,
     selectedSpecialties,
+    selectedDays,
+    selectedTimes,
     sort,
     subject,
     superOnly,
@@ -938,18 +975,36 @@ function TutorCard({
 }) {
   const t = useTranslations("tutors");
   const { format } = useCurrency();
+  const router = useRouter();
+  const profileHref = `/tutors/${tutor.id}`;
+
+  function openProfileFromCard(event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) {
+    const target = event.target as HTMLElement;
+    if (target.closest("a, button, input, textarea, select, [role='button'], [data-no-card-link='true']")) return;
+    router.push(profileHref);
+  }
+
   return (
     <TooltipProvider>
       <article
+        role="link"
+        tabIndex={0}
+        aria-label={t("card.profile", { name: tutor.name })}
         onMouseEnter={onActivate}
         onFocus={onActivate}
+        onClick={openProfileFromCard}
+        onKeyDown={(event) => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          openProfileFromCard(event);
+        }}
         className={cn(
-          "grid min-w-0 gap-5 rounded-2xl border bg-white p-5 transition-all duration-200 sm:grid-cols-[180px_minmax(0,1fr)_260px]",
+          "grid min-w-0 cursor-pointer gap-5 rounded-2xl border bg-white p-5 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 sm:grid-cols-[180px_minmax(0,1fr)_260px]",
           active ? "border-brand-400 shadow-card" : "border-line hover:border-brand-200 hover:shadow-soft",
         )}
       >
         {/* — Photo — */}
-        <Link href={`/tutors/${tutor.id}`} className="group relative aspect-square overflow-hidden rounded-xl bg-surface sm:aspect-[4/5]">
+        <Link href={profileHref} className="group relative aspect-square overflow-hidden rounded-xl bg-surface sm:aspect-[4/5]">
           <Image src={tutor.photo} alt={t("card.photoAlt", { name: tutor.name })} fill className="object-cover transition-transform duration-300 group-hover:scale-[1.03]" sizes="180px" />
           <Tooltip>
             <TooltipTrigger asChild>
@@ -971,7 +1026,7 @@ function TutorCard({
         {/* — Details — */}
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <Link href={`/tutors/${tutor.id}`} className="text-[1.4rem] font-black leading-tight text-ink hover:text-brand-700">
+            <Link href={profileHref} className="text-[1.4rem] font-black leading-tight text-ink hover:text-brand-700">
               {tutor.name}
             </Link>
             <Tooltip>
@@ -1029,7 +1084,7 @@ function TutorCard({
             {" — "}
             <span>{tutor.source === "db" ? tutor.bio : t(`copy.${tutor.id}.bio`)}</span>
           </p>
-          <Link href={`/tutors/${tutor.id}`} className="mt-1.5 inline-block text-sm font-black text-brand-700 underline underline-offset-4 hover:text-brand-800">
+          <Link href={profileHref} className="mt-1.5 inline-block text-sm font-black text-brand-700 underline underline-offset-4 hover:text-brand-800">
             {t("card.learnMore")}
           </Link>
 
@@ -1078,7 +1133,7 @@ function TutorCard({
             <CardStat value={`${tutor.lessons}`} label={t("card.lessons")} />
           </div>
 
-          <Link href={`/tutors/${tutor.id}`} className={cn(buttonVariants({ variant: "accent", size: "lg" }), "w-full")}>
+          <Link href={profileHref} className={cn(buttonVariants({ variant: "accent", size: "lg" }), "w-full")}>
             <CalendarDays className="h-5 w-5" />
             {t("card.book")}
           </Link>
