@@ -74,12 +74,13 @@ export default async function GetStartedPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams?: Promise<{ next?: string; subject?: string }>;
+  searchParams?: Promise<{ force?: string; next?: string; subject?: string }>;
 }) {
   const { locale } = await params;
-  const { next, subject } = (await searchParams) ?? {};
+  const { force, next, subject } = (await searchParams) ?? {};
   setRequestLocale(locale);
   const selectedSubject = normalizeSubject(subject);
+  const forceStart = force === "1" || force === "true";
   const safeNextPath = isSafeRedirectPath(next ?? null) ? next : undefined;
   const completedDestination =
     safeNextPath ?? (selectedSubject ? `/tutors?subject=${selectedSubject}` : "/tutors");
@@ -89,7 +90,7 @@ export default async function GetStartedPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (user) {
+  if (user && !forceStart) {
     const completed = selectedSubject
       ? await hasCompletedFullOnboardingForSubject(supabase, user.id, selectedSubject)
       : await hasCompletedFullOnboarding(supabase, user.id);
@@ -122,7 +123,11 @@ export default async function GetStartedPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <OnboardingGate nextPath={completedDestination} subject={selectedSubject}>
+      <OnboardingGate
+        forceStart={forceStart}
+        nextPath={completedDestination}
+        subject={selectedSubject}
+      >
         <OnboardingQuiz initialSubject={selectedSubject} nextPath={safeNextPath} />
       </OnboardingGate>
     </>

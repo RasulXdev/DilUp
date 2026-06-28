@@ -330,7 +330,7 @@ export function OnboardingQuiz({
         value,
         label: t(`subjects.${value}`),
         flag: subjectFlags[value],
-        disabled: value !== "english",
+        disabled: false,
       })),
       goals: [
         { value: "career", label: t("goals.career"), icon: BriefcaseBusiness },

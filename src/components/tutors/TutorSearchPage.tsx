@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import {
   ArrowRight,
@@ -18,6 +18,7 @@ import {
   ShieldCheck,
   SlidersHorizontal,
   BadgePercent,
+  CheckCircle2,
   Star,
   Sun,
   Sunrise,
@@ -31,6 +32,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { Logo } from "@/components/shared/Logo";
 import { useCurrency } from "@/components/shared/CurrencyProvider";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -107,21 +109,23 @@ const subjectCodeToOnboarding: Record<SubjectCode, string> = {
   it: "italian",
 };
 
-function initialSubjectCode(subject?: string): SubjectCode | null {
-  if (!subject) return null;
-  return subjectParamToCode[subject.toLowerCase()] ?? null;
-}
-
-function hasCompletedSubject(code: SubjectCode) {
-  if (typeof window === "undefined") return false;
+function readCompletedSubjects() {
+  if (typeof window === "undefined") return [];
 
   try {
     const raw = window.localStorage.getItem("dilup_completed_onboarding_subjects");
     const completed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(completed) && completed.includes(subjectCodeToOnboarding[code]);
+    return Array.isArray(completed)
+      ? completed.filter((item): item is string => typeof item === "string")
+      : [];
   } catch {
-    return false;
+    return [];
   }
+}
+
+function initialSubjectCode(subject?: string): SubjectCode | null {
+  if (!subject) return null;
+  return subjectParamToCode[subject.toLowerCase()] ?? null;
 }
 
 export function TutorSearchPage({
@@ -151,22 +155,28 @@ export function TutorSearchPage({
   const [superOnly, setSuperOnly] = useState(false);
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortKey>("top");
+  const [completedSubjects] = useState<string[]>(readCompletedSubjects);
+  const [subjectPickedFromFilter, setSubjectPickedFromFilter] = useState(false);
+  const [learnPickerOpen, setLearnPickerOpen] = useState(false);
+  const [heroLearnPickerOpen, setHeroLearnPickerOpen] = useState(false);
+  const matchingHeaderRef = useRef<HTMLDivElement | null>(null);
 
   const filteredTutors = useMemo(() => {
-    if (!subject) return [];
-
     const loweredQuery = query.trim().toLowerCase();
     const result = tutors.filter((tutor) => {
       const inPrice = tutor.price >= price[0] && tutor.price <= price[1];
       const inCountry = !country || tutor.countryCode === country;
-      const inSubject = tutor.subject === subject;
+      const inSubject = !subject || tutor.subject === subject;
       const inSpecialty =
         selectedSpecialties.length === 0 ||
         selectedSpecialties.some((item) => tutor.specialties.includes(item));
       const inLanguage =
         selectedLanguages.length === 0 ||
         selectedLanguages.some((item) => tutor.alsoSpeaks.includes(item));
-      const nativeMatch = !nativeOnly || tutor.languages.some((language) => language.code === subject && language.level === "native");
+      const nativeMatch =
+        !nativeOnly ||
+        !subject ||
+        tutor.languages.some((language) => language.code === subject && language.level === "native");
       const professionalMatch = !professionalOnly || tutor.categories.includes("professional");
       const superMatch = !superOnly || tutor.categories.includes("super");
       const queryMatch =
@@ -220,16 +230,41 @@ export function TutorSearchPage({
 
   const activeTutor = filteredTutors.find((tutor) => tutor.id === activeTutorId) ?? filteredTutors[0] ?? tutors[0];
   const draftSubjectLabel = draftSubject ? t(`subjects.${draftSubject}`) : t("filters.chooseLanguage");
-  const quizHref = draftSubject ? `/get-started?subject=${subjectCodeToOnboarding[draftSubject]}` : "/get-started";
+  const quizHref = draftSubject
+    ? `/get-started?subject=${subjectCodeToOnboarding[draftSubject]}&force=1`
+    : "/get-started?force=1";
+  const subjectTutorCount = subject
+    ? tutors.filter((tutor) => tutor.subject === subject).length
+    : tutors.length;
+  const selectedSubjectCompleted = subject
+    ? completedSubjects.includes(subjectCodeToOnboarding[subject])
+    : false;
+  const showMatchingHeader = subjectPickedFromFilter && Boolean(subject) && !selectedSubjectCompleted;
+
+  useLayoutEffect(() => {
+    if (!showMatchingHeader) return;
+
+    const scrollToHeaderStart = () => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    };
+
+    scrollToHeaderStart();
+    const frame = window.requestAnimationFrame(scrollToHeaderStart);
+    const timeout = window.setTimeout(scrollToHeaderStart, 80);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(timeout);
+    };
+  }, [showMatchingHeader, subject]);
 
   function chooseSubject(nextSubject: SubjectCode) {
     setDraftSubject(nextSubject);
-    if (hasCompletedSubject(nextSubject)) {
-      setSubject(nextSubject);
-      setActiveTutorId(tutors.find((tutor) => tutor.subject === nextSubject)?.id ?? tutors[0]?.id ?? "");
-      return;
-    }
-    setSubject(null);
+    setSubject(nextSubject);
+    setSubjectPickedFromFilter(true);
+    setLearnPickerOpen(false);
+    setHeroLearnPickerOpen(false);
+    setActiveTutorId(tutors.find((tutor) => tutor.subject === nextSubject)?.id ?? tutors[0]?.id ?? "");
   }
 
   function toggleValue<T extends string>(value: T, values: T[], setValues: (next: T[]) => void) {
@@ -240,30 +275,29 @@ export function TutorSearchPage({
     <>
       <Navbar />
       <main className="min-h-dvh bg-white">
-      <section className="mx-auto w-full max-w-[1500px] px-5 pb-16 pt-8 sm:px-7 lg:px-10">
-        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="text-sm font-bold text-brand-700">{t("eyebrow")}</p>
-            <h1 className="mt-2 max-w-4xl text-3xl font-black tracking-normal text-ink sm:text-4xl lg:text-5xl">
-              {subject ? t("title", { subject: t(`subjects.${subject}`) }) : t("chooseTitle")}
-            </h1>
-            {!subject ? (
-              <p className="mt-3 max-w-2xl text-base font-semibold leading-7 text-ink-soft">
-                {t("chooseSubtitle")}
-              </p>
-            ) : null}
-          </div>
-          <div className="flex items-center gap-3">
-            {isFetching ? (
-              <span className="hidden rounded-full bg-surface px-4 py-2 text-sm font-bold text-ink-soft md:inline-flex">
-                {t("refreshing")}
-              </span>
-            ) : null}
-            <div className="hidden rounded-full bg-brand-50 px-4 py-2 text-sm font-bold text-brand-800 md:block">
-              {t("resultCount", { count: filteredTutors.length })}
+      <section className="mx-auto w-full max-w-[1500px] px-5 pb-16 pt-8 [overflow-anchor:none] sm:px-7 lg:px-10">
+        {subject && !showMatchingHeader ? (
+          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-sm font-bold text-brand-700">{t("eyebrow")}</p>
+              <h1 className="mt-2 max-w-4xl text-3xl font-black tracking-normal text-ink sm:text-4xl lg:text-5xl">
+                {t("title", { subject: t(`subjects.${subject}`) })}
+              </h1>
+            </div>
+            <div className="flex items-center gap-3">
+              {isFetching ? (
+                <span className="hidden rounded-full bg-surface px-4 py-2 text-sm font-bold text-ink-soft md:inline-flex">
+                  {t("refreshing")}
+                </span>
+              ) : null}
+              {subject ? (
+                <div className="hidden rounded-full bg-brand-50 px-4 py-2 text-sm font-bold text-brand-800 md:block">
+                  {t("resultCount", { count: filteredTutors.length })}
+                </div>
+              ) : null}
             </div>
           </div>
-        </div>
+        ) : null}
 
         {isError ? (
           <div className="mt-6 flex flex-col gap-3 rounded-xl border border-red-200 bg-red-50 p-4 sm:flex-row sm:items-center sm:justify-between">
@@ -277,17 +311,43 @@ export function TutorSearchPage({
           </div>
         ) : null}
 
-        <div className="relative z-30 mt-8 bg-white py-3">
+        {showMatchingHeader && subject ? (
+          <div ref={matchingHeaderRef}>
+            <TutorMatchingHeader
+              draftSubject={subject}
+              draftSubjectLabel={t(`subjects.${subject}`)}
+              languages={languages}
+              onFindTutorClick={() => setSubjectPickedFromFilter(false)}
+              open={heroLearnPickerOpen}
+              onOpenChange={setHeroLearnPickerOpen}
+              onChooseSubject={chooseSubject}
+              quizHref={quizHref}
+              resultCount={subjectTutorCount}
+            />
+          </div>
+        ) : null}
+
+        <div
+          className={cn(
+            "relative z-30 bg-white py-3",
+            showMatchingHeader ? "mt-16 sm:mt-20 lg:mt-[72px]" : subject ? "mt-8" : "mt-0",
+          )}
+        >
           <div className="grid gap-3 lg:grid-cols-4">
-            <Picker label={t("filters.learn")} value={draftSubjectLabel} className="lg:col-span-1">
+            <Picker
+              label={t("filters.learn")}
+              value={draftSubjectLabel}
+              className="lg:col-span-1"
+              open={learnPickerOpen}
+              onOpenChange={setLearnPickerOpen}
+            >
               <CommandList
-                items={languages.map((value) => ({ value, label: t(`subjects.${value}`), available: value === "en" }))}
+                items={languages.map((value) => ({ value, label: t(`subjects.${value}`) }))}
                 activeItems={draftSubject ? [draftSubject] : []}
                 onSelect={(item) => chooseSubject(item as SubjectCode)}
               />
             </Picker>
 
-            {subject ? (
             <Picker label={t("filters.price")} value={`${format(price[0])} - ${format(price[1])}`}>
               <div className="px-2 py-4">
                 <div className="text-center text-2xl font-black text-ink">{format(price[0])} - {format(price[1])}</div>
@@ -301,9 +361,7 @@ export function TutorSearchPage({
                 />
               </div>
             </Picker>
-            ) : null}
 
-            {subject ? (
             <Picker label={t("filters.country")} value={country ? t(`countries.${country}`) : t("filters.anyCountry")}>
               <CommandList
                 items={countries.map((value) => ({ value, label: t(`countries.${value}`) }))}
@@ -312,9 +370,7 @@ export function TutorSearchPage({
                 onSelect={(item) => setCountry(country === item ? null : item)}
               />
             </Picker>
-            ) : null}
 
-            {subject ? (
             <Picker
               label={t("filters.available")}
               value={selectedTimes.length || selectedDays.length ? t("filters.timesSelected", { count: selectedTimes.length + selectedDays.length }) : t("filters.anyTime")}
@@ -384,10 +440,8 @@ export function TutorSearchPage({
                 </button>
               ) : null}
             </Picker>
-            ) : null}
           </div>
 
-          {subject ? (
           <div className="mt-3 flex flex-wrap gap-3">
             <Picker label={t("filters.specialties")} value={selectedSpecialties.length ? `${selectedSpecialties.length}` : ""} compact>
               <CommandList
@@ -433,37 +487,9 @@ export function TutorSearchPage({
               ) : null}
             </label>
           </div>
-          ) : null}
         </div>
 
         <div className="mt-4">
-          {!subject ? (
-            <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_410px]">
-              <div className="rounded-2xl border border-line bg-surface p-8">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
-                  <Search className="h-6 w-6" />
-                </div>
-                <h2 className="mt-5 text-2xl font-black text-ink">{t("chooseCardTitle")}</h2>
-                <p className="mt-2 max-w-2xl text-base font-semibold leading-7 text-ink-soft">
-                  {t("chooseCardText")}
-                </p>
-                <Link
-                  href={quizHref}
-                  aria-disabled={!draftSubject}
-                  className={cn(
-                    buttonVariants({ variant: "accent", size: "lg" }),
-                    "mt-6",
-                    !draftSubject && "pointer-events-none opacity-50",
-                  )}
-                >
-                  {t("startMatching")}
-                  <ArrowRight className="h-5 w-5" />
-                </Link>
-              </div>
-              <div className="hidden lg:block" />
-            </div>
-          ) : null}
-          {subject ? (
           <>
           <div className="mb-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_410px]">
             <div className="flex items-center gap-4 rounded-xl border border-line bg-surface px-4 py-4">
@@ -503,7 +529,6 @@ export function TutorSearchPage({
             ) : null}
           </div>
           </>
-          ) : null}
         </div>
       </section>
       </main>
@@ -512,9 +537,157 @@ export function TutorSearchPage({
   );
 }
 
-function Picker({ children, className, compact = false, label, value }: { children: React.ReactNode; className?: string; compact?: boolean; label: string; value: string }) {
+function TutorMatchingHeader({
+  draftSubject,
+  draftSubjectLabel,
+  languages,
+  onFindTutorClick,
+  onOpenChange,
+  onChooseSubject,
+  open,
+  quizHref,
+  resultCount,
+}: {
+  draftSubject: SubjectCode | null;
+  draftSubjectLabel: string;
+  languages: SubjectCode[];
+  onFindTutorClick: () => void;
+  onOpenChange: (open: boolean) => void;
+  onChooseSubject: (subject: SubjectCode) => void;
+  open: boolean;
+  quizHref: string;
+  resultCount: number;
+}) {
+  const t = useTranslations("tutors");
+
   return (
-    <Popover>
+    <section className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen border-b border-[#e8e8ee] bg-white">
+      <div className="mx-auto grid min-h-[calc(100svh-80px)] max-w-[1459px] items-center gap-10 px-5 py-14 sm:px-7 sm:py-16 lg:min-h-[clamp(760px,calc(100svh-80px),1001px)] lg:grid-cols-[minmax(420px,580px)_minmax(420px,1fr)] lg:gap-16 lg:px-10 lg:py-20 xl:grid-cols-[580px_minmax(440px,1fr)]">
+        <div className="relative hidden h-[clamp(420px,40vw,580px)] w-[clamp(420px,40vw,580px)] max-w-full overflow-hidden rounded-[1.5rem] bg-brand-700 xl:h-[580px] xl:w-[580px] lg:block">
+          <Image
+            src="/images/dilup-hero-tutor.png"
+            alt=""
+            fill
+            className="object-cover object-center opacity-95"
+            sizes="720px"
+            priority
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,34,84,0.08),rgba(5,34,84,0.52))]" />
+          <div className="absolute bottom-8 left-8 w-[min(78%,430px)] rounded-2xl border border-white/60 bg-white p-5 shadow-card">
+            <div className="flex items-center gap-3">
+              <div className="relative h-16 w-16 overflow-hidden rounded-xl bg-brand-50">
+                <Image
+                  src="/images/onboarding-tutor-avatar.png"
+                  alt=""
+                  fill
+                  className="object-cover"
+                  sizes="64px"
+                />
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-2xl font-black text-ink">{t("guided.tutorName")}</p>
+                <p className="text-base font-bold text-ink-soft">{t("guided.tutorMeta")}</p>
+              </div>
+            </div>
+            <div className="mt-4 flex items-center gap-2 text-base font-bold text-brand-800">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+              {t("guided.tutorSignal")}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center">
+          <div className="w-full max-w-[620px]">
+            <Logo
+              href="/tutors"
+              className="text-3xl font-black text-ink [&>span:first-child]:h-10 [&>span:first-child]:w-10 [&>span:first-child]:rounded-xl"
+            />
+            <h2 className="mt-10 max-w-[620px] text-[2.45rem] font-black leading-[1.08] text-ink sm:text-[3rem] lg:text-[3.25rem]">
+              {draftSubject
+                ? t("guided.titleWithSubject", { subject: draftSubjectLabel })
+                : t("guided.title")}
+            </h2>
+            <p className="mt-5 max-w-[560px] text-lg font-medium leading-7 text-ink-soft">
+              {t("guided.text")}
+            </p>
+
+            <div className="mt-9 max-w-[560px] space-y-3">
+              <p className="text-base font-black leading-snug text-ink">{t("guided.quickLabel")}</p>
+              <Popover open={open} onOpenChange={onOpenChange}>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className={cn(
+                      "group flex h-14 w-full items-center justify-between rounded-[10px] border-2 border-ink bg-white pl-5 pr-2.5 text-left text-lg font-black text-ink",
+                      "shadow-[0_3px_0_rgba(15,23,42,0.12)] transition-colors hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+                    )}
+                  >
+                    <span className="truncate">{draftSubjectLabel}</span>
+                    <span className="ml-4 flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-surface text-ink transition-colors group-hover:bg-white">
+                      <ChevronDown className={cn("h-5 w-5 stroke-[2.5] transition-transform", open && "rotate-180")} />
+                    </span>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="start"
+                  avoidCollisions={false}
+                  side="bottom"
+                  sideOffset={8}
+                  className="w-[min(35rem,calc(100vw-32px))] rounded-[12px] border-2 border-ink p-0 shadow-[0_12px_0_rgba(15,23,42,0.08)]"
+                >
+                  <CommandList
+                    items={languages.map((value) => ({
+                      value,
+                      label: t(`subjects.${value}`),
+                    }))}
+                    activeItems={draftSubject ? [draftSubject] : []}
+                    onSelect={(item) => onChooseSubject(item as SubjectCode)}
+                    variant="hero"
+                  />
+                </PopoverContent>
+              </Popover>
+              <Link
+                href={quizHref}
+                aria-disabled={!draftSubject}
+                onClick={onFindTutorClick}
+                className={cn(
+                  "inline-flex h-16 w-full items-center justify-center gap-3 rounded-[10px] border-2 border-ink bg-brand-600 px-7 text-xl font-black text-white shadow-none transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+                  !draftSubject && "pointer-events-none opacity-50",
+                )}
+              >
+                {t("guided.findTutor")}
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+              <p className="flex h-12 w-full items-center justify-center rounded-[10px] border-2 border-line bg-white px-5 text-center text-base font-black text-ink transition-colors hover:border-ink hover:bg-surface">
+                {t("guided.showTutors", { count: resultCount })}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Picker({
+  children,
+  className,
+  compact = false,
+  label,
+  onOpenChange,
+  open,
+  value,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  compact?: boolean;
+  label: string;
+  onOpenChange?: (open: boolean) => void;
+  open?: boolean;
+  value: string;
+}) {
+  return (
+    <Popover open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>
         <button
           type="button"
@@ -542,11 +715,13 @@ function CommandList({
   items,
   onSelect,
   searchable = false,
+  variant = "default",
 }: {
   activeItems: string[];
   items: { available?: boolean; label: string; value: string }[];
   onSelect: (item: string) => void;
   searchable?: boolean;
+  variant?: "default" | "hero";
 }) {
   const t = useTranslations("tutors");
   const onboardingT = useTranslations("onboarding");
@@ -561,7 +736,12 @@ function CommandList({
           <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t("filters.typeSearch")} className="min-w-0 flex-1 bg-transparent text-sm font-semibold outline-none" />
         </label>
       ) : null}
-      <div className="max-h-80 overflow-y-auto overflow-x-hidden pr-2 [scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:var(--color-brand-200)_transparent] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-brand-200 [&::-webkit-scrollbar-track]:bg-transparent">
+      <div
+        className={cn(
+          "overflow-y-auto overflow-x-hidden [scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:var(--color-brand-300)_transparent] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-brand-300 [&::-webkit-scrollbar-track]:bg-transparent",
+          variant === "hero" ? "max-h-[288px] p-2" : "max-h-80 pr-2",
+        )}
+      >
         {visibleItems.map((item) => {
           const active = activeItems.includes(item.value);
           const available = item.available ?? true;
@@ -572,8 +752,15 @@ function CommandList({
               disabled={!available}
               onClick={() => available && onSelect(item.value)}
               className={cn(
-                "flex min-h-12 w-full items-center justify-between gap-4 border-b border-line py-1 pl-1 pr-2 text-left text-base font-semibold last:border-0",
-                available ? "hover:text-brand-700" : "cursor-not-allowed text-muted",
+                "flex w-full items-center justify-between gap-4 text-left font-semibold transition-colors",
+                variant === "hero"
+                  ? "min-h-16 rounded-lg px-4 text-lg font-black"
+                  : "min-h-12 border-b border-line py-1 pl-1 pr-2 text-base last:border-0",
+                available
+                  ? variant === "hero"
+                    ? "hover:bg-brand-50 hover:text-brand-800"
+                    : "hover:text-brand-700"
+                  : "cursor-not-allowed text-muted",
               )}
             >
               <span className="flex min-w-0 flex-1 items-center gap-2 pr-2">

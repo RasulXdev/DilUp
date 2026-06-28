@@ -179,12 +179,35 @@
   "tutors": {
     "eyebrow": "Tutor marketplace",
     "title": "{subject} tutors that help build confidence speaking",
-    "chooseTitle": "Choose what you want to learn",
-    "chooseSubtitle": "Pick a language first. Then we will ask a few questions and show tutors that fit your goal.",
-    "chooseCardTitle": "Start with a language",
-    "chooseCardText": "DilUp uses your selected language to open the matching quiz. If you already completed the quiz for this language, tutors appear right away.",
-    "startMatching": "Find tutors",
     "resultCount": "{count} tutors",
+    "guided": {
+      "eyebrow": "Personal tutor matching",
+      "title": "Online language lessons, matched around your goals",
+      "titleWithSubject": "Online {subject} lessons, matched around your goals",
+      "text": "Answer a few focused questions so DilUp can shape tutor results around your level, schedule, budget and learning style.",
+      "quickLabel": "Quickly answer a few questions to get a personalized tutor shortlist",
+      "findTutor": "Find your tutor",
+      "showTutors": "Show {count} tutors",
+      "liveBadge": "Live lesson",
+      "liveText": "One-to-one practice with real feedback",
+      "tutorName": "Ryan C.",
+      "tutorMeta": "Professional tutor · 200 lessons",
+      "tutorSignal": "Matching works best after the quiz",
+      "steps": {
+        "goal": {
+          "title": "Goal",
+          "text": "Career, exams, kids or travel"
+        },
+        "schedule": {
+          "title": "Schedule",
+          "text": "Days and times that work"
+        },
+        "budget": {
+          "title": "Budget",
+          "text": "Your lesson price range"
+        }
+      }
+    },
     "promoTitle": "Enjoy 30% off your trial lesson",
     "promoText": "No code needed. Applies to tutors charging ₼12 or more.",
     "refreshing": "Refreshing tutors...",
