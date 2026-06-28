@@ -42,14 +42,40 @@ const weekDays = [
 ];
 
 const timezones = [
-  "Asia/Baku",
-  "Europe/Moscow",
-  "Europe/Nicosia",
-  "Europe/Riga",
-  "Europe/Sofia",
-  "Europe/Tallinn",
-  "Europe/Vilnius",
-  "Asia/Tehran",
+  { name: "Pacific/Auckland", gmt: "GMT +13:00" },
+  { name: "Australia/Sydney", gmt: "GMT +11:00" },
+  { name: "Asia/Tokyo", gmt: "GMT +9:00" },
+  { name: "Asia/Seoul", gmt: "GMT +9:00" },
+  { name: "Asia/Shanghai", gmt: "GMT +8:00" },
+  { name: "Asia/Singapore", gmt: "GMT +8:00" },
+  { name: "Asia/Bangkok", gmt: "GMT +7:00" },
+  { name: "Asia/Dhaka", gmt: "GMT +6:00" },
+  { name: "Asia/Kolkata", gmt: "GMT +5:30" },
+  { name: "Asia/Karachi", gmt: "GMT +5:00" },
+  { name: "Asia/Dubai", gmt: "GMT +4:00" },
+  { name: "Asia/Baku", gmt: "GMT +4:00" },
+  { name: "Asia/Tehran", gmt: "GMT +3:30" },
+  { name: "Europe/Moscow", gmt: "GMT +3:00" },
+  { name: "Europe/Istanbul", gmt: "GMT +3:00" },
+  { name: "Europe/Kyiv", gmt: "GMT +2:00" },
+  { name: "Europe/Nicosia", gmt: "GMT +2:00" },
+  { name: "Europe/Riga", gmt: "GMT +2:00" },
+  { name: "Europe/Sofia", gmt: "GMT +2:00" },
+  { name: "Europe/Tallinn", gmt: "GMT +2:00" },
+  { name: "Europe/Vilnius", gmt: "GMT +2:00" },
+  { name: "Europe/Berlin", gmt: "GMT +1:00" },
+  { name: "Europe/Madrid", gmt: "GMT +1:00" },
+  { name: "Europe/Paris", gmt: "GMT +1:00" },
+  { name: "Europe/Rome", gmt: "GMT +1:00" },
+  { name: "Europe/Warsaw", gmt: "GMT +1:00" },
+  { name: "Europe/London", gmt: "GMT +0:00" },
+  { name: "Atlantic/Reykjavik", gmt: "GMT +0:00" },
+  { name: "America/Sao_Paulo", gmt: "GMT -3:00" },
+  { name: "America/New_York", gmt: "GMT -5:00" },
+  { name: "America/Toronto", gmt: "GMT -5:00" },
+  { name: "America/Chicago", gmt: "GMT -6:00" },
+  { name: "America/Denver", gmt: "GMT -7:00" },
+  { name: "America/Los_Angeles", gmt: "GMT -8:00" },
 ];
 
 export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
@@ -57,6 +83,7 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
   const labels = useTranslations("tutors");
   const [lessonLength, setLessonLength] = useState<25 | 50>(50);
   const [timezone, setTimezone] = useState("Asia/Baku");
+  const activeTimezone = timezones.find((item) => item.name === timezone) ?? timezones[0];
   const recommendations = tutors.filter((item) => item.id !== tutor.id).slice(0, 4);
 
   return (
@@ -221,20 +248,20 @@ export function TutorProfilePage({ tutor }: { tutor: Tutor }) {
                 <PopoverTrigger asChild>
                   <button type="button" className="flex h-14 min-w-64 items-center justify-between rounded-xl border border-line px-4 text-left">
                     <span>
-                      <span className="block font-black text-ink">{timezone}</span>
-                      <span className="text-sm font-semibold text-muted">GMT +4:00</span>
+                      <span className="block font-black text-ink">{activeTimezone.name}</span>
+                      <span className="text-sm font-semibold text-muted">{activeTimezone.gmt}</span>
                     </span>
                     <ChevronDown className="h-5 w-5" />
                   </button>
                 </PopoverTrigger>
                 <PopoverContent align="end" className="max-h-96 w-80 overflow-auto p-2">
                   {timezones.map((item) => (
-                    <button key={item} type="button" onClick={() => setTimezone(item)} className="flex min-h-14 w-full items-center justify-between border-b border-line px-3 text-left last:border-0 hover:text-brand-700">
+                    <button key={item.name} type="button" onClick={() => setTimezone(item.name)} className="flex min-h-14 w-full items-center justify-between border-b border-line px-3 text-left last:border-0 hover:text-brand-700">
                       <span>
-                        <span className="block font-bold">{item}</span>
-                        <span className="text-xs font-semibold text-muted">GMT +4:00</span>
+                        <span className="block font-bold">{item.name}</span>
+                        <span className="text-xs font-semibold text-muted">{item.gmt}</span>
                       </span>
-                      {timezone === item ? <Check className="h-4 w-4" /> : null}
+                      {timezone === item.name ? <Check className="h-4 w-4" /> : null}
                     </button>
                   ))}
                 </PopoverContent>

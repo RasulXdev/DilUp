@@ -15,7 +15,6 @@ import {
   Search,
   ShieldCheck,
   SlidersHorizontal,
-  Moon,
   Sparkles,
   Sun,
   Sunrise,
@@ -55,36 +54,19 @@ const specialties: SpecialtyCode[] = [
 const alsoSpeaks = ["az", "ru", "tr", "en", "fi"] as const;
 type SpokenLanguage = (typeof alsoSpeaks)[number];
 const timeRanges = [
-  { value: "06-07", group: "morning" },
-  { value: "07-08", group: "morning" },
-  { value: "08-09", group: "morning" },
-  { value: "09-10", group: "morning" },
-  { value: "10-11", group: "morning" },
-  { value: "11-12", group: "morning" },
-  { value: "12-13", group: "daytime" },
-  { value: "13-14", group: "daytime" },
-  { value: "14-15", group: "daytime" },
-  { value: "15-16", group: "daytime" },
-  { value: "16-17", group: "daytime" },
-  { value: "17-18", group: "daytime" },
-  { value: "18-19", group: "evening" },
-  { value: "19-20", group: "evening" },
-  { value: "20-21", group: "evening" },
-  { value: "21-22", group: "evening" },
-  { value: "22-23", group: "evening" },
-  { value: "23-00", group: "evening" },
-  { value: "00-01", group: "night" },
-  { value: "01-02", group: "night" },
-  { value: "02-03", group: "night" },
-  { value: "03-04", group: "night" },
-  { value: "04-05", group: "night" },
-  { value: "05-06", group: "night" },
+  { value: "9-12", group: "daytime" },
+  { value: "12-15", group: "daytime" },
+  { value: "15-18", group: "daytime" },
+  { value: "18-21", group: "evening" },
+  { value: "21-24", group: "evening" },
+  { value: "0-3", group: "evening" },
+  { value: "3-6", group: "morning" },
+  { value: "6-9", group: "morning" },
 ] as const;
 const timeGroupIcons: Record<(typeof timeRanges)[number]["group"], LucideIcon> = {
-  morning: Sunrise,
   daytime: Sun,
   evening: Sunset,
-  night: Moon,
+  morning: Sunrise,
 };
 const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -223,12 +205,7 @@ export function TutorSearchPage() {
             </Picker>
 
             <Picker label={t("filters.available")} value={t("filters.anyTime")}>
-              <div className="max-h-[28rem] space-y-5 overflow-auto pr-1">
-                <FilterGroup icon={timeGroupIcons.morning} title={t("filters.morning")}>
-                  {timeRanges.filter((item) => item.group === "morning").map((item) => (
-                    <TimeButton key={item.value} value={item.value} />
-                  ))}
-                </FilterGroup>
+              <div className="space-y-5">
                 <FilterGroup icon={timeGroupIcons.daytime} title={t("filters.daytime")}>
                   {timeRanges.filter((item) => item.group === "daytime").map((item) => (
                     <TimeButton key={item.value} value={item.value} />
@@ -239,8 +216,8 @@ export function TutorSearchPage() {
                     <TimeButton key={item.value} value={item.value} />
                   ))}
                 </FilterGroup>
-                <FilterGroup icon={timeGroupIcons.night} title={t("filters.night")}>
-                  {timeRanges.filter((item) => item.group === "night").map((item) => (
+                <FilterGroup icon={timeGroupIcons.morning} title={t("filters.morning")}>
+                  {timeRanges.filter((item) => item.group === "morning").map((item) => (
                     <TimeButton key={item.value} value={item.value} />
                   ))}
                 </FilterGroup>
