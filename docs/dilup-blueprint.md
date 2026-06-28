@@ -147,7 +147,6 @@ src/
 │   │   │   └── get-started/page.tsx       # 13-sualllı quiz (Preply-style)
 │   │   ├── (platform)/
 │   │   │   ├── layout.tsx
-│   │   │   ├── dashboard/page.tsx
 │   │   │   ├── tutors/
 │   │   │   │   ├── page.tsx               # Browse/search tutors
 │   │   │   │   └── [id]/page.tsx          # Tutor profile
@@ -282,11 +281,6 @@ src/
 │   │   ├── MessageBubble.tsx
 │   │   ├── MessageInput.tsx
 │   │   └── ConversationView.tsx
-│   ├── dashboard/
-│   │   ├── StatsCards.tsx
-│   │   ├── UpcomingLessons.tsx
-│   │   ├── RecentActivity.tsx
-│   │   └── RecommendedTutors.tsx
 │   └── shared/
 │       ├── Logo.tsx
 │       ├── LanguageSwitcher.tsx
@@ -913,7 +907,7 @@ CREATE POLICY "Tutors can upload own video" ON storage.objects FOR INSERT WITH C
 - Supabase Auth: email/password + Google OAuth + magic link
 - Middleware: session refresh, locale detection, protected routes redirect
 - Auth pages: Login, Register (student), Register (tutor — multi-step), Forgot Password
-- Role-based redirects: student → /dashboard, tutor → /tutor-dashboard, admin → /admin
+- Role-based redirects: student → / or /tutors, tutor → /tutor-dashboard, admin → /admin
 
 ### 1.6 i18n Setup (next-intl)
 - Routing: `/az/...`, `/en/...`, `/ru/...`
@@ -970,19 +964,16 @@ CREATE POLICY "Tutors can upload own video" ON storage.objects FOR INSERT WITH C
 ### 3.1 Platform Layout
 - Sidebar, TopBar (search, notifications, avatar dropdown), MobileNav
 
-### 3.2 Student Dashboard (`/dashboard`)
-- Stats Cards, Upcoming Lessons, Recent Activity, Recommended Tutors, Quick actions
-
-### 3.3 Browse Tutors (`/tutors`)
+### 3.2 Browse Tutors (`/tutors`)
 - Filter bar: dil, qiymət range, ölkə, mövcudluq, specialties, native speaker
 - TutorCard: avatar+status dot, ad+badge+bayraq, tutor tipi, dil, bio, social proof, qiymət+rating+stats, CTA-lar
 - Sort, search, infinite scroll/pagination
 
-### 3.4 Tutor Profile (`/tutors/[id]`)
+### 3.3 Tutor Profile (`/tutors/[id]`)
 - Video intro, başlıq, "Professional Tutor" badge, about, "I speak", **Lesson rating (4 metrik)**, **AI review summary**, reviews, **weekly schedule grid**, sticky booking sidebar
 - (Detallı struktur: `dilup-master-plan.md` bölmə 5)
 
-### 3.5 Gün 3 Gözlənilən Nəticə
+### 3.4 Gün 3 Gözlənilən Nəticə
 - [ ] Tutors browse page (filter+search+sort)
 - [ ] Tutor profile page tam
 - [ ] Favorites

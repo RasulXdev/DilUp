@@ -182,6 +182,10 @@
     "resultCount": "{count} müəllim",
     "promoTitle": "Trial dərsinə 30% endirim əldə et",
     "promoText": "Kod lazım deyil. ₼12 və daha yuxarı qiymətli müəllimlərə aiddir.",
+    "refreshing": "Müəllimlər yenilənir...",
+    "errorTitle": "Müəllimləri yükləyə bilmədik",
+    "errorText": "Səhifə yadda saxlanmış müəllim datası ilə işləyir. Ən son siyahı üçün yenidən yoxla.",
+    "tryAgain": "Yenidən yoxla",
     "emptyTitle": "Bu filterlərə uyğun müəllim hələ yoxdur",
     "emptyText": "Qiyməti, vaxtı və ya ixtisasları dəyişməyə çalış.",
     "filters": {
@@ -346,7 +350,8 @@
       "lessons": "dərs",
       "book": "Trial dərs bron et",
       "message": "Mesaj göndər",
-      "save": "Müəllimi yadda saxla"
+      "save": "Müəllimi yadda saxla",
+      "unsave": "Yadda saxlanılanlardan çıxar"
     }
   },
   "tutorProfile": {
@@ -395,6 +400,7 @@
     "bookTrial": "Trial dərs bron et",
     "message": "Müəllimə mesaj",
     "save": "Yadda saxla",
+    "saved": "Yadda saxlanılıb",
     "share": "Paylaş",
     "notMatch": "Uyğun deyil?",
     "freeTrials": "Hələ 2 pulsuz trial imkanın var."
@@ -677,6 +683,22 @@
       "loginPrompt": "Artıq hesabın var?",
       "preview": "Müəllim nəticələrinə bax",
       "legal": "Davam etməklə DilUp şərtləri və məxfilik siyasəti ilə razılaşırsan."
+    }
+  },
+  "platform": {
+    "savedTutors": {
+      "eyebrow": "Favoritlər",
+      "title": "Yadda saxlanan müəllimlər",
+      "subtitle": "Sonra baxmaq üçün {count} müəllim saxlanılıb.",
+      "findMore": "Daha çox müəllim tap",
+      "emptyTitle": "Hələ müəllim saxlamamısan",
+      "emptyText": "Öz qısa siyahını yaratmaq üçün müəllim kartlarında və profillərində ürək düyməsindən istifadə et.",
+      "browseTutors": "Müəllimlərə bax",
+      "photoAlt": "{name} portreti",
+      "rating": "{rating} · {count} rəy",
+      "perLesson": "/ dərs",
+      "viewProfile": "Profilə bax",
+      "remove": "Sil"
     }
   },
   "quickSetup": {

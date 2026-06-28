@@ -31,6 +31,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { resolveTutorsGateHref } from "@/lib/auth/redirects";
 import { createClient } from "@/lib/supabase/client";
+import { useSavedTutors } from "@/lib/tutors/useSavedTutors";
 import { cn } from "@/lib/utils";
 import type { Tutor } from "@/lib/tutors";
 import { tutors } from "@/lib/tutors";
@@ -413,6 +414,8 @@ export function TutorProfilePage({ tutor, allTutors }: { tutor: Tutor; allTutors
 function BookingCard({ tutor }: { tutor: Tutor }) {
   const t = useTranslations("tutorProfile");
   const { format } = useCurrency();
+  const { isSaved, toggleSaved } = useSavedTutors();
+  const saved = isSaved(tutor.id);
   const dest = `/checkout/${tutor.id}`;
   const [bookHref, setBookHref] = useState(`/get-started?next=${encodeURIComponent(dest)}`);
 
@@ -454,7 +457,12 @@ function BookingCard({ tutor }: { tutor: Tutor }) {
       </Link>
       <div className="mt-4 grid grid-cols-3 gap-3">
         <IconButton label={t("message")} icon={<MessageSquare />} />
-        <IconButton label={t("save")} icon={<Heart />} />
+        <IconButton
+          active={saved}
+          label={saved ? t("saved") : t("save")}
+          icon={<Heart className={saved ? "fill-current" : undefined} />}
+          onClick={() => toggleSaved(tutor.id)}
+        />
         <IconButton label={t("share")} icon={<Share2 />} />
       </div>
       <div className="mt-6 flex gap-3 rounded-xl bg-emerald-50 p-4 text-emerald-950">
@@ -468,9 +476,27 @@ function BookingCard({ tutor }: { tutor: Tutor }) {
   );
 }
 
-function IconButton({ icon, label }: { icon: React.ReactNode; label: string }) {
+function IconButton({
+  active = false,
+  icon,
+  label,
+  onClick,
+}: {
+  active?: boolean;
+  icon: React.ReactNode;
+  label: string;
+  onClick?: () => void;
+}) {
   return (
-    <button type="button" aria-label={label} className="flex h-16 items-center justify-center rounded-xl border border-line bg-white hover:bg-brand-50 hover:text-brand-700">
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      className={cn(
+        "flex h-16 items-center justify-center rounded-xl border hover:bg-brand-50 hover:text-brand-700",
+        active ? "border-brand-300 bg-brand-50 text-brand-700" : "border-line bg-white",
+      )}
+    >
       <span className="[&_svg]:h-5 [&_svg]:w-5">{icon}</span>
     </button>
   );

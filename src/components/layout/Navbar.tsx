@@ -151,7 +151,7 @@ export function Navbar() {
     { href: "/", label: t("account.home"), icon: Home },
     { panel: "messages" as const, label: t("account.messages"), icon: MessageCircle },
     { unavailable: true, label: t("account.lessons"), icon: BookOpen },
-    { unavailable: true, label: t("account.savedTutors"), icon: Heart },
+    { href: "/saved-tutors", label: t("account.savedTutors"), icon: Heart },
     { unavailable: true, label: t("account.refer"), icon: Gift },
     { unavailable: true, label: t("account.settings"), icon: Settings },
     { href: "/contact", label: t("account.help"), icon: HelpCircle },
@@ -278,7 +278,7 @@ export function Navbar() {
               </Link>
               <button
                 type="button"
-                onClick={() => showComingSoon(t("account.savedTutors"))}
+                onClick={() => router.push("/saved-tutors")}
                 aria-label={t("actions.savedTutors")}
                 className="inline-flex h-11 w-11 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-white/70 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
               >
@@ -469,7 +469,10 @@ export function Navbar() {
                     </Link>
                     <button
                       type="button"
-                      onClick={() => showComingSoon(t("account.savedTutors"))}
+                      onClick={() => {
+                        setOpen(false);
+                        router.push("/saved-tutors");
+                      }}
                       aria-label={t("actions.savedTutors")}
                       className="flex h-12 items-center justify-center rounded-full bg-white/75 text-brand-700"
                     >

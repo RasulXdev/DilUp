@@ -182,6 +182,10 @@
     "resultCount": "{count} tutors",
     "promoTitle": "Enjoy 30% off your trial lesson",
     "promoText": "No code needed. Applies to tutors charging ₼12 or more.",
+    "refreshing": "Refreshing tutors...",
+    "errorTitle": "We could not load tutors",
+    "errorText": "The page is still usable with cached tutor data. Try again to refresh the latest list.",
+    "tryAgain": "Try again",
     "emptyTitle": "No tutors match these filters yet",
     "emptyText": "Try changing price, availability or specialties.",
     "filters": {
@@ -346,7 +350,8 @@
       "lessons": "lessons",
       "book": "Book trial lesson",
       "message": "Send message",
-      "save": "Save tutor"
+      "save": "Save tutor",
+      "unsave": "Remove saved tutor"
     }
   },
   "tutorProfile": {
@@ -395,6 +400,7 @@
     "bookTrial": "Book trial lesson",
     "message": "Message tutor",
     "save": "Save tutor",
+    "saved": "Saved tutor",
     "share": "Share tutor",
     "notMatch": "Not a match?",
     "freeTrials": "You still have 2 free tutor trials."
@@ -677,6 +683,22 @@
       "loginPrompt": "Already have an account?",
       "preview": "Preview tutor results",
       "legal": "By continuing, you agree to DilUp terms and privacy policy."
+    }
+  },
+  "platform": {
+    "savedTutors": {
+      "eyebrow": "Favorites",
+      "title": "Saved tutors",
+      "subtitle": "{count} tutor(s) saved for later.",
+      "findMore": "Find more tutors",
+      "emptyTitle": "No saved tutors yet",
+      "emptyText": "Use the heart button on tutor cards or profiles to build your shortlist.",
+      "browseTutors": "Browse tutors",
+      "photoAlt": "Portrait of {name}",
+      "rating": "{rating} · {count} reviews",
+      "perLesson": "/ lesson",
+      "viewProfile": "View profile",
+      "remove": "Remove"
     }
   },
   "quickSetup": {

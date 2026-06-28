@@ -36,6 +36,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { type SpecialtyCode, type SubjectCode, type Tutor } from "@/lib/tutors";
+import { useSavedTutors } from "@/lib/tutors/useSavedTutors";
+import { useTutorsQuery } from "@/lib/tutors/useTutorsQuery";
 import { cn } from "@/lib/utils";
 
 type SortKey = "top" | "priceLow" | "priceHigh" | "popular" | "reviews" | "rating";
@@ -73,10 +75,12 @@ const timeGroupIcons: Record<(typeof timeRanges)[number]["group"], LucideIcon> =
 };
 const days = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
-export function TutorSearchPage({ tutors }: { tutors: Tutor[] }) {
+export function TutorSearchPage({ tutors: initialTutors }: { tutors: Tutor[] }) {
   const t = useTranslations("tutors");
   const dayLabels = useTranslations("onboarding");
   const { format } = useCurrency();
+  const { data: tutors, isError, isFetching, refetch } = useTutorsQuery(initialTutors);
+  const { isSaved, toggleSaved } = useSavedTutors();
   const [activeTutorId, setActiveTutorId] = useState(tutors[0]?.id ?? "");
   const [subject, setSubject] = useState<SubjectCode>("en");
   const [price, setPrice] = useState([4, 68]);
@@ -174,10 +178,29 @@ export function TutorSearchPage({ tutors }: { tutors: Tutor[] }) {
               {t("title", { subject: t(`subjects.${subject}`) })}
             </h1>
           </div>
-          <div className="hidden rounded-full bg-brand-50 px-4 py-2 text-sm font-bold text-brand-800 md:block">
-            {t("resultCount", { count: filteredTutors.length })}
+          <div className="flex items-center gap-3">
+            {isFetching ? (
+              <span className="hidden rounded-full bg-surface px-4 py-2 text-sm font-bold text-ink-soft md:inline-flex">
+                {t("refreshing")}
+              </span>
+            ) : null}
+            <div className="hidden rounded-full bg-brand-50 px-4 py-2 text-sm font-bold text-brand-800 md:block">
+              {t("resultCount", { count: filteredTutors.length })}
+            </div>
           </div>
         </div>
+
+        {isError ? (
+          <div className="mt-6 flex flex-col gap-3 rounded-xl border border-red-200 bg-red-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-black text-red-950">{t("errorTitle")}</p>
+              <p className="mt-1 text-sm font-semibold text-red-800">{t("errorText")}</p>
+            </div>
+            <Button type="button" variant="outline" onClick={() => refetch()}>
+              {t("tryAgain")}
+            </Button>
+          </div>
+        ) : null}
 
         <div className="relative z-30 mt-8 bg-white py-3">
           <div className="grid gap-3 lg:grid-cols-4">
@@ -351,6 +374,8 @@ export function TutorSearchPage({ tutors }: { tutors: Tutor[] }) {
                   tutor={tutor}
                   active={activeTutor.id === tutor.id}
                   onActivate={() => setActiveTutorId(tutor.id)}
+                  saved={isSaved(tutor.id)}
+                  onToggleSaved={() => toggleSaved(tutor.id)}
                 />
                 {activeTutor.id === tutor.id ? <TutorPreview tutor={activeTutor} /> : <div className="hidden lg:block" />}
               </div>
@@ -593,7 +618,19 @@ function TutorPreview({ tutor }: { tutor: Tutor }) {
   );
 }
 
-function TutorCard({ active, onActivate, tutor }: { active: boolean; onActivate: () => void; tutor: Tutor }) {
+function TutorCard({
+  active,
+  onActivate,
+  onToggleSaved,
+  saved,
+  tutor,
+}: {
+  active: boolean;
+  onActivate: () => void;
+  onToggleSaved: () => void;
+  saved: boolean;
+  tutor: Tutor;
+}) {
   const t = useTranslations("tutors");
   const { format } = useCurrency();
   return (
@@ -677,8 +714,18 @@ function TutorCard({ active, onActivate, tutor }: { active: boolean; onActivate:
             </div>
             <p className="text-sm font-semibold text-muted">{t("card.duration", { minutes: tutor.lessonDuration })}</p>
           </div>
-          <button type="button" aria-label={t("card.save")} className="flex h-11 w-11 items-center justify-center rounded-full border border-line text-ink-soft hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700">
-            <Heart className="h-5 w-5" />
+          <button
+            type="button"
+            aria-label={saved ? t("card.unsave") : t("card.save")}
+            onClick={onToggleSaved}
+            className={cn(
+              "flex h-11 w-11 items-center justify-center rounded-full border transition",
+              saved
+                ? "border-brand-300 bg-brand-50 text-brand-700"
+                : "border-line text-ink-soft hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700",
+            )}
+          >
+            <Heart className={cn("h-5 w-5", saved && "fill-current")} />
           </button>
         </div>
         <div className="grid grid-cols-3 gap-3">
