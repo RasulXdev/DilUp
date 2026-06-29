@@ -5,7 +5,7 @@ export type UserRole = Database["public"]["Enums"]["user_role"];
 
 const ROLE_HOME: Record<UserRole, string> = {
   student: "/tutors",
-  tutor: "/tutors",
+  tutor: "/tutor-onboarding",
   admin: "/tutors",
 };
 

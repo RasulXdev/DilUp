@@ -53,6 +53,8 @@
     },
     "login": {
       "title": "Welcome back",
+      "titleTutor": "Log in as a tutor",
+      "noTutorAccount": "No tutor account yet?",
       "signUpStudent": "Sign up as a student",
       "signUpOr": "or",
       "signUpTutor": "Sign up as a tutor",

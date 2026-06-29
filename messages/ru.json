@@ -53,6 +53,8 @@
     },
     "login": {
       "title": "С возвращением",
+      "titleTutor": "Войти как репетитор",
+      "noTutorAccount": "Еще нет аккаунта репетитора?",
       "signUpStudent": "Как студент",
       "signUpOr": "или",
       "signUpTutor": "Как репетитор",

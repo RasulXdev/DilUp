@@ -27,6 +27,10 @@ export function RegisterForm({
   const router = useRouter();
   const locale = useLocale();
   const searchParams = useSearchParams();
+  const requestedNext = searchParams.get("next");
+  const safeNext = isSafeRedirectPath(requestedNext) ? requestedNext : null;
+  const authNext = safeNext ?? (variant === "tutor" ? "/tutor-onboarding" : "/tutors");
+  const encodedNext = encodeURIComponent(authNext);
   const [showPassword, setShowPassword] = useState(false);
   const {
     register,
@@ -41,10 +45,10 @@ export function RegisterForm({
       window.location.origin,
     );
     callbackUrl.searchParams.set("role", variant);
-    const next = searchParams.get("next");
-    const safeNext = isSafeRedirectPath(next) ? next : null;
     if (safeNext) {
       callbackUrl.searchParams.set("next", safeNext);
+    } else if (variant === "tutor") {
+      callbackUrl.searchParams.set("next", "/tutor-onboarding");
     }
 
     // Carry the anonymous onboarding session so it can be linked to the new
@@ -106,30 +110,36 @@ export function RegisterForm({
         <p className="mt-2 text-ink-soft">
           {t("register.haveAccount")}{" "}
           <Link
-            href="/login"
+            href={
+              variant === "tutor"
+                ? `/login?role=tutor&next=${encodedNext}`
+                : "/login"
+            }
             className="font-semibold text-brand-600 hover:text-brand-700"
           >
             {t("register.logInLink")}
           </Link>
         </p>
-        <p className="mx-auto mt-4 grid max-w-sm grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-1.5 text-center text-[13px] text-ink-soft sm:text-sm">
-          <Link
-            href="/register"
-            className="min-w-0 leading-snug font-semibold text-brand-600 underline underline-offset-4 hover:text-brand-700"
-          >
-            {t("login.signUpStudent")}
-          </Link>
-          <span>{t("login.signUpOr")}</span>
-          <Link
-            href="/become-tutor"
-            className="min-w-0 leading-snug font-semibold text-brand-600 underline underline-offset-4 hover:text-brand-700"
-          >
-            {t("login.signUpTutor")}
-          </Link>
-        </p>
+        {variant !== "tutor" && (
+          <p className="mx-auto mt-4 grid max-w-sm grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-1.5 text-center text-[13px] text-ink-soft sm:text-sm">
+            <Link
+              href={`/register?next=${encodedNext}`}
+              className="min-w-0 leading-snug font-semibold text-brand-600 underline underline-offset-4 hover:text-brand-700"
+            >
+              {t("login.signUpStudent")}
+            </Link>
+            <span>{t("login.signUpOr")}</span>
+            <Link
+              href="/become-tutor"
+              className="min-w-0 leading-snug font-semibold text-brand-600 underline underline-offset-4 hover:text-brand-700"
+            >
+              {t("login.signUpTutor")}
+            </Link>
+          </p>
+        )}
       </div>
 
-      <SocialButtons role={variant} />
+      <SocialButtons role={variant} next={authNext} />
 
       <div className="my-6 flex items-center gap-3">
         <Separator className="flex-1" />

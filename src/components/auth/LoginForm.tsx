@@ -23,6 +23,12 @@ export function LoginForm() {
   const t = useTranslations("auth");
   const router = useRouter();
   const searchParams = useSearchParams();
+  const role = searchParams.get("role") === "tutor" ? "tutor" : "student";
+  const isTutorAuth = role === "tutor";
+  const rawNext = searchParams.get("next");
+  const safeNext = isSafeRedirectPath(rawNext) ? rawNext : null;
+  const next = safeNext ?? (role === "tutor" ? "/tutor-onboarding" : "/tutors");
+  const encodedNext = encodeURIComponent(next);
   const [showPassword, setShowPassword] = useState(false);
   const {
     register,
@@ -44,11 +50,10 @@ export function LoginForm() {
     if (sessionId && data.user) {
       await claimOnboardingSession(sessionId);
     }
-    const next = searchParams.get("next");
     const fallback = data.user
       ? await resolvePostAuthPath(supabase, data.user.id)
       : "/";
-    const destination = isSafeRedirectPath(next) ? next! : fallback;
+    const destination = safeNext ?? (role === "tutor" ? "/tutor-onboarding" : fallback);
     toast.success(t("welcomeBack"));
     router.push(destination);
     router.refresh();
@@ -58,26 +63,38 @@ export function LoginForm() {
     <div className="w-full">
       <div className="mb-8 text-center">
         <h1 className="font-display text-3xl font-extrabold text-ink">
-          {t("login.title")}
+          {isTutorAuth ? t("login.titleTutor") : t("login.title")}
         </h1>
-        <p className="mx-auto mt-4 grid max-w-sm grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-1.5 text-center text-[13px] text-ink-soft sm:text-sm">
-          <Link
-            href="/register"
-            className="min-w-0 leading-snug font-semibold text-brand-600 underline underline-offset-4 hover:text-brand-700"
-          >
-            {t("login.signUpStudent")}
-          </Link>{" "}
-          <span>{t("login.signUpOr")}</span>
-          <Link
-            href="/become-tutor"
-            className="min-w-0 leading-snug font-semibold text-brand-600 underline underline-offset-4 hover:text-brand-700"
-          >
-            {t("login.signUpTutor")}
-          </Link>
-        </p>
+        {isTutorAuth ? (
+          <p className="mt-3 text-sm leading-6 text-ink-soft">
+            {t("login.noTutorAccount")}{" "}
+            <Link
+              href={`/register/tutor?next=${encodedNext}`}
+              className="font-semibold text-brand-600 underline underline-offset-4 hover:text-brand-700"
+            >
+              {t("login.signUpTutor")}
+            </Link>
+          </p>
+        ) : (
+          <p className="mx-auto mt-4 grid max-w-sm grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-1.5 text-center text-[13px] text-ink-soft sm:text-sm">
+            <Link
+              href={`/register?next=${encodedNext}`}
+              className="min-w-0 leading-snug font-semibold text-brand-600 underline underline-offset-4 hover:text-brand-700"
+            >
+              {t("login.signUpStudent")}
+            </Link>{" "}
+            <span>{t("login.signUpOr")}</span>
+            <Link
+              href="/become-tutor"
+              className="min-w-0 leading-snug font-semibold text-brand-600 underline underline-offset-4 hover:text-brand-700"
+            >
+              {t("login.signUpTutor")}
+            </Link>
+          </p>
+        )}
       </div>
 
-      <SocialButtons />
+      <SocialButtons next={next} role={role} />
 
       <div className="my-6 flex items-center gap-3">
         <Separator className="flex-1" />

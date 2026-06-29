@@ -53,6 +53,8 @@
     },
     "login": {
       "title": "Yenidən xoş gəldin",
+      "titleTutor": "Müəllim kimi daxil ol",
+      "noTutorAccount": "Hələ müəllim hesabın yoxdur?",
       "signUpStudent": "Tələbə kimi qeydiyyat",
       "signUpOr": "və ya",
       "signUpTutor": "Müəllim kimi qeydiyyat",
