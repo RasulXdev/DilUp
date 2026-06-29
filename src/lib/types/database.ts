@@ -1060,6 +1060,10 @@ export type Database = {
         Args: { p_session_id: string }
         Returns: undefined
       }
+      ensure_tutor_profile: {
+        Args: never
+        Returns: string
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
       tutor_search_doc: {

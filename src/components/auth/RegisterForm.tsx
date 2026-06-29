@@ -51,7 +51,9 @@ export function RegisterForm({
     // account — works whether or not email confirmation is enabled (the
     // callback reads it from metadata when there is no immediate session).
     const onboardingSession =
-      window.localStorage.getItem("dilup_onboarding_session") ?? undefined;
+      window.localStorage.getItem("dilup_onboarding_claim_session") ??
+      window.localStorage.getItem("dilup_onboarding_session") ??
+      undefined;
 
     const { data, error } = await supabase.auth.signUp({
       email: values.email,
@@ -77,18 +79,11 @@ export function RegisterForm({
         .update({ role: variant, full_name: values.fullName })
         .eq("id", data.session.user.id);
       if (variant === "tutor") {
-        await supabase.from("tutor_profiles").upsert(
-          {
-            user_id: data.session.user.id,
-            price_per_lesson: 20,
-            trial_price_per_lesson: 10,
-            headline: t("register.defaultTutorHeadline"),
-            about: t("register.defaultTutorAbout"),
-          },
-          { onConflict: "user_id" },
-        );
+        await supabase.rpc("ensure_tutor_profile");
       }
-      const sessionId = window.localStorage.getItem("dilup_onboarding_session");
+      const sessionId =
+        window.localStorage.getItem("dilup_onboarding_claim_session") ??
+        window.localStorage.getItem("dilup_onboarding_session");
       if (sessionId) {
         await claimOnboardingSession(sessionId);
       }

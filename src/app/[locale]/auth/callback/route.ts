@@ -44,16 +44,7 @@ export async function GET(
         );
 
         if (intendedRole === "tutor") {
-          await supabase.from("tutor_profiles").upsert(
-            {
-              user_id: user.id,
-              price_per_lesson: 20,
-              trial_price_per_lesson: 10,
-              headline: "DilUp tutor",
-              about: "Ready to teach live language lessons on DilUp.",
-            },
-            { onConflict: "user_id" },
-          );
+          await supabase.rpc("ensure_tutor_profile");
         }
 
         // Link anonymous matching quiz answers carried through signup metadata.

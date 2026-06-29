@@ -621,6 +621,7 @@ export function OnboardingQuiz({
 
     window.localStorage.setItem("dilup_onboarding_answers", JSON.stringify(answers));
     window.localStorage.setItem(`dilup_onboarding_answers_${answers.subject}`, JSON.stringify(answers));
+    window.localStorage.setItem("dilup_onboarding_claim_session", sessionId);
     rememberCompletedSubject(answers.subject);
 
     // Already signed in: the quiz answers are linked to the account directly,

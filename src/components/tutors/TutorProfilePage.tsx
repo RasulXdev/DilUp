@@ -37,7 +37,6 @@ import { createClient } from "@/lib/supabase/client";
 import { useSavedTutors } from "@/lib/tutors/useSavedTutors";
 import { cn } from "@/lib/utils";
 import type { Tutor } from "@/lib/tutors";
-import { tutors } from "@/lib/tutors";
 
 const azMonths = [
   "yanvar",
@@ -141,9 +140,9 @@ export function TutorProfilePage({ tutor, allTutors }: { tutor: Tutor; allTutors
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [showFullSchedule, setShowFullSchedule] = useState(false);
   const [resumeTab, setResumeTab] = useState<"education" | "certificates">("education");
-  const [openSpecialty, setOpenSpecialty] = useState<string | null>(tutor.specialties[0] ?? null);
+  const [openSpecialty, setOpenSpecialty] = useState<string | null>(null);
   const activeTimezone = timezones.find((item) => item.name === timezone) ?? timezones[0];
-  const recommendations = (allTutors ?? tutors).filter((item) => item.id !== tutor.id).slice(0, 4);
+  const recommendations = (allTutors ?? []).filter((item) => item.id !== tutor.id).slice(0, 4);
   const weekDays = getWeekDays(weekOffset);
   const weekStart = weekDays[0].date;
   const weekEnd = weekDays[6].date;
@@ -552,28 +551,30 @@ export function TutorProfilePage({ tutor, allTutors }: { tutor: Tutor; allTutors
             </div>
           </Section>
 
-          <Section title={t("alsoLike")}>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {recommendations.map((item) => (
-                <Link key={item.id} href={`/tutors/${item.id}`} className="group block">
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-surface">
-                    <Image src={item.photo} alt={item.name} fill className="object-cover transition-transform group-hover:scale-105" sizes="220px" />
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/80 to-transparent p-3 text-sm font-black text-white">
-                      {item.name} {item.flag}
+          {recommendations.length > 0 ? (
+            <Section title={t("alsoLike")}>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {recommendations.map((item) => (
+                  <Link key={item.id} href={`/tutors/${item.id}`} className="group block">
+                    <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-surface">
+                      <Image src={item.photo} alt={item.name} fill className="object-cover transition-transform group-hover:scale-105" sizes="220px" />
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/80 to-transparent p-3 text-sm font-black text-white">
+                        {item.name} {item.flag}
+                      </div>
                     </div>
-                  </div>
-                  <p className="mt-3 flex items-center gap-1.5 font-black text-ink">
-                    <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
-                    {item.rating} ({item.reviewsCount})
-                  </p>
-                  <p className="mt-1 line-clamp-2 text-sm font-semibold leading-6 text-ink-soft">{item.source === "db" ? item.headline : labels(`copy.${item.headline}`)}</p>
-                  <p className="mt-2 text-lg font-black text-ink">
-                    {format(item.price)} <span className="text-sm font-semibold text-muted">{t("perLesson")}</span>
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </Section>
+                    <p className="mt-3 flex items-center gap-1.5 font-black text-ink">
+                      <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
+                      {item.rating} ({item.reviewsCount})
+                    </p>
+                    <p className="mt-1 line-clamp-2 text-sm font-semibold leading-6 text-ink-soft">{item.source === "db" ? item.headline : labels(`copy.${item.headline}`)}</p>
+                    <p className="mt-2 text-lg font-black text-ink">
+                      {format(item.price)} <span className="text-sm font-semibold text-muted">{t("perLesson")}</span>
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </Section>
+          ) : null}
         </div>
 
         <aside className="lg:pt-20">
