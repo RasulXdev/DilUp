@@ -28,7 +28,7 @@ import {
   X,
   type LucideIcon,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
@@ -929,8 +929,37 @@ function TimeButton({ active, onClick, value }: { active: boolean; onClick: () =
   );
 }
 
+const AZ_VOWELS = "aıouəeiöü";
+
+function azGenitiveName(name: string) {
+  const trimmed = name.trim();
+  const lastLetter = trimmed.match(/[A-Za-zƏəĞğIıİiÖöŞşÜüÇç]+$/)?.[0]?.at(-1)?.toLocaleLowerCase("az");
+  const lastVowel = [...trimmed.toLocaleLowerCase("az")].reverse().find((char) => AZ_VOWELS.includes(char));
+
+  if (!lastLetter || !lastVowel) return trimmed;
+
+  const suffix =
+    lastVowel === "a" || lastVowel === "ı"
+      ? "ın"
+      : lastVowel === "o" || lastVowel === "u"
+        ? "un"
+        : lastVowel === "ö" || lastVowel === "ü"
+          ? "ün"
+          : "in";
+  const buffer = AZ_VOWELS.includes(lastLetter) ? "n" : "";
+
+  return `${trimmed}${buffer}${suffix}`;
+}
+
+function tutorFirstName(name: string) {
+  return name.trim().split(/\s+/)[0] || name;
+}
+
 function TutorPreview({ tutor }: { tutor: Tutor }) {
   const t = useTranslations("tutors");
+  const locale = useLocale();
+  const profileBaseName = tutorFirstName(tutor.name);
+  const profileName = locale === "az" ? azGenitiveName(profileBaseName) : profileBaseName;
 
   return (
     <aside className="hidden lg:block">
@@ -951,8 +980,8 @@ function TutorPreview({ tutor }: { tutor: Tutor }) {
             <CalendarDays className="h-5 w-5 shrink-0" />
             {t("preview.schedule")}
           </Link>
-          <Link href={`/tutors/${tutor.id}`} className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full truncate rounded-xl border-2 px-2")}>
-            {t("preview.profile", { name: tutor.name })}
+          <Link href={`/tutors/${tutor.id}`} className={cn(buttonVariants({ variant: "outline", size: "lg" }), "min-w-0 w-full rounded-xl border-2 px-2")}>
+            <span className="min-w-0 truncate">{t("preview.profile", { name: profileName })}</span>
           </Link>
         </div>
       </div>
@@ -1024,9 +1053,9 @@ function TutorCard({
         </Link>
 
         {/* — Details — */}
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <Link href={profileHref} className="text-[1.4rem] font-black leading-tight text-ink hover:text-brand-700">
+        <div className="min-w-0 overflow-hidden">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <Link href={profileHref} className="min-w-0 max-w-full truncate text-[1.4rem] font-black leading-tight text-ink hover:text-brand-700">
               {tutor.name}
             </Link>
             <Tooltip>

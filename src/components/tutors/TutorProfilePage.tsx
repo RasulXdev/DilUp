@@ -67,17 +67,17 @@ function formatLongDate(locale: string, date: Date, withYear: boolean) {
   }).format(date);
 }
 
-const DAY_KEYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DAY_KEYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 function getWeekDays(weekOffset = 0) {
   const now = new Date();
   const day = now.getDay();
-  const sunday = new Date(now);
-  sunday.setDate(now.getDate() - day);
-  sunday.setDate(sunday.getDate() + weekOffset * 7);
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - ((day + 6) % 7));
+  monday.setDate(monday.getDate() + weekOffset * 7);
   return DAY_KEYS.map((key, i) => {
-    const d = new Date(sunday);
-    d.setDate(sunday.getDate() + i);
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
     return { key, day: String(d.getDate()), date: d };
   });
 }
@@ -416,7 +416,7 @@ export function TutorProfilePage({ tutor, allTutors }: { tutor: Tutor; allTutors
                       <p className="mt-1 truncate text-[11px] font-black text-ink sm:text-sm lg:text-base">{formatShortDate(locale, day.date)}</p>
                     </div>
                     <div className="mt-3 flex flex-col gap-1.5 sm:mt-4 sm:gap-2 lg:mt-5 lg:gap-3">
-                      {visibleSlots.length > 0 ? visibleSlots.map((slot) => {
+                      {visibleSlots.map((slot) => {
                         const active = selectedSlot?.dayKey === day.key && selectedSlot.slot === slot;
                         return (
                         <button
@@ -433,9 +433,7 @@ export function TutorProfilePage({ tutor, allTutors }: { tutor: Tutor; allTutors
                           {slot}
                         </button>
                         );
-                      }) : (
-                        <span className="rounded-lg bg-surface px-1 py-2 text-[9px] font-bold text-muted sm:text-[11px] lg:text-xs">{t("noSlots")}</span>
-                      )}
+                      })}
                       {hiddenSlots > 0 ? (
                         <button
                           type="button"
