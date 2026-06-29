@@ -72,7 +72,7 @@ export default async function HomePage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Navbar className="static" />
+      <Navbar className="static bg-brand-300" />
       <main className="flex-1">
         <Hero />
         <TrustStats stats={platform} />

@@ -201,7 +201,7 @@ export function Navbar({ className }: { className?: string }) {
   }
 
   return (
-    <header className={cn("relative z-40 bg-brand-300", className)}>
+    <header className={cn("relative z-40 bg-white", className)}>
       {showEmailBanner ? (
         <div className="flex min-h-14 items-center justify-between gap-4 bg-brand-50 px-5 py-3 text-sm font-semibold text-ink sm:px-7 lg:px-8 xl:px-10">
           <p>{t("emailConfirm.text", { email: user?.email ?? "" })}</p>

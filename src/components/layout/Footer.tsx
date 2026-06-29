@@ -57,7 +57,9 @@ export function Footer() {
   ];
 
   return (
-    <footer className="mt-auto bg-brand-950 text-white">
+    <footer className="relative mt-auto bg-brand-950 text-white">
+      <BackToTop label={t("backToTop")} />
+
       {/* gold hairline */}
       <div className="h-px w-full bg-gradient-to-r from-transparent via-accent-400/60 to-transparent" />
 
@@ -186,7 +188,6 @@ export function Footer() {
             >
               {t("terms")}
             </Link>
-            <BackToTop label={t("backToTop")} />
           </div>
         </div>
       </div>
