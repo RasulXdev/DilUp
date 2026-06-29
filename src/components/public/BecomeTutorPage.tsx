@@ -13,7 +13,7 @@ export function BecomeTutorPage({ locale }: { locale: string }) {
 
   return (
     <>
-      <Navbar />
+      <Navbar className="static bg-white" />
       <main className="flex-1 overflow-hidden bg-white">
         <section className="bg-brand-300">
           <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-4 py-14 sm:px-6 sm:py-18 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:px-8 lg:py-24">
