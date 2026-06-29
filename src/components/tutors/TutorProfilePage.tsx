@@ -32,8 +32,15 @@ import { Navbar } from "@/components/layout/Navbar";
 import { useCurrency } from "@/components/shared/CurrencyProvider";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { resolveTutorsGateHref } from "@/lib/auth/redirects";
 import { createClient } from "@/lib/supabase/client";
+import { resolveSpecialtyKey } from "@/lib/tutors/labels";
 import { useSavedTutors } from "@/lib/tutors/useSavedTutors";
 import { cn } from "@/lib/utils";
 import type { Tutor } from "@/lib/tutors";
@@ -151,6 +158,10 @@ export function TutorProfilePage({ tutor, allTutors }: { tutor: Tutor; allTutors
   const headline = tutor.source === "db" ? tutor.headline : labels(`copy.${tutor.headline}`);
   const bio = tutor.source === "db" ? tutor.bio : labels(`copy.${tutor.id}.bio`);
   const about = tutor.source === "db" ? tutor.about : labels(`copy.${tutor.id}.about`);
+  const getSpecialtyLabel = (specialty: string) => {
+    const specialtyKey = resolveSpecialtyKey(specialty);
+    return specialtyKey ? labels(`specialties.${specialtyKey}`) : specialty;
+  };
   const visibleAbout = aboutExpanded || about.length < 300 ? about : `${about.slice(0, 300)}...`;
   const visibleReviews = showAllReviews ? tutor.reviews : tutor.reviews.slice(0, 2);
   const totalSlots = DAY_KEYS.reduce((sum, day) => sum + (tutor.schedule[day]?.length ?? 0), 0);
@@ -520,7 +531,7 @@ export function TutorProfilePage({ tutor, allTutors }: { tutor: Tutor; allTutors
           <Section title={t("specialtiesTitle")}>
             <div className="divide-y divide-line border-y border-line">
               {tutor.specialties.map((specialty) => {
-                const specialtyLabel = tutor.source === "db" ? specialty : labels(`specialties.${specialty}`);
+                const specialtyLabel = getSpecialtyLabel(specialty);
                 const open = openSpecialty === specialty;
 
                 return (
@@ -640,16 +651,18 @@ function BookingCard({
         <CalendarDays className="h-5 w-5" />
         {t("bookTrial")}
       </Link>
-      <div className="mt-4 grid grid-cols-3 gap-3">
-        <IconButton label={t("message")} icon={<MessageSquare />} />
-        <IconButton
-          active={saved}
-          label={saved ? t("saved") : t("save")}
-          icon={<Heart className={saved ? "fill-current" : undefined} />}
-          onClick={() => toggleSaved(tutor.id)}
-        />
-        <IconButton label={t("share")} icon={<Share2 />} />
-      </div>
+      <TooltipProvider>
+        <div className="mt-4 grid grid-cols-3 gap-3">
+          <IconButton label={t("message")} icon={<MessageSquare />} />
+          <IconButton
+            active={saved}
+            label={saved ? t("saved") : t("save")}
+            icon={<Heart className={saved ? "fill-current" : undefined} />}
+            onClick={() => toggleSaved(tutor.id)}
+          />
+          <IconButton label={t("share")} icon={<Share2 />} />
+        </div>
+      </TooltipProvider>
       <div className="mt-6 flex gap-3 rounded-xl bg-emerald-50 p-4 text-emerald-950">
         <Check className="mt-1 h-5 w-5 shrink-0" />
         <div>
@@ -736,17 +749,24 @@ function IconButton({
   onClick?: () => void;
 }) {
   return (
-    <button
-      type="button"
-      aria-label={label}
-      onClick={onClick}
-      className={cn(
-        "flex h-16 items-center justify-center rounded-xl border hover:bg-brand-50 hover:text-brand-700",
-        active ? "border-brand-300 bg-brand-50 text-brand-700" : "border-line bg-white",
-      )}
-    >
-      <span className="[&_svg]:h-5 [&_svg]:w-5">{icon}</span>
-    </button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          aria-label={label}
+          onClick={onClick}
+          className={cn(
+            "flex h-16 items-center justify-center rounded-xl border hover:bg-brand-50 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+            active ? "border-brand-300 bg-brand-50 text-brand-700" : "border-line bg-white",
+          )}
+        >
+          <span className="[&_svg]:h-5 [&_svg]:w-5">{icon}</span>
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="top" sideOffset={8}>
+        {label}
+      </TooltipContent>
+    </Tooltip>
   );
 }
 

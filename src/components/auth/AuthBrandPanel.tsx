@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Star, Quote, CheckCircle2 } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 
 /**
  * Immersive blue brand panel for the split-screen auth layout.
@@ -69,17 +70,26 @@ export function AuthBrandPanel() {
 
       {/* Content */}
       <div className="relative flex h-full flex-col justify-between p-12 text-white">
-        <div className="flex items-center gap-2.5">
+        <Link
+          href="/"
+          aria-label="DilUp"
+          className="group inline-flex w-fit items-center gap-2.5 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-300 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-800"
+        >
           <span
-            className="flex h-10 w-10 items-end justify-center gap-[3px] rounded-xl bg-white/15 px-2 pb-2.5 backdrop-blur"
+            className="flex h-10 w-10 items-end justify-center gap-[3px] rounded-xl bg-white px-2 pb-2.5 shadow-brand transition-transform group-hover:-translate-y-0.5"
             aria-hidden
           >
-            <span className="h-2.5 w-[3px] rounded-full bg-white/50" />
-            <span className="h-4 w-[3px] rounded-full bg-white/80" />
+            <span className="h-2.5 w-[3px] rounded-full bg-brand-300" />
+            <span className="h-4 w-[3px] rounded-full bg-brand-500" />
             <span className="h-6 w-[3px] rounded-full bg-accent-400" />
           </span>
-          <span className="font-display text-2xl font-extrabold">DilUp</span>
-        </div>
+          <span className="font-display text-3xl font-black tracking-tight text-white">
+            Dil
+            <span className="text-brand-200 drop-shadow-[0_6px_18px_rgba(147,184,253,0.55)]">
+              Up
+            </span>
+          </span>
+        </Link>
 
         <div className="max-w-md">
           <h2 className="font-display text-4xl font-extrabold leading-tight">

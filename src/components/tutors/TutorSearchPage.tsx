@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import {
   ArrowRight,
@@ -41,6 +41,7 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { type SpecialtyCode, type SubjectCode, type Tutor } from "@/lib/tutors";
+import { resolveSpecialtyKey } from "@/lib/tutors/labels";
 import { useSavedTutors } from "@/lib/tutors/useSavedTutors";
 import { useTutorsQuery } from "@/lib/tutors/useTutorsQuery";
 import { cn } from "@/lib/utils";
@@ -188,6 +189,10 @@ export function TutorSearchPage({
   const [professionalOnly, setProfessionalOnly] = useState(false);
   const [superOnly, setSuperOnly] = useState(false);
   const [query, setQuery] = useState("");
+  const getSpecialtyLabel = useCallback((specialty: string) => {
+    const specialtyKey = resolveSpecialtyKey(specialty);
+    return specialtyKey ? t(`specialties.${specialtyKey}`) : specialty;
+  }, [t]);
   const [sort, setSort] = useState<SortKey>("top");
   const [completedSubjects] = useState<string[]>(readCompletedSubjects);
   const [subjectPickedFromFilter, setSubjectPickedFromFilter] = useState(false);
@@ -221,7 +226,7 @@ export function TutorSearchPage({
           tutor.source === "db" ? tutor.headline : t(`copy.${tutor.headline}`),
           tutor.bio,
           t(`countries.${tutor.countryCode}`),
-          ...tutor.specialties.map((specialty) => (tutor.source === "db" ? specialty : t(`specialties.${specialty}`))),
+          ...tutor.specialties.map(getSpecialtyLabel),
         ]
           .join(" ")
           .toLowerCase()
@@ -262,6 +267,7 @@ export function TutorSearchPage({
     sort,
     subject,
     superOnly,
+    getSpecialtyLabel,
     t,
     tutors,
   ]);

@@ -191,9 +191,9 @@
       "showTutors": "{count} müəllimi göstər",
       "tutorName": "Ryan C.",
       "tutorMeta": "Peşəkar müəllim · 200 dərs",
-      "tutorSignal": "Matching quiz-dən sonra daha dəqiq işləyir"
+      "tutorSignal": "Uyğunluq suallarından sonra daha dəqiq işləyir"
     },
-    "promoTitle": "Trial dərsinə 30% endirim əldə et",
+    "promoTitle": "Sınaq dərsinə 30% endirim əldə et",
     "promoText": "Kod lazım deyil. ₼12 və daha yuxarı qiymətli müəllimlərə aiddir.",
     "refreshing": "Müəllimlər yenilənir...",
     "errorTitle": "Müəllimləri yükləyə bilmədik",
@@ -314,7 +314,7 @@
           "0": "Sue heyrətamiz müəllimdir! Çox peşəkardır və həmişə inkişaf etmək üçün əla strategiyaları var.",
           "1": "Həqiqətən gördüyüm ən yaxşı müəllimlərdən biridir — səbirli, ruhlandırıcı və inkişafına həqiqətən diqqət yetirir.",
           "2": "Dərslər yaxşı strukturlaşdırılıb, izləməsi asandır və heç vaxt darıxdırıcı deyil.",
-          "3": "Hər dəfə yeni şey öyrənirəm, hər dərsdən sonrakı feedback çox faydalıdır."
+          "3": "Hər dəfə yeni şey öyrənirəm, hər dərsdən sonrakı geribildirim çox faydalıdır."
         }
       },
       "nea-p": {
@@ -328,12 +328,12 @@
         }
       },
       "andrew-s": {
-        "bio": "IELTS danışıq, yazı və peşəkar kommunikasiya üzrə ekspert dəstək. Trial dərslə başla, planını birlikdə quraq.",
+        "bio": "IELTS danışıq, yazı və peşəkar kommunikasiya üzrə ekspert dəstək. Sınaq dərsi ilə başla, planını birlikdə quraq.",
         "about": "Mən Andrew, Birləşmiş Krallıqdan DELTA dərəcəli İngilis dili müəllimiyəm. Dərslərim birbaşa, praktik və ölçülə bilən irəliləyişə fokuslanır — IELTS-ə hazırlaşırsansa, biznes yazını gücləndirmək istəyirsənsə və ya görüşlərdə daha inamlı səslənmək istəyirsənsə, əla seçimdir.",
         "highlight": "IELTS danışıq və yazı praktikası üçün güclü seçim.",
-        "reviewSummary": "Tələbələr Andrew-un birbaşa feedback-ini, ağıllı imtahan strategiyalarını və səliqəli dərslərini yüksək qiymətləndirir.",
+        "reviewSummary": "Tələbələr Andrew-un birbaşa geribildirimini, ağıllı imtahan strategiyalarını və səliqəli dərslərini yüksək qiymətləndirir.",
         "reviews": {
-          "0": "Andrew-un IELTS feedback-i çox aydındır və həqiqətən faydalıdır.",
+          "0": "Andrew-un IELTS geribildirimi çox aydındır və həqiqətən faydalıdır.",
           "1": "Əla struktur, biznes lüğətim çox inkişaf etdi."
         }
       }
@@ -382,7 +382,7 @@
     "caption": "Trial dərslə başla və tədris stilinin sənə uyğun olub-olmadığını gör.",
     "trialReady": "{minutes} dəq trial hazırdır",
     "from": "{country} ölkəsindən",
-    "professionalBadge": "Professional Müəllim",
+    "professionalBadge": "Peşəkar müəllim",
     "highlights": "Seçilən məqamlar",
     "highlightsNote": "Müəllim məlumatları və real tələbə rəylərinə əsaslanır",
     "superTutor": "Super Müəllim",
@@ -428,21 +428,21 @@
     "educationText": "Dərslər {subject}, danışıq hədəfləri və öyrənən inamı ətrafında qurulur.",
     "certificateVerified": "Sertifikat təsdiqlənib",
     "specialtiesTitle": "İxtisaslarım",
-    "specialtyDetail": "{name} {specialty} dərslərində {subject} praktikasını aydın hədəflər, yönləndirilmiş danışıq və dərsdən sonra faydalı feedback ilə birləşdirir.",
+    "specialtyDetail": "{name} {specialty} dərslərində {subject} praktikasını aydın hədəflər, yönləndirilmiş danışıq və dərsdən sonra faydalı geribildirim ilə birləşdirir.",
     "alsoLike": "Bunlar da maraqlı ola bilər",
     "lessonDuration": "{minutes} dəq dərs",
     "perLesson": "/ dərs",
     "reviews": "{count} rəy",
     "students": "tələbə",
     "lessons": "dərs",
-    "bookTrial": "Trial dərs bron et",
+    "bookTrial": "Sınaq dərsi bron et",
     "bookTrialShort": "Bron et",
     "message": "Müəllimə mesaj",
     "save": "Yadda saxla",
     "saved": "Yadda saxlanılıb",
     "share": "Paylaş",
     "notMatch": "Uyğun deyil?",
-    "freeTrials": "Hələ 2 pulsuz trial imkanın var."
+    "freeTrials": "Hələ 2 pulsuz sınaq imkanın var."
   },
   "howItWorks": {
     "title": "<mark>DilUp</mark> necə işləyir",
