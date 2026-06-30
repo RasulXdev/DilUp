@@ -730,15 +730,32 @@ function StepBody({
 
       return `${option.label} ${option.code}`.toLocaleLowerCase().includes(query);
     });
+    const phoneCode = selectedPhoneCountry?.code ?? "";
+    const phoneLocalValue =
+      phoneCode && application.phone.startsWith(phoneCode)
+        ? application.phone.slice(phoneCode.length).trimStart()
+        : application.phone.replace(/^\+\d+\s*/, "");
+    const updatePhoneLocalValue = (value: string) => {
+      if (!phoneCode) {
+        updateField("phone", value);
+        return;
+      }
+
+      updateField("phone", value.trim() ? `${phoneCode} ${value}` : phoneCode);
+    };
     const syncPhoneCountry = (country: string) => {
       setApplication((current) => {
         const oldCode = callingCodesByCountry[current.phoneCountry];
         const nextCode = callingCodesByCountry[country];
-        const shouldReplacePhone = !current.phone.trim() || current.phone === oldCode;
+        const currentLocalValue =
+          oldCode && current.phone.startsWith(oldCode)
+            ? current.phone.slice(oldCode.length).trimStart()
+            : current.phone.replace(/^\+\d+\s*/, "");
+        const shouldReplacePhone = Boolean(nextCode);
 
         return {
           ...current,
-          phone: nextCode && shouldReplacePhone ? nextCode : current.phone,
+          phone: nextCode && shouldReplacePhone ? (currentLocalValue ? `${nextCode} ${currentLocalValue}` : nextCode) : current.phone,
           phoneCountry: nextCode ? country : current.phoneCountry,
         };
       });
@@ -747,12 +764,16 @@ function StepBody({
       setApplication((current) => {
         const oldCode = callingCodesByCountry[current.phoneCountry];
         const nextCode = callingCodesByCountry[country];
-        const shouldReplacePhone = !current.phone.trim() || current.phone === oldCode;
+        const currentLocalValue =
+          oldCode && current.phone.startsWith(oldCode)
+            ? current.phone.slice(oldCode.length).trimStart()
+            : current.phone.replace(/^\+\d+\s*/, "");
+        const shouldReplacePhone = Boolean(nextCode);
 
         return {
           ...current,
           country,
-          phone: nextCode && shouldReplacePhone ? nextCode : current.phone,
+          phone: nextCode && shouldReplacePhone ? (currentLocalValue ? `${nextCode} ${currentLocalValue}` : nextCode) : current.phone,
           phoneCountry: nextCode ? country : current.phoneCountry,
         };
       });
@@ -936,10 +957,15 @@ function StepBody({
                 <span aria-hidden>{selectedPhoneCountry?.flag ?? ""}</span>
                 <ChevronDown className="h-3.5 w-3.5 text-muted" />
               </button>
+              {phoneCode ? (
+                <span className="flex h-full shrink-0 items-center pl-3 pr-1 text-base text-ink" aria-hidden>
+                  {phoneCode}
+                </span>
+              ) : null}
               <input
-                value={application.phone}
-                onChange={(event) => updateField("phone", event.target.value)}
-                className="h-full min-w-0 flex-1 px-3 text-base outline-none placeholder:text-muted"
+                value={phoneLocalValue}
+                onChange={(event) => updatePhoneLocalValue(event.target.value)}
+                className="h-full min-w-0 flex-1 px-3 pl-1 text-base outline-none placeholder:text-muted"
                 inputMode="tel"
                 placeholder={t("fields.phone").replace(/\s*\(.+\)\s*$/, "")}
               />
