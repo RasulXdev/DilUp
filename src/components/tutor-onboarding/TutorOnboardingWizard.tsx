@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -764,6 +764,7 @@ function StepBody({
   const [countrySearch, setCountrySearch] = useState("");
   const [languagePickerIndex, setLanguagePickerIndex] = useState<number | null>(null);
   const [languageSearch, setLanguageSearch] = useState("");
+  const phonePickerRef = useRef<HTMLDivElement>(null);
   const selectedPhoneCountry =
     phoneOptions.find((option) => option.value === application.phoneCountry);
   const firstSpokenIndex = application.speaks.findIndex((language, index) =>
@@ -781,6 +782,23 @@ function StepBody({
         level: application.spokenLanguageLevels[index] || (index === 0 ? application.languageLevel : ""),
       }))
     : [{ language: "", level: "" }];
+
+  useEffect(() => {
+    if (!phonePickerOpen) {
+      return;
+    }
+
+    function closeOnOutsidePointer(event: PointerEvent) {
+      if (!phonePickerRef.current?.contains(event.target as Node)) {
+        setPhonePickerOpen(false);
+        setPhoneSearch("");
+      }
+    }
+
+    document.addEventListener("pointerdown", closeOnOutsidePointer);
+
+    return () => document.removeEventListener("pointerdown", closeOnOutsidePointer);
+  }, [phonePickerOpen]);
 
   if (step === "about") {
     const menuProps = {
@@ -1034,7 +1052,7 @@ function StepBody({
           {t("actions.addLanguage")}
         </button>
         <Field label={t("fields.phone")}>
-          <div className="relative max-w-[300px]">
+          <div ref={phonePickerRef} className="relative max-w-[300px]">
             <div className="flex h-12 items-center overflow-hidden rounded-[8px] border-2 border-[#dcdce5] bg-white focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-500/15">
               <button
                 type="button"
@@ -1380,14 +1398,31 @@ function SearchableOptionSelect({
   searchPlaceholder: string;
   value: string;
 }) {
+  const pickerRef = useRef<HTMLDivElement>(null);
   const selectedOption = options.find((option) => option.value === value);
   const query = search.trim().toLocaleLowerCase();
   const filteredOptions = query
     ? options.filter((option) => option.label.toLocaleLowerCase().includes(query))
     : options;
 
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    function closeOnOutsidePointer(event: PointerEvent) {
+      if (!pickerRef.current?.contains(event.target as Node)) {
+        onOpenChange(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", closeOnOutsidePointer);
+
+    return () => document.removeEventListener("pointerdown", closeOnOutsidePointer);
+  }, [onOpenChange, open]);
+
   return (
-    <div className="relative">
+    <div ref={pickerRef} className="relative">
       <button
         type="button"
         onClick={() => onOpenChange(!open)}
