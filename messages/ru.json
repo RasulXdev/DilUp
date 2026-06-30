@@ -862,6 +862,7 @@
       "chooseLevel": "Уровень",
       "phoneCode": "Код",
       "searchLanguage": "Поиск языка...",
+      "searchCountry": "Поиск страны...",
       "searchPhoneCountry": "Поиск страны или кода..."
     },
     "labels": {

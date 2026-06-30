@@ -275,6 +275,72 @@ const callingCodesByCountry: Record<string, string> = {
   VA: "+39", VC: "+1784", VE: "+58", VG: "+1284", VI: "+1340", VN: "+84", VU: "+678", WF: "+681", WS: "+685",
   YE: "+967", YT: "+262", ZA: "+27", ZM: "+260", ZW: "+263",
 };
+const phoneNumberExamples: Record<string, string> = {
+  AE: "50 123 4567",
+  AF: "70 123 4567",
+  AL: "69 123 4567",
+  AR: "11 2345 6789",
+  AT: "664 123456",
+  AU: "412 345 678",
+  AZ: "50 123 45 67",
+  BA: "61 123 456",
+  BD: "1712 345678",
+  BE: "470 12 34 56",
+  BG: "88 123 4567",
+  BR: "11 91234 5678",
+  BY: "29 123 45 67",
+  CA: "416 555 0123",
+  CH: "78 123 45 67",
+  CL: "9 1234 5678",
+  CN: "131 2345 6789",
+  CO: "300 123 4567",
+  CZ: "601 123 456",
+  DE: "151 23456789",
+  DK: "20 12 34 56",
+  EG: "100 123 4567",
+  ES: "612 345 678",
+  FI: "40 123 4567",
+  FR: "6 12 34 56 78",
+  GB: "7400 123456",
+  GE: "555 12 34 56",
+  GR: "691 234 5678",
+  HK: "5123 4567",
+  HU: "20 123 4567",
+  ID: "812 3456 7890",
+  IE: "85 123 4567",
+  IL: "50 123 4567",
+  IN: "98765 43210",
+  IQ: "750 123 4567",
+  IR: "912 345 6789",
+  IT: "312 345 6789",
+  JP: "90 1234 5678",
+  KZ: "701 123 4567",
+  KR: "10 1234 5678",
+  KW: "500 12345",
+  KG: "700 123 456",
+  MA: "612 345678",
+  MD: "69 123 456",
+  MX: "55 1234 5678",
+  MY: "12 345 6789",
+  NL: "6 12345678",
+  NO: "406 12 345",
+  NZ: "21 123 4567",
+  PK: "301 2345678",
+  PL: "512 345 678",
+  PT: "912 345 678",
+  RO: "712 345 678",
+  RU: "912 345 67 89",
+  SA: "50 123 4567",
+  SE: "70 123 45 67",
+  SG: "8123 4567",
+  TH: "81 234 5678",
+  TR: "501 234 56 78",
+  UA: "67 123 45 67",
+  US: "201 555 0123",
+  UZ: "90 123 45 67",
+  VN: "91 234 56 78",
+  ZA: "71 123 4567",
+};
 const fallbackTimeZones = ["Asia/Baku", "Europe/Istanbul", "Europe/London", "America/New_York", "Asia/Dubai"];
 const dayKeys = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 const timeKeys = ["morning", "afternoon", "evening", "night"];
@@ -694,6 +760,8 @@ function StepBody({
 }) {
   const [phonePickerOpen, setPhonePickerOpen] = useState(false);
   const [phoneSearch, setPhoneSearch] = useState("");
+  const [countryPickerOpen, setCountryPickerOpen] = useState(false);
+  const [countrySearch, setCountrySearch] = useState("");
   const [languagePickerIndex, setLanguagePickerIndex] = useState<number | null>(null);
   const [languageSearch, setLanguageSearch] = useState("");
   const selectedPhoneCountry =
@@ -730,7 +798,18 @@ function StepBody({
 
       return `${option.label} ${option.code}`.toLocaleLowerCase().includes(query);
     });
+    const filteredCountryOptions = countryOptions.filter((option) => {
+      const query = countrySearch.trim().toLocaleLowerCase();
+      if (!query) {
+        return true;
+      }
+
+      return option.label.toLocaleLowerCase().includes(query);
+    });
     const phoneCode = selectedPhoneCountry?.code ?? "";
+    const phoneExample = selectedPhoneCountry
+      ? phoneNumberExamples[selectedPhoneCountry.value] ?? "123 456 7890"
+      : t("fields.phone").replace(/\s*\(.+\)\s*$/, "");
     const phoneLocalValue =
       phoneCode && application.phone.startsWith(phoneCode)
         ? application.phone.slice(phoneCode.length).trimStart()
@@ -846,15 +925,25 @@ function StepBody({
             <Input className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus-visible:ring-brand-500/15" value={application.lastName} onChange={(event) => updateField("lastName", event.target.value)} />
           </Field>
           <Field label={t("fields.country")}>
-            <Select
-              value={application.country || undefined}
-              onValueChange={selectBirthCountry}
-            >
-              <SelectTrigger className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none">
-                <SelectValue placeholder={t("placeholders.chooseCountry")} />
-              </SelectTrigger>
-              <SelectContent {...menuProps}>{countryOptions.map((option) => <SelectItem key={option.value} value={option.value} className={menuItemClass}>{option.label}</SelectItem>)}</SelectContent>
-            </Select>
+            <SearchableOptionSelect
+              emptyText={t("labels.noResults")}
+              onOpenChange={(open) => {
+                setCountryPickerOpen(open);
+                setCountrySearch("");
+              }}
+              onSearchChange={setCountrySearch}
+              onValueChange={(value) => {
+                selectBirthCountry(value);
+                setCountryPickerOpen(false);
+                setCountrySearch("");
+              }}
+              open={countryPickerOpen}
+              options={filteredCountryOptions}
+              placeholder={t("placeholders.chooseCountry")}
+              search={countrySearch}
+              searchPlaceholder={t("placeholders.searchCountry")}
+              value={application.country}
+            />
           </Field>
           <Field label={t("fields.teaches")}>
             <Select value={application.teaches || undefined} onValueChange={(value) => updateField("teaches", value)}>
@@ -888,7 +977,7 @@ function StepBody({
               )}
             >
               <Field label={index === 0 ? t("fields.speaks") : t("fields.speaksExtra")}>
-                <SearchableLanguageSelect
+                <SearchableOptionSelect
                   emptyText={t("labels.noResults")}
                   onOpenChange={(open) => {
                     setLanguagePickerIndex(open ? index : null);
@@ -967,7 +1056,7 @@ function StepBody({
                 onChange={(event) => updatePhoneLocalValue(event.target.value)}
                 className="h-full min-w-0 flex-1 px-3 pl-1 text-base outline-none placeholder:text-muted"
                 inputMode="tel"
-                placeholder={t("fields.phone").replace(/\s*\(.+\)\s*$/, "")}
+                placeholder={phoneExample}
               />
             </div>
             {phonePickerOpen ? (
@@ -1268,7 +1357,7 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
   );
 }
 
-function SearchableLanguageSelect({
+function SearchableOptionSelect({
   emptyText,
   onOpenChange,
   onSearchChange,
