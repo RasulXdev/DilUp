@@ -755,6 +755,7 @@
       "saveContinue": "Save and continue",
       "submit": "Submit application",
       "addLanguage": "Add another language",
+      "removeLanguage": "Remove language",
       "ready": "This step is ready.",
       "missing": "Complete the required fields to continue."
     },

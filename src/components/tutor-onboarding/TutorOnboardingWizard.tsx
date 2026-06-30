@@ -616,6 +616,23 @@ function StepBody({
         };
       });
     };
+    const removeSpokenLanguage = (index: number) => {
+      if (index === 0) {
+        return;
+      }
+
+      setApplication((current) => {
+        const speaks = (current.speaks.length ? [...current.speaks] : [""]).filter((_, rowIndex) => rowIndex !== index);
+        const spokenLanguageLevels = (current.spokenLanguageLevels.length ? [...current.spokenLanguageLevels] : [current.languageLevel])
+          .filter((_, rowIndex) => rowIndex !== index);
+
+        return {
+          ...current,
+          speaks,
+          spokenLanguageLevels,
+        };
+      });
+    };
 
     return (
       <div className="grid gap-4">
@@ -659,7 +676,15 @@ function StepBody({
         </div>
         <div className="grid gap-3">
           {spokenRows.map((row, index) => (
-            <div key={index} className="grid grid-cols-[minmax(0,1fr)_minmax(128px,0.85fr)] gap-2">
+            <div
+              key={index}
+              className={cn(
+                "grid items-end gap-2",
+                index === 0
+                  ? "grid-cols-[minmax(0,1fr)_minmax(128px,0.85fr)]"
+                  : "grid-cols-[minmax(0,1fr)_minmax(128px,0.85fr)_40px]",
+              )}
+            >
               <Field label={index === 0 ? t("fields.speaks") : t("fields.speaksExtra")}>
                 <Select
                   value={row.language || undefined}
@@ -683,6 +708,16 @@ function StepBody({
                   </SelectContent>
                 </Select>
               </Field>
+              {index > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => removeSpokenLanguage(index)}
+                  className="mb-0 flex h-10 w-10 items-center justify-center rounded-[8px] border-2 border-transparent text-ink-soft transition-colors hover:bg-surface hover:text-ink focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15"
+                  aria-label={t("actions.removeLanguage")}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              ) : null}
             </div>
           ))}
         </div>
