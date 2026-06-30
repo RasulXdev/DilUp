@@ -860,10 +860,13 @@
       "chooseSubject": "Choose subject...",
       "chooseLanguage": "Language...",
       "chooseLevel": "Level",
-      "phoneCode": "Code"
+      "phoneCode": "Code",
+      "searchLanguage": "Search language...",
+      "searchPhoneCountry": "Search country or code..."
     },
     "labels": {
-      "comingSoon": "coming soon"
+      "comingSoon": "coming soon",
+      "noResults": "No results found"
     },
     "languages": {
       "english": "English",

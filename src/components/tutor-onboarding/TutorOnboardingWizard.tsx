@@ -19,6 +19,7 @@ import {
   Play,
   Plus,
   RefreshCw,
+  Search,
   Trash2,
   User,
   Upload,
@@ -111,6 +112,8 @@ const STORAGE_KEY = "dilup_tutor_application_v2";
 const teachingLanguageKeys = ["english", "russian", "turkish", "german", "french", "spanish", "arabic", "italian"];
 const activeTeachingLanguageKeys = ["english"];
 const levelKeys = ["b1", "b2", "c1", "c2", "native"];
+const dropdownScrollClass =
+  "overflow-y-auto overflow-x-hidden [scrollbar-gutter:stable] ![scrollbar-width:thin] ![scrollbar-color:var(--color-brand-300)_transparent] [&::-webkit-scrollbar]:!block [&::-webkit-scrollbar]:!w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-brand-300 [&::-webkit-scrollbar-track]:bg-transparent";
 const spokenLanguageCodes = [
   "af", "sq", "am", "grc", "ar", "az", "eu", "bn", "bs", "bg", "my", "ca", "ceb", "yue", "zh-Hans", "ht", "crh",
   "hr", "cs", "da", "en", "eo", "et", "fa", "fi", "fr", "gl", "ka", "de", "el", "gu", "haw", "he", "hi", "is", "ig",
@@ -142,6 +145,106 @@ const countryCodes = [
   "TM", "TC", "TV", "UG", "UA", "AE", "GB", "US", "UM", "UY", "UZ", "VU",
   "VE", "VN", "VG", "VI", "WF", "EH", "YE", "ZM", "ZW",
 ];
+const localizedRegionNames: Record<string, Record<string, string>> = {
+  az: {
+    AF: "Əfqanıstan", AX: "Aland adaları", AL: "Albaniya", DZ: "Əlcəzair", AS: "Amerika Samoası", AD: "Andorra",
+    AO: "Anqola", AI: "Angilya", AQ: "Antarktika", AG: "Antiqua və Barbuda", AR: "Argentina", AW: "Aruba",
+    AU: "Avstraliya", AT: "Avstriya", AZ: "Azərbaycan", BS: "Baham adaları", BH: "Bəhreyn", BD: "Banqladeş",
+    BB: "Barbados", BY: "Belarus", BE: "Belçika", BZ: "Beliz", BJ: "Benin", BM: "Bermud adaları",
+    BT: "Butan", BO: "Boliviya", BQ: "Karib Niderlandı", BA: "Bosniya və Herseqovina", BW: "Botsvana",
+    BV: "Buve adası", BR: "Braziliya", IO: "Britaniyanın Hind Okeanı Ərazisi", BN: "Bruney", BG: "Bolqarıstan",
+    BF: "Burkina Faso", BI: "Burundi", CV: "Kabo-Verde", KH: "Kamboca", CM: "Kamerun", CA: "Kanada",
+    KY: "Kayman adaları", CF: "Mərkəzi Afrika Respublikası", TD: "Çad", CL: "Çili", CN: "Çin", CX: "Milad adası",
+    CC: "Kokos (Kilinq) adaları", CO: "Kolumbiya", KM: "Komor adaları", CG: "Konqo - Brazzavil",
+    CD: "Konqo - Kinşasa", CK: "Kuk adaları", CR: "Kosta Rika", CI: "Kotd'ivuar", HR: "Xorvatiya",
+    CU: "Kuba", CW: "Kurasao", CY: "Kipr", CZ: "Çexiya", DK: "Danimarka", DJ: "Cibuti", DM: "Dominika",
+    DO: "Dominikan Respublikası", EC: "Ekvador", EG: "Misir", SV: "Salvador", GQ: "Ekvatorial Qvineya",
+    ER: "Eritreya", EE: "Estoniya", SZ: "Esvatini", ET: "Efiopiya", FK: "Folklend adaları", FO: "Farer adaları",
+    FJ: "Fici", FI: "Finlandiya", FR: "Fransa", GF: "Fransa Qvianası", PF: "Fransa Polineziyası",
+    TF: "Fransanın Cənub Əraziləri", GA: "Qabon", GM: "Qambiya", GE: "Gürcüstan", DE: "Almaniya",
+    GH: "Qana", GI: "Cəbəllütariq", GR: "Yunanıstan", GL: "Qrenlandiya", GD: "Qrenada", GP: "Qvadelupa",
+    GU: "Quam", GT: "Qvatemala", GG: "Gernsi", GN: "Qvineya", GW: "Qvineya-Bisau", GY: "Qayana",
+    HT: "Haiti", HM: "Herd və Makdonald adaları", VA: "Vatikan", HN: "Honduras", HK: "Honq Konq",
+    HU: "Macarıstan", IS: "İslandiya", IN: "Hindistan", ID: "İndoneziya", IR: "İran", IQ: "İraq",
+    IE: "İrlandiya", IM: "Men adası", IL: "İsrail", IT: "İtaliya", JM: "Yamayka", JP: "Yaponiya",
+    JE: "Cersi", JO: "İordaniya", KZ: "Qazaxıstan", KE: "Keniya", KI: "Kiribati", KP: "Şimali Koreya",
+    KR: "Cənubi Koreya", KW: "Küveyt", KG: "Qırğızıstan", LA: "Laos", LV: "Latviya", LB: "Livan",
+    LS: "Lesoto", LR: "Liberiya", LY: "Liviya", LI: "Lixtenşteyn", LT: "Litva", LU: "Lüksemburq",
+    MO: "Makao", MG: "Madaqaskar", MW: "Malavi", MY: "Malayziya", MV: "Maldiv adaları", ML: "Mali",
+    MT: "Malta", MH: "Marşal adaları", MQ: "Martinik", MR: "Mavritaniya", MU: "Mavriki", YT: "Mayot",
+    MX: "Meksika", FM: "Mikroneziya", MD: "Moldova", MC: "Monako", MN: "Monqolustan", ME: "Monteneqro",
+    MS: "Monserat", MA: "Mərakeş", MZ: "Mozambik", MM: "Myanma", NA: "Namibiya", NR: "Nauru",
+    NP: "Nepal", NL: "Niderland", NC: "Yeni Kaledoniya", NZ: "Yeni Zelandiya", NI: "Nikaraqua", NE: "Niger",
+    NG: "Nigeriya", NU: "Niue", NF: "Norfolk adası", MK: "Şimali Makedoniya", MP: "Şimali Marian adaları",
+    NO: "Norveç", OM: "Oman", PK: "Pakistan", PW: "Palau", PS: "Fələstin Əraziləri", PA: "Panama",
+    PG: "Papua-Yeni Qvineya", PY: "Paraqvay", PE: "Peru", PH: "Filippin", PN: "Pitkern adaları",
+    PL: "Polşa", PT: "Portuqaliya", PR: "Puerto Riko", QA: "Qətər", RE: "Reyunyon", RO: "Rumıniya",
+    RU: "Rusiya", RW: "Ruanda", BL: "Sent-Bartelemi", SH: "Müqəddəs Yelena", KN: "Sent-Kits və Nevis",
+    LC: "Sent-Lusiya", MF: "Sent Martin", PM: "Müqəddəs Pyer və Mikelon", VC: "Sent-Vinsent və Qrenadinlər",
+    WS: "Samoa", SM: "San-Marino", ST: "San-Tome və Prinsipi", SA: "Səudiyyə Ərəbistanı", SN: "Seneqal",
+    RS: "Serbiya", SC: "Seyşel adaları", SL: "Syerra-Leone", SG: "Sinqapur", SX: "Sint-Marten",
+    SK: "Slovakiya", SI: "Sloveniya", SB: "Solomon adaları", SO: "Somali", ZA: "Cənub Afrika",
+    GS: "Cənubi Corciya və Cənubi Sendviç adaları", SS: "Cənubi Sudan", ES: "İspaniya", LK: "Şri-Lanka",
+    SD: "Sudan", SR: "Surinam", SJ: "Svalbard və Yan-Mayen", SE: "İsveç", CH: "İsveçrə", SY: "Suriya",
+    TW: "Tayvan", TJ: "Tacikistan", TZ: "Tanzaniya", TH: "Tailand", TL: "Şərqi Timor", TG: "Toqo",
+    TK: "Tokelau", TO: "Tonqa", TT: "Trinidad və Tobaqo", TN: "Tunis", TR: "Türkiyə", TM: "Türkmənistan",
+    TC: "Törks və Kaykos adaları", TV: "Tuvalu", UG: "Uqanda", UA: "Ukrayna", AE: "Birləşmiş Ərəb Əmirlikləri",
+    GB: "Birləşmiş Krallıq", US: "Amerika Birləşmiş Ştatları", UM: "ABŞ-a bağlı kiçik adacıqlar",
+    UY: "Uruqvay", UZ: "Özbəkistan", VU: "Vanuatu", VE: "Venesuela", VN: "Vyetnam",
+    VG: "Britaniyanın Virgin adaları", VI: "ABŞ Virgin adaları", WF: "Uollis və Futuna", EH: "Qərbi Saxara",
+    YE: "Yəmən", ZM: "Zambiya", ZW: "Zimbabve",
+  },
+  ru: {
+    AF: "Афганистан", AX: "Аландские о-ва", AL: "Албания", DZ: "Алжир", AS: "Американское Самоа",
+    AD: "Андорра", AO: "Ангола", AI: "Ангилья", AQ: "Антарктида", AG: "Антигуа и Барбуда",
+    AR: "Аргентина", AW: "Аруба", AU: "Австралия", AT: "Австрия", AZ: "Азербайджан", BS: "Багамы",
+    BH: "Бахрейн", BD: "Бангладеш", BB: "Барбадос", BY: "Беларусь", BE: "Бельгия", BZ: "Белиз",
+    BJ: "Бенин", BM: "Бермудские о-ва", BT: "Бутан", BO: "Боливия", BQ: "Бонэйр, Синт-Эстатиус и Саба",
+    BA: "Босния и Герцеговина", BW: "Ботсвана", BV: "о-в Буве", BR: "Бразилия",
+    IO: "Британская территория в Индийском океане", BN: "Бруней", BG: "Болгария", BF: "Буркина-Фасо",
+    BI: "Бурунди", CV: "Кабо-Верде", KH: "Камбоджа", CM: "Камерун", CA: "Канада", KY: "о-ва Кайман",
+    CF: "Центрально-Африканская Республика", TD: "Чад", CL: "Чили", CN: "Китай", CX: "о-в Рождества",
+    CC: "Кокосовые о-ва", CO: "Колумбия", KM: "Коморы", CG: "Конго - Браззавиль", CD: "Конго - Киншаса",
+    CK: "о-ва Кука", CR: "Коста-Рика", CI: "Кот-д'Ивуар", HR: "Хорватия", CU: "Куба", CW: "Кюрасао",
+    CY: "Кипр", CZ: "Чехия", DK: "Дания", DJ: "Джибути", DM: "Доминика", DO: "Доминиканская Республика",
+    EC: "Эквадор", EG: "Египет", SV: "Сальвадор", GQ: "Экваториальная Гвинея", ER: "Эритрея",
+    EE: "Эстония", SZ: "Эсватини", ET: "Эфиопия", FK: "Фолклендские о-ва", FO: "Фарерские о-ва",
+    FJ: "Фиджи", FI: "Финляндия", FR: "Франция", GF: "Французская Гвиана", PF: "Французская Полинезия",
+    TF: "Французские Южные территории", GA: "Габон", GM: "Гамбия", GE: "Грузия", DE: "Германия",
+    GH: "Гана", GI: "Гибралтар", GR: "Греция", GL: "Гренландия", GD: "Гренада", GP: "Гваделупа",
+    GU: "Гуам", GT: "Гватемала", GG: "Гернси", GN: "Гвинея", GW: "Гвинея-Бисау", GY: "Гайана",
+    HT: "Гаити", HM: "о-ва Херд и Макдональд", VA: "Ватикан", HN: "Гондурас", HK: "Гонконг",
+    HU: "Венгрия", IS: "Исландия", IN: "Индия", ID: "Индонезия", IR: "Иран", IQ: "Ирак",
+    IE: "Ирландия", IM: "о-в Мэн", IL: "Израиль", IT: "Италия", JM: "Ямайка", JP: "Япония",
+    JE: "Джерси", JO: "Иордания", KZ: "Казахстан", KE: "Кения", KI: "Кирибати", KP: "КНДР",
+    KR: "Республика Корея", KW: "Кувейт", KG: "Киргизия", LA: "Лаос", LV: "Латвия", LB: "Ливан",
+    LS: "Лесото", LR: "Либерия", LY: "Ливия", LI: "Лихтенштейн", LT: "Литва", LU: "Люксембург",
+    MO: "Макао", MG: "Мадагаскар", MW: "Малави", MY: "Малайзия", MV: "Мальдивы", ML: "Мали",
+    MT: "Мальта", MH: "Маршалловы о-ва", MQ: "Мартиника", MR: "Мавритания", MU: "Маврикий",
+    YT: "Майотта", MX: "Мексика", FM: "Федеративные Штаты Микронезии", MD: "Молдова", MC: "Монако",
+    MN: "Монголия", ME: "Черногория", MS: "Монтсеррат", MA: "Марокко", MZ: "Мозамбик", MM: "Мьянма",
+    NA: "Намибия", NR: "Науру", NP: "Непал", NL: "Нидерланды", NC: "Новая Каледония",
+    NZ: "Новая Зеландия", NI: "Никарагуа", NE: "Нигер", NG: "Нигерия", NU: "Ниуэ", NF: "о-в Норфолк",
+    MK: "Северная Македония", MP: "Северные Марианские о-ва", NO: "Норвегия", OM: "Оман",
+    PK: "Пакистан", PW: "Палау", PS: "Палестинские территории", PA: "Панама", PG: "Папуа - Новая Гвинея",
+    PY: "Парагвай", PE: "Перу", PH: "Филиппины", PN: "о-ва Питкэрн", PL: "Польша", PT: "Португалия",
+    PR: "Пуэрто-Рико", QA: "Катар", RE: "Реюньон", RO: "Румыния", RU: "Россия", RW: "Руанда",
+    BL: "Сен-Бартелеми", SH: "о-в Св. Елены", KN: "Сент-Китс и Невис", LC: "Сент-Люсия",
+    MF: "Сен-Мартен", PM: "Сен-Пьер и Микелон", VC: "Сент-Винсент и Гренадины", WS: "Самоа",
+    SM: "Сан-Марино", ST: "Сан-Томе и Принсипи", SA: "Саудовская Аравия", SN: "Сенегал",
+    RS: "Сербия", SC: "Сейшельские о-ва", SL: "Сьерра-Леоне", SG: "Сингапур", SX: "Синт-Мартен",
+    SK: "Словакия", SI: "Словения", SB: "Соломоновы о-ва", SO: "Сомали", ZA: "Южно-Африканская Республика",
+    GS: "Южная Георгия и Южные Сандвичевы о-ва", SS: "Южный Судан", ES: "Испания", LK: "Шри-Ланка",
+    SD: "Судан", SR: "Суринам", SJ: "Шпицберген и Ян-Майен", SE: "Швеция", CH: "Швейцария",
+    SY: "Сирия", TW: "Тайвань", TJ: "Таджикистан", TZ: "Танзания", TH: "Таиланд", TL: "Восточный Тимор",
+    TG: "Того", TK: "Токелау", TO: "Тонга", TT: "Тринидад и Тобаго", TN: "Тунис", TR: "Турция",
+    TM: "Туркменистан", TC: "Тёркс и Кайкос", TV: "Тувалу", UG: "Уганда", UA: "Украина", AE: "ОАЭ",
+    GB: "Великобритания", US: "Соединенные Штаты", UM: "Внешние малые о-ва (США)", UY: "Уругвай",
+    UZ: "Узбекистан", VU: "Вануату", VE: "Венесуэла", VN: "Вьетнам", VG: "Виргинские о-ва (Великобритания)",
+    VI: "Виргинские о-ва (США)", WF: "Уоллис и Футуна", EH: "Западная Сахара", YE: "Йемен",
+    ZM: "Замбия", ZW: "Зимбабве",
+  },
+};
 const callingCodesByCountry: Record<string, string> = {
   AD: "+376", AE: "+971", AF: "+93", AG: "+1268", AI: "+1264", AL: "+355", AO: "+244", AQ: "+672", AR: "+54",
   AS: "+1684", AT: "+43", AU: "+61", AW: "+297", AX: "+358", AZ: "+994", BA: "+387", BB: "+1246", BD: "+880",
@@ -175,26 +278,72 @@ const callingCodesByCountry: Record<string, string> = {
 const fallbackTimeZones = ["Asia/Baku", "Europe/Istanbul", "Europe/London", "America/New_York", "Asia/Dubai"];
 const dayKeys = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 const timeKeys = ["morning", "afternoon", "evening", "night"];
-const languageNameFallbacks: Record<string, string> = {
-  ber: "Berber",
-  bo: "Tibetan",
-  ceb: "Cebuano",
-  crh: "Crimean Tatar",
-  grc: "Ancient Greek",
-  haw: "Hawaiian",
-  ht: "Haitian Creole",
-  lg: "Ganda",
-  min: "Minangkabau",
-  nn: "Norwegian Nynorsk",
-  qu: "Quechua",
-  sah: "Sakha",
-  sh: "Serbo-Croatian",
-  sm: "Samoan",
-  su: "Sundanese",
-  tl: "Tagalog",
-  vo: "Volapuk",
-  war: "Waray",
-  yue: "Cantonese",
+const localizedLanguageNames: Record<string, Record<string, string>> = {
+  az: {
+    af: "Afrikaans dili", sq: "Alban dili", am: "Amhar dili", grc: "Qədim yunan dili", ar: "Ərəb dili",
+    az: "Azərbaycan dili", eu: "Bask dili", bn: "Benqal dili", bs: "Bosniya dili", bg: "Bolqar dili",
+    my: "Birma dili", ca: "Katalan dili", ceb: "Sebuano dili", yue: "Kanton dili", "zh-Hans": "Çin dili",
+    ht: "Haiti kreol dili", crh: "Krım tatar dili", hr: "Xorvat dili", cs: "Çex dili", da: "Danimarka dili",
+    en: "İngilis dili", eo: "Esperanto dili", et: "Eston dili", fa: "Fars dili", fi: "Fin dili",
+    fr: "Fransız dili", gl: "Qalisiya dili", ka: "Gürcü dili", de: "Alman dili", el: "Yunan dili",
+    gu: "Qucarat dili", haw: "Havay dili", he: "İvrit dili", hi: "Hind dili", is: "İsland dili",
+    ig: "İqbo dili", id: "İndoneziya dili", ga: "İrland dili", it: "İtalyan dili", ja: "Yapon dili",
+    jv: "Yava dili", kn: "Kannada dili", kk: "Qazax dili", km: "Kxmer dili", rw: "Kinyarvanda dili",
+    ko: "Koreya dili", ku: "Kürd dili", lo: "Lao dili", la: "Latın dili", lv: "Latış dili",
+    lt: "Litva dili", lg: "Qanda dili", lb: "Lüksemburq dili", mk: "Makedon dili", hu: "Macar dili",
+    ms: "Malay dili", ml: "Malayalam dili", mt: "Malta dili", mi: "Maori dili", mr: "Marathi dili",
+    min: "Minanqkabau dili", mn: "Monqol dili", nl: "Niderland dili", no: "Norveç dili", nn: "Yeni Norveç dili",
+    ps: "Puştu dili", pl: "Polyak dili", pt: "Portuqal dili", pa: "Pəncab dili", qu: "Keçua dili",
+    ro: "Rumın dili", ru: "Rus dili", sm: "Samoa dili", sr: "Serb dili", sh: "Serb-xorvat dili",
+    si: "Sinhala dili", sk: "Slovak dili", sl: "Sloven dili", so: "Somali dili", es: "İspan dili",
+    su: "Sunda dili", sw: "Suahili dili", sv: "İsveç dili", tl: "Taqaloq dili", ber: "Berber dili",
+    ta: "Tamil dili", te: "Teluqu dili", th: "Tay dili", bo: "Tibet dili", tr: "Türk dili",
+    uk: "Ukrayna dili", ur: "Urdu dili", uz: "Özbək dili", vi: "Vyetnam dili", vo: "Volapük dili",
+    war: "Varay dili", cy: "Uels dili", xh: "Xosa dili", sah: "Saxa dili", yi: "İdiş dili", yo: "Yoruba dili",
+  },
+  ru: {
+    af: "Африкаанс", sq: "Албанский", am: "Амхарский", grc: "Древнегреческий", ar: "Арабский",
+    az: "Азербайджанский", eu: "Баскский", bn: "Бенгальский", bs: "Боснийский", bg: "Болгарский",
+    my: "Бирманский", ca: "Каталанский", ceb: "Себуано", yue: "Кантонский", "zh-Hans": "Китайский",
+    ht: "Гаитянский креольский", crh: "Крымскотатарский", hr: "Хорватский", cs: "Чешский", da: "Датский",
+    en: "Английский", eo: "Эсперанто", et: "Эстонский", fa: "Персидский", fi: "Финский",
+    fr: "Французский", gl: "Галисийский", ka: "Грузинский", de: "Немецкий", el: "Греческий",
+    gu: "Гуджарати", haw: "Гавайский", he: "Иврит", hi: "Хинди", is: "Исландский",
+    ig: "Игбо", id: "Индонезийский", ga: "Ирландский", it: "Итальянский", ja: "Японский",
+    jv: "Яванский", kn: "Каннада", kk: "Казахский", km: "Кхмерский", rw: "Киньяруанда",
+    ko: "Корейский", ku: "Курдский", lo: "Лаосский", la: "Латинский", lv: "Латышский",
+    lt: "Литовский", lg: "Ганда", lb: "Люксембургский", mk: "Македонский", hu: "Венгерский",
+    ms: "Малайский", ml: "Малаялам", mt: "Мальтийский", mi: "Маори", mr: "Маратхи",
+    min: "Минангкабау", mn: "Монгольский", nl: "Нидерландский", no: "Норвежский", nn: "Нюнорск",
+    ps: "Пушту", pl: "Польский", pt: "Португальский", pa: "Панджаби", qu: "Кечуа",
+    ro: "Румынский", ru: "Русский", sm: "Самоанский", sr: "Сербский", sh: "Сербохорватский",
+    si: "Сингальский", sk: "Словацкий", sl: "Словенский", so: "Сомалийский", es: "Испанский",
+    su: "Сунданский", sw: "Суахили", sv: "Шведский", tl: "Тагальский", ber: "Берберский",
+    ta: "Тамильский", te: "Телугу", th: "Тайский", bo: "Тибетский", tr: "Турецкий",
+    uk: "Украинский", ur: "Урду", uz: "Узбекский", vi: "Вьетнамский", vo: "Волапюк",
+    war: "Варайский", cy: "Валлийский", xh: "Коса", sah: "Саха", yi: "Идиш", yo: "Йоруба",
+  },
+  en: {
+    ber: "Berber",
+    bo: "Tibetan",
+    ceb: "Cebuano",
+    crh: "Crimean Tatar",
+    grc: "Ancient Greek",
+    haw: "Hawaiian",
+    ht: "Haitian Creole",
+    lg: "Ganda",
+    min: "Minangkabau",
+    nn: "Norwegian Nynorsk",
+    qu: "Quechua",
+    sah: "Sakha",
+    sh: "Serbo-Croatian",
+    sm: "Samoan",
+    su: "Sundanese",
+    tl: "Tagalog",
+    vo: "Volapuk",
+    war: "Waray",
+    yue: "Cantonese",
+  },
 };
 
 const initialApplication: TutorApplication = {
@@ -280,6 +429,22 @@ function getInitialTutorState() {
 }
 
 function getDisplayName(locale: string, type: "language" | "region", code: string) {
+  const localeKey = locale.split("-")[0] ?? locale;
+
+  if (type === "region") {
+    const localizedRegion = localizedRegionNames[localeKey]?.[code];
+    if (localizedRegion) {
+      return localizedRegion;
+    }
+  }
+
+  if (type === "language") {
+    const localizedLanguage = localizedLanguageNames[localeKey]?.[code];
+    if (localizedLanguage) {
+      return localizedLanguage;
+    }
+  }
+
   const localized = new Intl.DisplayNames([locale], { type }).of(code);
   if (localized && localized.toLocaleLowerCase(locale) !== code.toLocaleLowerCase(locale)) {
     return localized;
@@ -290,7 +455,7 @@ function getDisplayName(locale: string, type: "language" | "region", code: strin
     return fallback;
   }
 
-  return type === "language" ? languageNameFallbacks[code] ?? code : code;
+  return type === "language" ? localizedLanguageNames.en[code] ?? code : code;
 }
 
 export function TutorOnboardingWizard() {
@@ -528,6 +693,9 @@ function StepBody({
   t: ReturnType<typeof useTranslations<"tutorOnboarding">>;
 }) {
   const [phonePickerOpen, setPhonePickerOpen] = useState(false);
+  const [phoneSearch, setPhoneSearch] = useState("");
+  const [languagePickerIndex, setLanguagePickerIndex] = useState<number | null>(null);
+  const [languageSearch, setLanguageSearch] = useState("");
   const selectedPhoneCountry =
     phoneOptions.find((option) => option.value === application.phoneCountry);
   const firstSpokenIndex = application.speaks.findIndex((language, index) =>
@@ -554,6 +722,14 @@ function StepBody({
       side: "bottom" as const,
     };
     const menuItemClass = "min-h-12 py-3 pl-9 pr-3 text-base";
+    const filteredPhoneOptions = phoneOptions.filter((option) => {
+      const query = phoneSearch.trim().toLocaleLowerCase();
+      if (!query) {
+        return true;
+      }
+
+      return `${option.label} ${option.code}`.toLocaleLowerCase().includes(query);
+    });
     const syncPhoneCountry = (country: string) => {
       setApplication((current) => {
         const oldCode = callingCodesByCountry[current.phoneCountry];
@@ -691,15 +867,25 @@ function StepBody({
               )}
             >
               <Field label={index === 0 ? t("fields.speaks") : t("fields.speaksExtra")}>
-                <Select
-                  value={row.language || undefined}
-                  onValueChange={(value) => updateSpokenLanguage(index, value)}
-                >
-                  <SelectTrigger className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none">
-                    <SelectValue placeholder={t("placeholders.chooseLanguage")} />
-                  </SelectTrigger>
-                  <SelectContent {...menuProps}>{spokenLanguageOptions.map((option) => <SelectItem key={option.value} value={option.value} className={menuItemClass}>{option.label}</SelectItem>)}</SelectContent>
-                </Select>
+                <SearchableLanguageSelect
+                  emptyText={t("labels.noResults")}
+                  onOpenChange={(open) => {
+                    setLanguagePickerIndex(open ? index : null);
+                    setLanguageSearch("");
+                  }}
+                  onSearchChange={setLanguageSearch}
+                  onValueChange={(value) => {
+                    updateSpokenLanguage(index, value);
+                    setLanguagePickerIndex(null);
+                    setLanguageSearch("");
+                  }}
+                  open={languagePickerIndex === index}
+                  options={spokenLanguageOptions}
+                  placeholder={t("placeholders.chooseLanguage")}
+                  search={languagePickerIndex === index ? languageSearch : ""}
+                  searchPlaceholder={t("placeholders.searchLanguage")}
+                  value={row.language}
+                />
               </Field>
               <Field label={index === 0 ? t("fields.level") : t("fields.levelExtra")}>
                 <Select value={row.level || undefined} onValueChange={(value) => updateSpokenLevel(index, value)}>
@@ -759,14 +945,27 @@ function StepBody({
               />
             </div>
             {phonePickerOpen ? (
-              <div className="absolute left-0 top-[calc(100%+4px)] z-50 max-h-96 w-full overflow-y-auto rounded-[8px] border border-line bg-white p-1 text-base shadow-card">
-                {phoneOptions.map((option) => (
+              <div className="absolute left-0 top-[calc(100%+4px)] z-50 w-full rounded-[8px] border border-line bg-white p-1 text-base shadow-card">
+                <div className="sticky top-0 z-10 bg-white p-2">
+                  <div className="flex h-11 items-center gap-2 rounded-[8px] border border-line bg-white px-3 focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-500/15">
+                    <Search className="h-4 w-4 shrink-0 text-muted" aria-hidden />
+                    <input
+                      value={phoneSearch}
+                      onChange={(event) => setPhoneSearch(event.target.value)}
+                      className="h-full min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-muted"
+                      placeholder={t("placeholders.searchPhoneCountry")}
+                    />
+                  </div>
+                </div>
+                <div className={cn("max-h-80", dropdownScrollClass)}>
+                {filteredPhoneOptions.map((option) => (
                   <button
                     key={`${option.value}-${option.code}`}
                     type="button"
                     onClick={() => {
                       syncPhoneCountry(option.value);
                       setPhonePickerOpen(false);
+                      setPhoneSearch("");
                     }}
                     className={cn(
                       "flex min-h-12 w-full items-center gap-3 rounded-md px-3 text-left text-base outline-none transition-colors hover:bg-brand-50 focus-visible:bg-brand-50",
@@ -778,6 +977,10 @@ function StepBody({
                     <span className="shrink-0 font-semibold text-ink-soft">{option.code}</span>
                   </button>
                 ))}
+                {filteredPhoneOptions.length === 0 ? (
+                  <p className="px-3 py-4 text-base text-muted">{t("labels.noResults")}</p>
+                ) : null}
+                </div>
               </div>
             ) : null}
           </div>
@@ -1035,6 +1238,85 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
       <Label className="text-base font-normal leading-6 text-ink">{label}</Label>
       {children}
       {hint ? <p className="text-sm font-medium leading-6 text-muted">{hint}</p> : null}
+    </div>
+  );
+}
+
+function SearchableLanguageSelect({
+  emptyText,
+  onOpenChange,
+  onSearchChange,
+  onValueChange,
+  open,
+  options,
+  placeholder,
+  search,
+  searchPlaceholder,
+  value,
+}: {
+  emptyText: string;
+  onOpenChange: (open: boolean) => void;
+  onSearchChange: (value: string) => void;
+  onValueChange: (value: string) => void;
+  open: boolean;
+  options: SelectOption[];
+  placeholder: string;
+  search: string;
+  searchPlaceholder: string;
+  value: string;
+}) {
+  const selectedOption = options.find((option) => option.value === value);
+  const query = search.trim().toLocaleLowerCase();
+  const filteredOptions = query
+    ? options.filter((option) => option.label.toLocaleLowerCase().includes(query))
+    : options;
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => onOpenChange(!open)}
+        className="flex h-12 w-full items-center justify-between rounded-[8px] border-2 border-[#dcdce5] bg-white px-4 text-left text-base text-ink shadow-none outline-none transition-colors focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15"
+        aria-expanded={open}
+      >
+        <span className={cn("min-w-0 truncate", !selectedOption && "text-muted")}>
+          {selectedOption?.label ?? placeholder}
+        </span>
+        <ChevronDown className="h-4 w-4 shrink-0 text-muted" aria-hidden />
+      </button>
+      {open ? (
+        <div className="absolute left-0 top-[calc(100%+4px)] z-50 w-full rounded-[8px] border border-line bg-white p-1 text-base shadow-card">
+          <div className="sticky top-0 z-10 bg-white p-2">
+            <div className="flex h-11 items-center gap-2 rounded-[8px] border border-line bg-white px-3 focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-500/15">
+              <Search className="h-4 w-4 shrink-0 text-muted" aria-hidden />
+              <input
+                value={search}
+                onChange={(event) => onSearchChange(event.target.value)}
+                className="h-full min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-muted"
+                placeholder={searchPlaceholder}
+              />
+            </div>
+          </div>
+          <div className={cn("max-h-80", dropdownScrollClass)}>
+            {filteredOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => onValueChange(option.value)}
+                className={cn(
+                  "flex min-h-12 w-full items-center rounded-md px-3 text-left text-base outline-none transition-colors hover:bg-brand-50 focus-visible:bg-brand-50",
+                  option.value === value && "bg-brand-50 text-brand-700",
+                )}
+              >
+                <span className="min-w-0 truncate">{option.label}</span>
+              </button>
+            ))}
+            {filteredOptions.length === 0 ? (
+              <p className="px-3 py-4 text-base text-muted">{emptyText}</p>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

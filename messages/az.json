@@ -860,10 +860,13 @@
       "chooseSubject": "Fənn seç...",
       "chooseLanguage": "Dil...",
       "chooseLevel": "Səviyyə",
-      "phoneCode": "Kod"
+      "phoneCode": "Kod",
+      "searchLanguage": "Dil axtar...",
+      "searchPhoneCountry": "Ölkə və ya kod axtar..."
     },
     "labels": {
-      "comingSoon": "tezliklə"
+      "comingSoon": "tezliklə",
+      "noResults": "Nəticə tapılmadı"
     },
     "languages": {
       "english": "İngilis dili",

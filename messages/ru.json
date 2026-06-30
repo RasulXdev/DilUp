@@ -860,10 +860,13 @@
       "chooseSubject": "Выбери предмет...",
       "chooseLanguage": "Язык...",
       "chooseLevel": "Уровень",
-      "phoneCode": "Код"
+      "phoneCode": "Код",
+      "searchLanguage": "Поиск языка...",
+      "searchPhoneCountry": "Поиск страны или кода..."
     },
     "labels": {
-      "comingSoon": "скоро"
+      "comingSoon": "скоро",
+      "noResults": "Ничего не найдено"
     },
     "languages": {
       "english": "Английский",
