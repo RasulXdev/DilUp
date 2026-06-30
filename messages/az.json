@@ -7,6 +7,10 @@
     "becomeTutor": {
       "title": "DilUp-da müəllim ol — qiymətini özün təyin et",
       "description": "DilUp-da İngilis dili tədris et. Qiymətini özün təyin et, iş saatlarını seç və təhlükəsiz ödənişlərlə qazan."
+    },
+    "tutorOnboarding": {
+      "title": "Müəllim müraciəti",
+      "description": "DilUp müəllim profilini qur, sənədlərini əlavə et, uyğun saatlarını və dərs qiymətini seç."
     }
   },
   "publicPages": {
@@ -722,6 +726,269 @@
       "loginPrompt": "Artıq hesabın var?",
       "preview": "Müəllim nəticələrinə bax",
       "legal": "Davam etməklə DilUp şərtləri və məxfilik siyasəti ilə razılaşırsan."
+    }
+  },
+  "tutorOnboarding": {
+    "header": {
+      "draft": "Müraciət qaralama kimi saxlanır",
+      "help": "Kömək",
+      "account": "Hesab"
+    },
+    "sidebar": {
+      "title": "Müraciət addımları",
+      "aria": "Müəllim müraciəti addımları"
+    },
+    "steps": {
+      "start": "Başlanğıc",
+      "about": "Haqqında",
+      "photo": "Profil fotosu",
+      "certification": "Sertifikatlar",
+      "education": "Təhsil",
+      "description": "Profil mətni",
+      "video": "Tanıtım videosu",
+      "availability": "Mövcudluq",
+      "price": "Dərs qiyməti"
+    },
+    "actions": {
+      "back": "Geri",
+      "continue": "Davam et",
+      "saveContinue": "Yadda saxla və davam et",
+      "submit": "Müraciəti göndər",
+      "addLanguage": "Başqa dil əlavə et",
+      "ready": "Bu addım tamamdır.",
+      "missing": "Davam etmək üçün tələb olunan sahələri tamamla."
+    },
+    "content": {
+      "start": {
+        "eyebrow": "Müəllim kimi qoşul",
+        "title": "DilUp profilini bir neçə aydın addımda qur.",
+        "text": "Bu flow tələbələrin güvənəcəyi profil yaratmaq üçündür: kim olduğunu, nə öyrətdiyini, necə dərs keçdiyini və nə vaxt uyğun olduğunu göstər."
+      },
+      "about": {
+        "eyebrow": "Addım 1",
+        "title": "Haqqında",
+        "text": "İctimai müəllim profilini yaratmağa başla. Hər bölməni tamamladıqca irəliləyişin avtomatik yadda saxlanacaq. Qeydiyyatı tamamlamaq üçün istənilən vaxt geri qayıda bilərsən."
+      },
+      "photo": {
+        "eyebrow": "Profil fotosu",
+        "title": "Güvən verən aydın foto əlavə et.",
+        "text": "Foto ilk təəssüratı yaradır. Səliqəli, real və üzün aydın görünən şəkil seç."
+      },
+      "certification": {
+        "eyebrow": "Sertifikatlar",
+        "title": "Tədris bacarığını sübut edən sənədləri göstər.",
+        "text": "Sertifikat məcburi deyil, amma profilinin təsdiq prosesində və tələbə etibarında kömək edir."
+      },
+      "education": {
+        "eyebrow": "Təhsil",
+        "title": "Təhsil və ixtisas fonunu əlavə et.",
+        "text": "Universitet, kurs və ya pedaqoji hazırlıq barədə qısa məlumat tələbəyə kontekst verir."
+      },
+      "description": {
+        "eyebrow": "Profil mətni",
+        "title": "Profilini sənin səsinlə yaz.",
+        "text": "Mətn tələbəyə dərs üslubunu, təcrübəni və ilk dərsdən nə gözləyə biləcəyini izah etməlidir."
+      },
+      "video": {
+        "eyebrow": "Video tanıtım",
+        "title": "Qısa video ilə dərs enerjini göstər.",
+        "text": "Tələbələr müəllimi seçməzdən əvvəl səni eşitmək istəyir. 30-60 saniyəlik təbii video kifayətdir."
+      },
+      "availability": {
+        "eyebrow": "Cədvəl",
+        "title": "Dərs keçə biləcəyin vaxtları seç.",
+        "text": "Real uyğun saatlar daha az ləğv və daha rahat bron deməkdir."
+      },
+      "price": {
+        "eyebrow": "Qiymət",
+        "title": "50 dəqiqəlik dərs üçün qiymətini təyin et.",
+        "text": "Qiyməti sən seçirsən. DilUp pay-per-lesson modelidir, abunəlik satışı yoxdur."
+      }
+    },
+    "startCards": {
+      "profile": {
+        "title": "Profil",
+        "text": "Ad, dil, ixtisas və təcrübə məlumatlarını toplayırıq."
+      },
+      "proof": {
+        "title": "Etibar",
+        "text": "Foto, sertifikat və təhsil bölməsi profilini daha güclü edir."
+      },
+      "video": {
+        "title": "Tanıtım",
+        "text": "Video, cədvəl və qiymət tələbənin qərarına birbaşa təsir edir."
+      }
+    },
+    "fields": {
+      "firstName": "Ad",
+      "lastName": "Soyad",
+      "country": "Doğulduğun ölkə",
+      "birthYear": "Doğum ili",
+      "teaches": "Öyrətdiyin fənn",
+      "speaks": "Danışdığın dillər",
+      "speaksExtra": "Dil",
+      "level": "Səviyyə",
+      "levelExtra": "Səviyyə",
+      "phone": "Telefon nömrəsi (istəyə bağlı)",
+      "over18": "18 yaşdan yuxarı olduğumu təsdiqləyirəm",
+      "specialties": "Dərs ixtisasların",
+      "subject": "Dil",
+      "certificate": "Sertifikat adı",
+      "issuedBy": "Təşkilat",
+      "year": "İl",
+      "school": "Təhsil müəssisəsi",
+      "degree": "Dərəcə və ya proqram",
+      "field": "İxtisas sahəsi",
+      "years": "İllər",
+      "headline": "Profil başlığı",
+      "intro": "Qısa təqdimat",
+      "experience": "Tədris təcrübəsi",
+      "motivation": "Tələbələrə necə kömək edirsən?",
+      "timezone": "Saat qurşağı",
+      "days": "Günlər",
+      "times": "Vaxt aralıqları"
+    },
+    "hints": {
+      "headline": "Məsələn: Danışıq özgüvəni üçün strukturlaşdırılmış İngilis dili dərsləri.",
+      "intro": "Kimə dərs verdiyini və ilk dərsdə necə işləyəcəyini aydın yaz."
+    },
+    "placeholders": {
+      "headline": "Səbirli İngilis dili müəllimi",
+      "certificate": "TESOL, IELTS Trainer, CELTA...",
+      "chooseCountry": "Ölkə seç...",
+      "chooseSubject": "Fənn seç...",
+      "chooseLanguage": "Dil...",
+      "chooseLevel": "Səviyyə",
+      "phoneCode": "Kod"
+    },
+    "labels": {
+      "comingSoon": "tezliklə"
+    },
+    "languages": {
+      "english": "İngilis dili",
+      "azerbaijani": "Azərbaycan dili",
+      "russian": "Rus dili",
+      "turkish": "Türk dili",
+      "arabic": "Ərəb dili",
+      "german": "Alman dili",
+      "spanish": "İspan dili",
+      "french": "Fransız dili"
+    },
+    "levels": {
+      "native": "Ana dili",
+      "c2": "C2",
+      "c1": "C1",
+      "b2": "B2",
+      "b1": "B1"
+    },
+    "specialties": {
+      "kids": "Uşaqlar üçün",
+      "business": "Biznes dili",
+      "exam": "İmtahan hazırlığı",
+      "conversation": "Danışıq praktikası",
+      "grammar": "Qrammatika",
+      "travel": "Səyahət üçün"
+    },
+    "countries": {
+      "azerbaijan": "Azərbaycan",
+      "turkey": "Türkiyə",
+      "usa": "ABŞ",
+      "uk": "Böyük Britaniya",
+      "germany": "Almaniya",
+      "other": "Digər"
+    },
+    "days": {
+      "mon": "Bazar ertəsi",
+      "tue": "Çərşənbə axşamı",
+      "wed": "Çərşənbə",
+      "thu": "Cümə axşamı",
+      "fri": "Cümə",
+      "sat": "Şənbə",
+      "sun": "Bazar"
+    },
+    "times": {
+      "morning": "Səhər",
+      "afternoon": "Günorta",
+      "evening": "Axşam",
+      "night": "Gecə"
+    },
+    "photo": {
+      "upload": "Foto seç",
+      "replace": "Fotonu dəyiş",
+      "needsTitle": "Foton necə olmalıdır",
+      "profileLine": "{language} dərsləri keçir",
+      "speaksLine": "{language} ({level}) danışır",
+      "rules": {
+        "face": "Üzün aydın görünsün və kadra mərkəzdə düşsün.",
+        "light": "Təbii işıq və sakit fon seç.",
+        "plain": "Loqo, ağır filter və qrup şəkli istifadə etmə.",
+        "current": "Hazırkı görünüşünü əks etdirən real foto seç.",
+        "solo": "Fotoda yalnız sən ol.",
+        "quality": "Yüksək keyfiyyətli rəngli foto istifadə et.",
+        "noLogos": "Loqo və əlaqə məlumatları əlavə etmə."
+      }
+    },
+    "certification": {
+      "add": "Sertifikat əlavə et",
+      "helper": "Sertifikat #{number} profil yoxlanışında nəzərə alınacaq."
+    },
+    "education": {
+      "add": "Təhsil əlavə et"
+    },
+    "video": {
+      "record": "Video yazmağa başla",
+      "upload": "Yenidən yaz",
+      "ready": "Video hazırdır",
+      "empty": "Video hələ əlavə edilməyib",
+      "linkPrompt": "Hazır videon YouTube və ya Vimeo-dadır?",
+      "insertLink": "Link əlavə et",
+      "requirementsTitle": "Video tələbləri",
+      "requirementsText": "Video təsdiqlənmək üçün bu tələblərə uyğun olmalıdır.",
+      "doTitle": "Et",
+      "rules": {
+        "short": "30-60 saniyəlik qısa təqdimat kifayətdir.",
+        "sound": "Səsin aydın, fon isə sakit olsun.",
+        "promise": "Kimə kömək etdiyini və dərslərinin necə keçdiyini de.",
+        "invite": "Sonda tələbəni ilk dərsə dəvət et.",
+        "lighting": "Yaxşı işıqlandırma və neytral fon istifadə et.",
+        "stable": "Kamera sabit qalsın və görüntü titrəməsin."
+      }
+    },
+    "price": {
+      "label": "50 dəqiqəlik dərs",
+      "note": "Qiyməti sonra profilindən dəyişə biləcəksən.",
+      "payoutTitle": "Təxmini qazanc",
+      "payout": "Komissiyadan sonra sənə təxminən {amount} ₼ qalır.",
+      "payoutText": "Nümunə hesablamada DilUp-un 25% platforma komissiyası nəzərə alınır."
+    },
+    "preview": {
+      "badge": "Profil önbaxışı",
+      "title": "Tələbənin görəcəyi başlıq burada görünəcək",
+      "text": "Profil mətnin tamamlandıqca bu kart daha real görünəcək.",
+      "teaches": "Öyrədir",
+      "rate": "Qiymət",
+      "schedule": "Cədvəl",
+      "days": "gün",
+      "empty": "Seçilməyib",
+      "note": "Bu müraciət local olaraq saxlanır. Backend qoşulanda eyni məlumatlar Supabase profilinə yazılacaq."
+    },
+    "submitted": {
+      "title": "Müraciət qaralama kimi hazırdır.",
+      "text": "Flow tamamlandı. Növbəti mərhələdə bunu Supabase tutor profilinə bağlayıb admin review statusu əlavə edə bilərik.",
+      "cards": {
+        "review": {
+          "title": "Yoxlama",
+          "text": "Komanda profil məlumatlarını nəzərdən keçirir."
+        },
+        "message": {
+          "title": "Düzəliş",
+          "text": "Lazım olsa səndən əlavə məlumat istənilir."
+        },
+        "live": {
+          "title": "Yayım",
+          "text": "Təsdiqdən sonra profil tələbələrə görünür."
+        }
+      }
     }
   },
   "platform": {

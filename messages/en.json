@@ -7,6 +7,10 @@
     "becomeTutor": {
       "title": "Become a tutor on DilUp — set your own rate",
       "description": "Teach English on DilUp. Set your own price, choose your hours, and earn on your terms with secure payments."
+    },
+    "tutorOnboarding": {
+      "title": "Tutor application",
+      "description": "Build your DilUp tutor profile, add proof, choose availability and set your lesson price."
     }
   },
   "publicPages": {
@@ -722,6 +726,269 @@
       "loginPrompt": "Already have an account?",
       "preview": "Preview tutor results",
       "legal": "By continuing, you agree to DilUp terms and privacy policy."
+    }
+  },
+  "tutorOnboarding": {
+    "header": {
+      "draft": "Application saved as a draft",
+      "help": "Help",
+      "account": "Account"
+    },
+    "sidebar": {
+      "title": "Application steps",
+      "aria": "Tutor application steps"
+    },
+    "steps": {
+      "start": "Start",
+      "about": "About",
+      "photo": "Profile photo",
+      "certification": "Certificates",
+      "education": "Education",
+      "description": "Profile text",
+      "video": "Intro video",
+      "availability": "Availability",
+      "price": "Lesson price"
+    },
+    "actions": {
+      "back": "Back",
+      "continue": "Continue",
+      "saveContinue": "Save and continue",
+      "submit": "Submit application",
+      "addLanguage": "Add another language",
+      "ready": "This step is ready.",
+      "missing": "Complete the required fields to continue."
+    },
+    "content": {
+      "start": {
+        "eyebrow": "Join as a tutor",
+        "title": "Build your DilUp profile in a clear step-by-step flow.",
+        "text": "This flow helps you create a profile students can trust: who you are, what you teach, how you teach and when you are available."
+      },
+      "about": {
+        "eyebrow": "Step 1",
+        "title": "About",
+        "text": "Start creating your public tutor profile. Your progress will be automatically saved as you complete each section. You can return at any time to finish your registration."
+      },
+      "photo": {
+        "eyebrow": "Profile photo",
+        "title": "Add a clear photo that builds trust.",
+        "text": "Your photo creates the first impression. Choose a real, tidy image where your face is easy to see."
+      },
+      "certification": {
+        "eyebrow": "Certificates",
+        "title": "Show the documents that support your teaching skills.",
+        "text": "Certificates are not always required, but they help during review and make your profile stronger."
+      },
+      "education": {
+        "eyebrow": "Education",
+        "title": "Add your education and subject background.",
+        "text": "University, courses or teacher training details give students helpful context."
+      },
+      "description": {
+        "eyebrow": "Profile text",
+        "title": "Write the profile in your own voice.",
+        "text": "Your text should explain your teaching style, experience and what a student can expect from the first lesson."
+      },
+      "video": {
+        "eyebrow": "Video intro",
+        "title": "Show your teaching energy with a short video.",
+        "text": "Students want to hear you before choosing. A natural 30-60 second video is enough."
+      },
+      "availability": {
+        "eyebrow": "Schedule",
+        "title": "Choose when you can teach.",
+        "text": "Accurate availability means fewer cancellations and easier bookings."
+      },
+      "price": {
+        "eyebrow": "Price",
+        "title": "Set your rate for a 50-minute lesson.",
+        "text": "You choose the price. DilUp is pay-per-lesson, with no subscription package selling."
+      }
+    },
+    "startCards": {
+      "profile": {
+        "title": "Profile",
+        "text": "We collect your name, language, specialties and experience."
+      },
+      "proof": {
+        "title": "Trust",
+        "text": "Photo, certificates and education make your profile more credible."
+      },
+      "video": {
+        "title": "Introduction",
+        "text": "Video, schedule and price directly affect the student's decision."
+      }
+    },
+    "fields": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "country": "Country of birth",
+      "birthYear": "Birth year",
+      "teaches": "Subject you teach",
+      "speaks": "Languages you speak",
+      "speaksExtra": "Language",
+      "level": "Level",
+      "levelExtra": "Level",
+      "phone": "Phone number (optional)",
+      "over18": "I confirm I am over 18",
+      "specialties": "Teaching specialties",
+      "subject": "Language",
+      "certificate": "Certificate name",
+      "issuedBy": "Issued by",
+      "year": "Year",
+      "school": "School or institution",
+      "degree": "Degree or program",
+      "field": "Field of study",
+      "years": "Years",
+      "headline": "Profile headline",
+      "intro": "Short introduction",
+      "experience": "Teaching experience",
+      "motivation": "How do you help students?",
+      "timezone": "Timezone",
+      "days": "Days",
+      "times": "Time windows"
+    },
+    "hints": {
+      "headline": "For example: Structured English lessons for speaking confidence.",
+      "intro": "Clearly explain who you teach and how the first lesson will work."
+    },
+    "placeholders": {
+      "headline": "Patient English tutor",
+      "certificate": "TESOL, IELTS Trainer, CELTA...",
+      "chooseCountry": "Choose country...",
+      "chooseSubject": "Choose subject...",
+      "chooseLanguage": "Language...",
+      "chooseLevel": "Level",
+      "phoneCode": "Code"
+    },
+    "labels": {
+      "comingSoon": "coming soon"
+    },
+    "languages": {
+      "english": "English",
+      "azerbaijani": "Azerbaijani",
+      "russian": "Russian",
+      "turkish": "Turkish",
+      "arabic": "Arabic",
+      "german": "German",
+      "spanish": "Spanish",
+      "french": "French"
+    },
+    "levels": {
+      "native": "Native",
+      "c2": "C2",
+      "c1": "C1",
+      "b2": "B2",
+      "b1": "B1"
+    },
+    "specialties": {
+      "kids": "Kids",
+      "business": "Business language",
+      "exam": "Exam preparation",
+      "conversation": "Conversation practice",
+      "grammar": "Grammar",
+      "travel": "Travel language"
+    },
+    "countries": {
+      "azerbaijan": "Azerbaijan",
+      "turkey": "Turkey",
+      "usa": "United States",
+      "uk": "United Kingdom",
+      "germany": "Germany",
+      "other": "Other"
+    },
+    "days": {
+      "mon": "Monday",
+      "tue": "Tuesday",
+      "wed": "Wednesday",
+      "thu": "Thursday",
+      "fri": "Friday",
+      "sat": "Saturday",
+      "sun": "Sunday"
+    },
+    "times": {
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening",
+      "night": "Night"
+    },
+    "photo": {
+      "upload": "Choose photo",
+      "replace": "Replace photo",
+      "needsTitle": "What your photo needs",
+      "profileLine": "Teaches {language} lessons",
+      "speaksLine": "Speaks {language} ({level})",
+      "rules": {
+        "face": "Make sure your face is clear and centered.",
+        "light": "Use natural light and a calm background.",
+        "plain": "Avoid logos, heavy filters and group photos.",
+        "current": "Choose a real photo that reflects how you look now.",
+        "solo": "You should be the only person in the photo.",
+        "quality": "Use a high-resolution color photo.",
+        "noLogos": "Avoid logos or contact information."
+      }
+    },
+    "certification": {
+      "add": "Add certificate",
+      "helper": "Certificate #{number} will be considered during profile review."
+    },
+    "education": {
+      "add": "Add education"
+    },
+    "video": {
+      "record": "Start recording video",
+      "upload": "Re-record",
+      "ready": "Video ready",
+      "empty": "No video added yet",
+      "linkPrompt": "Have a pre-recorded video on YouTube or Vimeo?",
+      "insertLink": "Insert link",
+      "requirementsTitle": "Video requirements",
+      "requirementsText": "Make sure your video meets the requirements to get approved.",
+      "doTitle": "Do",
+      "rules": {
+        "short": "A 30-60 second introduction is enough.",
+        "sound": "Keep your sound clear and background quiet.",
+        "promise": "Say who you help and how your lessons work.",
+        "invite": "End by inviting the student to the first lesson.",
+        "lighting": "Use good lighting and a neutral background.",
+        "stable": "Keep the camera stable so the video does not shake."
+      }
+    },
+    "price": {
+      "label": "50-minute lesson",
+      "note": "You can change the rate later from your profile.",
+      "payoutTitle": "Estimated payout",
+      "payout": "After commission, you keep about {amount} ₼.",
+      "payoutText": "This example uses DilUp's 25% platform commission."
+    },
+    "preview": {
+      "badge": "Profile preview",
+      "title": "The headline students see will appear here",
+      "text": "As you complete the profile text, this card becomes more realistic.",
+      "teaches": "Teaches",
+      "rate": "Rate",
+      "schedule": "Schedule",
+      "days": "days",
+      "empty": "Not selected",
+      "note": "This application is saved locally. When the backend is connected, the same data will be written to the Supabase tutor profile."
+    },
+    "submitted": {
+      "title": "Your application draft is ready.",
+      "text": "The flow is complete. Next we can connect it to the Supabase tutor profile and add admin review status.",
+      "cards": {
+        "review": {
+          "title": "Review",
+          "text": "The team checks your profile information."
+        },
+        "message": {
+          "title": "Edits",
+          "text": "If needed, we ask for extra details."
+        },
+        "live": {
+          "title": "Live",
+          "text": "After approval, your profile becomes visible to students."
+        }
+      }
     }
   },
   "platform": {
