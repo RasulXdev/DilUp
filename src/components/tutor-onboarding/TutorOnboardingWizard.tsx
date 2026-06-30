@@ -108,7 +108,7 @@ const steps: { key: StepKey; icon: LucideIcon }[] = [
 
 const STORAGE_KEY = "dilup_tutor_application_v2";
 
-const teachingLanguageKeys = ["english", "azerbaijani", "russian", "turkish", "arabic", "german", "spanish", "french"];
+const teachingLanguageKeys = ["english", "russian", "turkish", "german", "french", "spanish", "arabic", "italian"];
 const activeTeachingLanguageKeys = ["english"];
 const levelKeys = ["b1", "b2", "c1", "c2", "native"];
 const spokenLanguageCodes = [
@@ -617,22 +617,27 @@ function StepBody({
       });
     };
     const removeSpokenLanguage = (index: number) => {
-      if (index === 0) {
-        return;
-      }
-
       setApplication((current) => {
-        const speaks = (current.speaks.length ? [...current.speaks] : [""]).filter((_, rowIndex) => rowIndex !== index);
-        const spokenLanguageLevels = (current.spokenLanguageLevels.length ? [...current.spokenLanguageLevels] : [current.languageLevel])
+        const currentSpeaks = current.speaks.length ? [...current.speaks] : [""];
+        const currentLevels = current.spokenLanguageLevels.length ? [...current.spokenLanguageLevels] : [current.languageLevel];
+
+        if (currentSpeaks.length <= 1) {
+          return current;
+        }
+
+        const speaks = currentSpeaks.filter((_, rowIndex) => rowIndex !== index);
+        const spokenLanguageLevels = currentLevels
           .filter((_, rowIndex) => rowIndex !== index);
 
         return {
           ...current,
+          languageLevel: spokenLanguageLevels[0] ?? "",
           speaks,
           spokenLanguageLevels,
         };
       });
     };
+    const canRemoveSpokenRows = spokenRows.length > 1;
 
     return (
       <div className="grid gap-4">
@@ -680,9 +685,9 @@ function StepBody({
               key={index}
               className={cn(
                 "grid items-end gap-2",
-                index === 0
-                  ? "grid-cols-[minmax(0,1fr)_minmax(128px,0.85fr)]"
-                  : "grid-cols-[minmax(0,1fr)_minmax(128px,0.85fr)_40px]",
+                canRemoveSpokenRows
+                  ? "grid-cols-[minmax(0,1fr)_minmax(128px,0.85fr)_48px]"
+                  : "grid-cols-[minmax(0,1fr)_minmax(128px,0.85fr)]",
               )}
             >
               <Field label={index === 0 ? t("fields.speaks") : t("fields.speaksExtra")}>
@@ -708,14 +713,14 @@ function StepBody({
                   </SelectContent>
                 </Select>
               </Field>
-              {index > 0 ? (
+              {canRemoveSpokenRows ? (
                 <button
                   type="button"
                   onClick={() => removeSpokenLanguage(index)}
-                  className="mb-0 flex h-10 w-10 items-center justify-center rounded-[8px] border-2 border-transparent text-ink-soft transition-colors hover:bg-surface hover:text-ink focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15"
+                  className="flex h-12 w-12 items-center justify-center rounded-[8px] border-2 border-transparent text-ink-soft transition-colors hover:bg-surface hover:text-ink focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15"
                   aria-label={t("actions.removeLanguage")}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-5 w-5" />
                 </button>
               ) : null}
             </div>
