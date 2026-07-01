@@ -1935,29 +1935,50 @@ function StepBody({
                   <span className="pointer-events-none absolute left-0 top-1/3 h-px w-full bg-[#60a5fa]/85" />
                   <span className="pointer-events-none absolute left-0 top-2/3 h-px w-full bg-[#60a5fa]/85" />
                   {[
-                    { position: "left-[-5px] top-[-5px]", handle: "nw" },
-                    { position: "left-1/2 top-[-5px] -translate-x-1/2", handle: "n" },
-                    { position: "right-[-5px] top-[-5px]", handle: "ne" },
-                    { position: "right-[-5px] top-1/2 -translate-y-1/2", handle: "e" },
-                    { position: "bottom-[-5px] right-[-5px]", handle: "se" },
-                    { position: "bottom-[-5px] left-1/2 -translate-x-1/2", handle: "s" },
-                    { position: "bottom-[-5px] left-[-5px]", handle: "sw" },
-                    { position: "left-[-5px] top-1/2 -translate-y-1/2", handle: "w" },
-                  ].map(({ position, handle }) => (
-                    <span
-                      key={position}
-                      data-photo-handle={handle}
-                      className={cn(
-                        "absolute h-2.5 w-2.5 rounded-full border border-white bg-[#2563eb]",
-                        position,
-                        handle === "n" || handle === "s" ? "cursor-ns-resize" : handle === "e" || handle === "w" ? "cursor-ew-resize" : "cursor-nwse-resize",
-                      )}
-                      onPointerDown={(event) => startPhotoDrag(event, "resize", handle)}
-                      onPointerMove={movePhotoDrag}
-                      onPointerUp={stopPhotoDrag}
-                      onPointerCancel={stopPhotoDrag}
-                    />
-                  ))}
+                    { position: "left-0 top-0 -translate-x-1/2 -translate-y-1/2", handle: "nw", corner: "border-l-2 border-t-2" },
+                    { position: "left-1/2 top-0 -translate-x-1/2 -translate-y-1/2", handle: "n" },
+                    { position: "right-0 top-0 -translate-y-1/2 translate-x-1/2", handle: "ne", corner: "border-r-2 border-t-2" },
+                    { position: "right-0 top-1/2 -translate-y-1/2 translate-x-1/2", handle: "e" },
+                    { position: "bottom-0 right-0 translate-x-1/2 translate-y-1/2", handle: "se", corner: "border-b-2 border-r-2" },
+                    { position: "bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2", handle: "s" },
+                    { position: "bottom-0 left-0 -translate-x-1/2 translate-y-1/2", handle: "sw", corner: "border-b-2 border-l-2" },
+                    { position: "left-0 top-1/2 -translate-x-1/2 -translate-y-1/2", handle: "w" },
+                  ].map(({ position, handle, corner }) => {
+                    const isVerticalSide = handle === "n" || handle === "s";
+                    const isHorizontalSide = handle === "e" || handle === "w";
+                    const cursorClass = isVerticalSide
+                      ? "cursor-ns-resize"
+                      : isHorizontalSide
+                        ? "cursor-ew-resize"
+                        : handle === "ne" || handle === "sw"
+                          ? "cursor-nesw-resize"
+                          : "cursor-nwse-resize";
+
+                    return (
+                      <span
+                        key={position}
+                        data-photo-handle={handle}
+                        className={cn(
+                          "absolute flex touch-none items-center justify-center focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/20",
+                          corner ? "h-11 w-11" : "h-10 w-10",
+                          position,
+                          cursorClass,
+                        )}
+                        onPointerDown={(event) => startPhotoDrag(event, "resize", handle)}
+                        onPointerMove={movePhotoDrag}
+                        onPointerUp={stopPhotoDrag}
+                        onPointerCancel={stopPhotoDrag}
+                      >
+                        <span
+                          className={cn(
+                            "pointer-events-none block border-white shadow-[0_0_0_1px_rgba(37,99,235,0.9)]",
+                            corner ? "h-3 w-3" : isVerticalSide ? "h-[3px] w-9 bg-white" : "h-9 w-[3px] bg-white",
+                            corner,
+                          )}
+                        />
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
               <div className="grid gap-4 sm:grid-cols-[minmax(0,528px)_88px] sm:items-start">
