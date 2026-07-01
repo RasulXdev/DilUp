@@ -777,8 +777,8 @@
       },
       "certification": {
         "eyebrow": "Certificates",
-        "title": "Show the documents that support your teaching skills.",
-        "text": "Certificates are not always required, but they help during review and make your profile stronger."
+        "title": "Teaching certification",
+        "text": "Do you have teaching certificates? If so, describe them to enhance your profile credibility and get more students."
       },
       "education": {
         "eyebrow": "Education",
@@ -833,10 +833,14 @@
       "phone": "Phone number (optional)",
       "over18": "I confirm I am over 18",
       "specialties": "Teaching specialties",
-      "subject": "Language",
+      "subject": "Subject",
       "certificate": "Certificate name",
+      "certification": "Certification",
+      "certificateDescription": "Description",
+      "certificateName": "Certificate name",
       "issuedBy": "Issued by",
       "year": "Year",
+      "yearsOfStudy": "Years of study",
       "school": "School or institution",
       "degree": "Degree or program",
       "field": "Field of study",
@@ -856,6 +860,8 @@
     "placeholders": {
       "headline": "Patient English tutor",
       "certificate": "TESOL, IELTS Trainer, CELTA...",
+      "verifiedCertificate": "Select verified certificate",
+      "select": "Select",
       "chooseCountry": "Choose country...",
       "chooseSubject": "Choose subject...",
       "chooseLanguage": "Language...",
@@ -966,8 +972,22 @@
       }
     },
     "certification": {
-      "add": "Add certificate",
-      "helper": "Certificate #{number} will be considered during profile review."
+      "add": "Add another certificate",
+      "authentic": "Only authentic documents will be accepted. False information can delay approval or suspend your tutor account.",
+      "badgeText": "Upload your certificate to boost your credibility. Our team will review it and add a verified badge to your profile.",
+      "badgeTitle": "Get a “Certificate verified” badge",
+      "clearSubject": "Clear selected subject",
+      "exactName": "Write the name exactly as it appears on your certificate.",
+      "format": "JPG or PNG format; maximum size of 20MB.",
+      "helper": "Certificate #{number} will be considered during profile review.",
+      "noCertificateText": "Do you plan on getting certified? You can add your teaching certification later.",
+      "none": "I don’t have a teaching certificate",
+      "notListed": "My certificate is not on the list",
+      "present": "Present",
+      "remove": "Remove certificate",
+      "upload": "Upload",
+      "uploadText": "Our team will manually review your submission.",
+      "uploadTitle": "Upload your certificate"
     },
     "education": {
       "add": "Add education"

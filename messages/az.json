@@ -777,8 +777,8 @@
       },
       "certification": {
         "eyebrow": "Sertifikatlar",
-        "title": "Tədris bacarığını sübut edən sənədləri göstər.",
-        "text": "Sertifikat məcburi deyil, amma profilinin təsdiq prosesində və tələbə etibarında kömək edir."
+        "title": "Tədris sertifikatı",
+        "text": "Tədris sertifikatların var? Varsa, profil etibarını artırmaq və daha çox tələbə qazanmaq üçün onları əlavə et."
       },
       "education": {
         "eyebrow": "Təhsil",
@@ -833,10 +833,14 @@
       "phone": "Telefon nömrəsi (istəyə bağlı)",
       "over18": "18 yaşdan yuxarı olduğumu təsdiqləyirəm",
       "specialties": "Dərs ixtisasların",
-      "subject": "Dil",
+      "subject": "Fənn",
       "certificate": "Sertifikat adı",
+      "certification": "Sertifikat",
+      "certificateDescription": "Təsvir",
+      "certificateName": "Sertifikat adı",
       "issuedBy": "Təşkilat",
       "year": "İl",
+      "yearsOfStudy": "Təhsil illəri",
       "school": "Təhsil müəssisəsi",
       "degree": "Dərəcə və ya proqram",
       "field": "İxtisas sahəsi",
@@ -856,6 +860,8 @@
     "placeholders": {
       "headline": "Səbirli İngilis dili müəllimi",
       "certificate": "TESOL, IELTS Trainer, CELTA...",
+      "verifiedCertificate": "Təsdiqlənmiş sertifikat seç",
+      "select": "Seç",
       "chooseCountry": "Ölkə seç...",
       "chooseSubject": "Fənn seç...",
       "chooseLanguage": "Dil...",
@@ -966,8 +972,22 @@
       }
     },
     "certification": {
-      "add": "Sertifikat əlavə et",
-      "helper": "Sertifikat #{number} profil yoxlanışında nəzərə alınacaq."
+      "add": "Başqa sertifikat əlavə et",
+      "authentic": "Yalnız həqiqi sənədlər qəbul edilir. Yanlış məlumat təsdiqi gecikdirə və ya müəllim hesabını dayandıra bilər.",
+      "badgeText": "Etibarlılığını artırmaq üçün sertifikatını yüklə. Komandamız onu yoxlayıb profilinə təsdiq nişanı əlavə edəcək.",
+      "badgeTitle": "“Sertifikat təsdiqləndi” nişanı al",
+      "clearSubject": "Seçilmiş fənni sil",
+      "exactName": "Adı sertifikatda necə yazılıbsa, elə də daxil et.",
+      "format": "JPG və ya PNG formatı; maksimum 20MB.",
+      "helper": "Sertifikat #{number} profil yoxlanışında nəzərə alınacaq.",
+      "noCertificateText": "Sertifikat almağı planlaşdırırsan? Tədris sertifikatını daha sonra əlavə edə bilərsən.",
+      "none": "Tədris sertifikatım yoxdur",
+      "notListed": "Sertifikatım siyahıda yoxdur",
+      "present": "Hazırda",
+      "remove": "Sertifikatı sil",
+      "upload": "Yüklə",
+      "uploadText": "Komandamız göndərdiyin sənədi əl ilə yoxlayacaq.",
+      "uploadTitle": "Sertifikatını yüklə"
     },
     "education": {
       "add": "Təhsil əlavə et"

@@ -27,6 +27,7 @@ import {
   User,
   Upload,
   Wallet,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -63,8 +64,13 @@ type Certificate = {
   id: number;
   subject: string;
   certificate: string;
+  description: string;
   issuedBy: string;
   year: string;
+  startYear: string;
+  endYear: string;
+  notListed: boolean;
+  fileName: string;
 };
 
 type Education = {
@@ -88,6 +94,7 @@ type TutorApplication = {
   over18: boolean;
   photoReady: boolean;
   photoUrl: string;
+  hasNoCertificates: boolean;
   certificates: Certificate[];
   education: Education[];
   headline: string;
@@ -117,6 +124,164 @@ const STORAGE_KEY = "dilup_tutor_application_v2";
 const teachingLanguageKeys = ["english", "russian", "turkish", "german", "french", "spanish", "arabic", "italian"];
 const activeTeachingLanguageKeys = ["english"];
 const levelKeys = ["b1", "b2", "c1", "c2", "native"];
+const verifiedCertificateOptions = [
+  "Bridge EDU • 60-Hour Succeeding as an English Teacherpreneur",
+  "TEFL Hero • TEFL Hero 120-Hour Advanced Teaching English as a Foreign Language",
+  "The TEFL Org • 120-Hour Premier Online TEFL Course",
+  "OISE TEFL • 120-hour OISE TEFL Online Course",
+  "Swansea University • Certificate in English Language Teaching to Adults",
+  "The TEFL Academy • Teaching English as a Foreign Language Course (120 hours)",
+  "Training Qualifications UK Ltd • TQUK Level 5 Certificate in Teaching English as a Foreign Language (QCF)",
+  "OISE TEFL • 150-hour OISE TEFL Online Course",
+  "Bridge EDU • 10-Hour Games and Activities for the Online Classroom (Young Learners)",
+  "Bridge EDU • 10-Hour Health, Safety, and Mental Attitudes while Teaching English Online",
+  "Bridge EDU • 10-Hour Instilling Confidence and Leadership in Your Learners",
+  "Bridge EDU • 10-Hour Introduction to Promoting 21st-Century Skills",
+  "Bridge EDU • 10-Hour Promoting Creative and Innovative Thinking in Your Classroom",
+  "Bridge EDU • 10-Hour Promoting Critical Thinking Skills in Your Classroom",
+  "Bridge EDU • 10-Hour Promoting Digital Literacy in Your Classroom",
+  "Bridge EDU • 10-Hour Promoting Social, Cultural, Global, and Environmental Awareness in Your Classroom",
+  "Bridge EDU • 10-Hour Teaching Communicative, Collaborative, and Interpersonal Skills",
+  "Bridge EDU • 10-Hour Teaching English Online to Groups",
+  "Bridge EDU • 100-Hour Introductory EducatorPlus Certificate",
+  "Bridge EDU • 20-Hour Error Correction in the EFL Classroom",
+  "Bridge EDU • 20-Hour Guided Teaching Practicum",
+  "Bridge EDU • 20-Hour Materials Development for the EFL Classroom",
+  "Bridge EDU • 20-Hour Teaching English as a Christian Service",
+  "Bridge EDU • 20-Hour Teaching English as a Global Language",
+  "Bridge EDU • 20-Hour Teaching English as a Volunteer",
+  "Bridge EDU • 20-Hour Teaching English Using Podcasts",
+  "Bridge EDU • 20-Hour Teaching English Using Video",
+  "Bridge EDU • 20-Hour Teaching English with Low Resources",
+  "Bridge EDU • 20-Hour Teaching IELTS Exam Prep",
+  "Bridge EDU • 20-Hour Teaching PTE Test Prep",
+  "Bridge EDU • 20-Hour Teaching TOEFL Exam Prep",
+  "Bridge EDU • 30-Hour Teaching English Pronunciation",
+  "Bridge EDU • 40-Hour Basic Certificate",
+  "Bridge EDU • 40-Hour Designing Custom Courses",
+  "Bridge EDU • 60-Hour Advanced CLIL Methodology",
+  "Bridge EDU • 60-Hour Advanced Methods in Teaching English Online",
+  "Bridge EDU • 60-Hour Foundational CLIL Methodology",
+  "Bridge EDU • 60-Hour Foundations in Teaching English Online",
+  "Bridge EDU • 60-Hour Introductory Educator Certificate",
+  "Bridge EDU • 60-Hour Practicum in Teaching English Online",
+  "Bridge EDU • 60-Hour Teaching Business English",
+  "Bridge EDU • 60-Hour Teaching English in English",
+  "Bridge EDU • 60-Hour Teaching English to Teenagers",
+  "Bridge EDU • 60-Hour Teaching English to Young Learners",
+  "Bridge EDU • IDELT (International Diploma in English Language Teaching)",
+  "Cambridge English • Cambridge English Level 7 Diploma In Teaching English to Speakers of Other Languages (Delta) (QCF)",
+  "Cambridge English • Cambridge English Level 5 Certificate in Teaching English to Speakers of Other Languages (CELTA)",
+  "Cambridge English • Cambridge English Level 7 Diploma In Teaching English to Speakers of Other Languages (Delta)",
+  "Cambridge English • Cambridge ESOL Level 4 Certificate in Teaching English to Speakers of Other Languages (CELTA)",
+  "Cambridge English • Cambridge ESOL Level 5 Certificate in Teaching English to Speakers of Other Languages (CELTA)",
+  "Cambridge English • Cambridge ESOL Level 7 Diploma in Teaching English to Speakers of Other Languages (Delta)",
+  "Cambridge English • Cambridge ESOL Level 7 Diploma in Teaching English to Speakers of Other Languages (DELTA)",
+  "Focus Awards Limited • Focus Awards Level 5 Certificate in Teaching English as a Foreign Language (RQF)",
+  "Gatehouse Awards Ltd • GA Level 3 Certificate in Teaching English as a Foreign Language (TEFL) (i-to-i)",
+  "Gatehouse Awards Ltd • GA Level 3 Certificate in Teaching English to Speakers of Other Languages (TESOL)",
+  "Gatehouse Awards Ltd • GA Level 5 Certificate in Teaching English as a Foreign Language (TEFL) (i-to-i)",
+  "Gatehouse Awards Ltd • GA Level 5 Diploma in Teaching English as a Foreign Language (TEFL) (i-to-i)",
+  "Gatehouse Awards Ltd • GA Level 5 Diploma in Teaching English to Speakers of Other Languages (TESOL)",
+  "Highfield Qualifications • Highfield Level 5 Advanced Diploma in Teaching English as a Foreign Language (TEFL) (Premier TEFL)",
+  "Highfield Qualifications • Highfield Level 5 Advanced Diploma in Teaching English as a Foreign Language (TEFL) (The TEFL Institute)",
+  "Highfield Qualifications • Highfield Level 5 Certificate in Teaching English as a Foreign Language (TEFL) (Premier TEFL)",
+  "Highfield Qualifications • Highfield Level 5 Certificate in Teaching English as a Foreign Language (TEFL) (The TEFL Institute)",
+  "Highfield Qualifications • Highfield Level 5 Diploma in Teaching English as a Foreign Language (TEFL) (Premier TEFL)",
+  "Highfield Qualifications • Highfield Level 5 Diploma in Teaching English as a Foreign Language (TEFL) (The TEFL Institute)",
+  "i-to-i • GA Level 3 Certificate in Teaching English as a Foreign Language (TEFL) (i-to-i)",
+  "International Open Academy • 120-Hour TEFL Certificate",
+  "International Open Academy • 120-Hour TESOL Certificate",
+  "International Open Academy • 150-Hour Advanced TEFL Certificate",
+  "International Open Academy • 150-Hour Advanced TESOL Certificate",
+  "International Open Academy • Teaching English Online",
+  "International Open Academy • Teaching Professional English",
+  "International Open Academy • Teaching Young Learners",
+  "International TEFL Academy • TQUK Level 5 Certificate in Teaching English as a Foreign Language - International TEFL Academy (RQF)",
+  "ITTT (International TEFL and TESOL training) • 120-hr course with Tutor & Videos: (for teaching abroad)",
+  "ITTT (International TEFL and TESOL training) • 170-hr course with Tutor & Videos: (for teaching abroad & online)",
+  "ITTT (International TEFL and TESOL training) • 220-hr course with Tutor & Videos: (for teaching abroad & Young Learners & Business English)",
+  "ITTT (International TEFL and TESOL training) • 370-hr diploma course: (TEFL/TESOL Certificate & Diploma)",
+  "ITTT (International TEFL and TESOL training) • 550-hr diploma course: (TEFL/TESOL Certificate & Diploma-Young Learners & Business + Practicum)",
+  "Learning Resource Network • LRN Level 3 Certificate In Teaching English to Speakers of Other Languages (ELTAB)",
+  "Learning Resource Network • LRN Level 5 Certificate In Teaching English to Speakers of Other Languages (ELTAC)",
+  "Learning Resource Network • LRN LEVEL 7 DIPLOMA IN TEACHING ENGLISH TO SPEAKERS OF OTHER LANGUAGES (ELTAD)",
+  "LoveTEFL • GA Level 3 Certificate in Teaching English as a Foreign Language (TEFL) (i-to-i)",
+  "mytefl • BASIC COURSE - 40 HOURS OF TEFL TRAINING",
+  "mytefl • MASTER COURSE - 140 HOURS OF TEFL TRAINING",
+  "mytefl • PROFESSIONAL COURSE - 120 HOURS OF TEFL TRAINING",
+  "Open College Network Northern Ireland • OCN NI Level 4 Certificate in Teaching English to Speakers of Other Languages",
+  "Pearson EDI • Pearson EDI Level 4 Certificate in Teaching English as a Foreign Language",
+  "Pearson EDI • Pearson LCCI Level 5 Certificate in Teaching English as a Foreign Language (QCF)",
+  "Pearson Education Ltd • Pearson LCCI Level 5 Certificate in Teaching English as a Foreign Language (QCF)",
+  "Premier TEFL • 310 Hour Hybrid Level 5 TEFL Advanced Diploma",
+  "Premier TEFL • 120 Premier TEFL course",
+  "Premier TEFL • 130 Hour Hybrid TEFL Course",
+  "Premier TEFL • 270 Premier TEFL course",
+  "Premier TEFL • Highfield Level 5 Advanced Diploma in Teaching English as a Foreign Language (TEFL) (Premier TEFL)",
+  "Premier TEFL • Highfield Level 5 Certificate in Teaching English as a Foreign Language (TEFL) (Premier TEFL)",
+  "Premier TEFL • Highfield Level 5 Diploma in Teaching English as a Foreign Language (TEFL) (Premier TEFL)",
+  "Premier TEFL • Level 5 Teaching Business English",
+  "Premier TEFL • Level 5 Teaching Exam English",
+  "Premier TEFL • Level 5 Teaching Online & One-to-One",
+  "Premier TEFL • Level 5 Teaching Other Subjects in English",
+  "Premier TEFL • Specialist 30 Hour TEFL-Pro Courses",
+  "Qualifi Ltd • Qualifi Level 3 Certificate in Teaching English as a Foreign Language (TEFL) (The TEFL Academy)",
+  "Qualifi Ltd • Qualifi Level 5 Certificate in Teaching English as a Foreign Language (TEFL) (The TEFL Academy)",
+  "Qualifi Ltd • Qualifi Level 5 Diploma in Teaching English as a Foreign Language (TEFL) (The TEFL Academy)",
+  "Qualifi Ltd • Qualifi Level 5 Certificate in Observed Teaching Practice (TEFL) (The TEFL Academy)",
+  "Qualifi Ltd • Qualifi Level 5 Certificate in Teaching English as a Foreign Language with Practice (CertTEFL) (The TEFL Academy)",
+  "Qualifi Ltd • QUALIFI Level 5 Diploma in Teaching English to Speakers of Other Languages (TESOL) (The TEFL Academy)",
+  "Teacher Record • Teaching English as a Foreign Language (120 hours)",
+  "TEFL Fullcircle • Professional 120-Hour Online TEFL Course",
+  "TEFL Fullcircle • Professional 160-Hour Online TEFL Course",
+  "TEFL Fullcircle • Professional 200-Hour Online TEFL Course",
+  "TEFL Fullcircle • Professional 40-Hour Teaching English Online TEFL Course",
+  "telc - language tests • telc Level 3 Certificate in Teaching English as a Foreign Language (TEFL) (Gallery Teachers)",
+  "telc - language tests • telc Level 5 Certificate in Teaching English as a Foreign Language (TEFL) (Gallery Teachers)",
+  "Training Qualifications UK Ltd • TQUK Level 5 Diploma in Teaching English as a Foreign Language - The TEFL Org (RQF)",
+  "Training Qualifications UK Ltd • TQUK Level 6 Diploma in Teaching English to Speakers of Other Languages (RQF)",
+  "Trinity College London • TCL Level 4 Certificate in Teaching English to Speakers of Other Languages (Cert TESOL)",
+  "Trinity College London • TCL Level 5 Certificate in Teaching English to Speakers of Other Languages (Cert TESOL)",
+  "Trinity College London • TCL Level 5 Certificate in Teaching English to Speakers of Other Languages (CertTESOL)",
+  "Trinity College London • TCL Level 7 Diploma in Teaching English to Speakers of Other Languages",
+  "Trinity College London • TCL Level 7 Diploma In TESOL Education Studies",
+  "Trinity College London • TCL Level 7 Fellowship Diploma in TESOL Education Studies (FTCL)",
+  "Trinity College London • TCL Level 7 Licentiate Diploma in Teaching English to Speakers of Other Languages (LTCL)",
+  "AIM Qualifications • AIM Qualifications Level 5 Certificate in Teaching English as a Second Language (TESOL)",
+  "Awarding Body for Vocational Achievement (AVA) Ltd • BAA Level 5 Certificate in Teaching English to Speakers of other Languages",
+  "Awarding Body for Vocational Achievement (AVA) Ltd • BAA Level 5 Certificate in Teaching English to Speakers of other Languages - CERT",
+  "Awarding Body for Vocational Achievement (AVA) Ltd • BAA Level 7 Diploma in Teaching English to Speakers of other Languages",
+  "Bridge EDU • 10-Hour Developing Students' Education and Career Pathways",
+  "Bridge EDU • 10-Hour Games and Activities for the Online Classroom (Adults)",
+  "Bridge EDU • 10-Hour Games and Activities for the Online Classroom (Teenagers)",
+  "Bridge EDU • 10-Hour Games and Activities for the Online Classroom (Very Young Learners)",
+  "Bridge EDU • 120 Hour Master TEFL Certificate",
+  "Bridge EDU • 40-Hour Teaching English Grammar",
+  "mytefl • ADVANCED COURSE - 80 HOURS OF TEFL TRAINING",
+  "The TEFL Academy • Qualifi Level 3 Certificate in Teaching English as a Foreign Language (TEFL) (The TEFL Academy)",
+  "The TEFL Academy • Qualifi Level 5 Certificate in Teaching English as a Foreign Language (TEFL) (The TEFL Academy)",
+  "The TEFL Academy • Qualifi Level 5 Diploma in Teaching English as a Foreign Language (TEFL) (The TEFL Academy)",
+  "The TEFL Academy • Qualifi Level 5 Certificate in Observed Teaching Practice (TEFL) (The TEFL Academy)",
+  "The TEFL Academy • Qualifi Level 5 Certificate in Teaching English as a Foreign Language with Practice (CertTEFL) (The TEFL Academy)",
+  "The TEFL Academy • QUALIFI Level 5 Diploma in Teaching English to Speakers of Other Languages (TESOL) (The TEFL Academy)",
+  "The TEFL Institute • Highfield Level 5 Advanced Diploma in Teaching English as a Foreign Language (TEFL) (The TEFL Institute)",
+  "The TEFL Institute • Highfield Level 5 Certificate in Teaching English as a Foreign Language (TEFL) (The TEFL Institute)",
+  "The TEFL Institute • Highfield Level 5 Diploma in Teaching English as a Foreign Language (TEFL) (The TEFL Institute)",
+  "The TEFL Org • TQUK Level 5 Diploma in Teaching English as a Foreign Language - The TEFL Org (RQF)",
+  "The TEFL Org • 140-Hour Premier TEFL Course",
+  "The TEFL Org • 168-hour Level 5 Online TEFL Course",
+  "Training Qualifications UK Ltd • TQUK Level 5 Certificate in Teaching English as a Foreign Language - International TEFL Academy (RQF)",
+  "Training Qualifications UK Ltd • TQUK Level 5 Certificate in Teaching English as a Foreign Language - TtMadrid (RQF)",
+  "Training Qualifications UK Ltd • TQUK Level 5 Certificate in Teaching English as a Foreign Language (RQF)",
+  "Training Qualifications UK Ltd • TQUK Level 5 Certificate in Teaching English as a Foreign Language (RQF, TEFL UK)",
+  "Training Qualifications UK Ltd • TQUK Level 6 Diploma in Teaching English to Speakers of Other Languages (RQF, TEFL UK)",
+  "i-to-i • GA Level 5 Diploma in Teaching English as a Foreign Language (TEFL) (i-to-i)",
+  "i-to-i • GA Level 5 Certificate in Teaching English as a Foreign Language (TEFL) (i-to-i)",
+];
+const presentYearValue = "present";
+const certificateYearOptions = Array.from({ length: new Date().getFullYear() - 1919 }, (_, index) => String(new Date().getFullYear() - index));
+const certificateEndYearOptions = [presentYearValue, ...certificateYearOptions];
 const photoGuidelineImages = [
   "/images/footer/how-it-works-tutors-1.jpg",
   "/images/footer/dilup-tutor-profile.jpg",
@@ -442,13 +607,19 @@ const initialApplication: TutorApplication = {
   over18: false,
   photoReady: false,
   photoUrl: "",
+  hasNoCertificates: false,
   certificates: [
     {
       id: 1,
-      subject: "english",
+      subject: "",
       certificate: "",
+      description: "",
       issuedBy: "",
       year: "",
+      startYear: "",
+      endYear: "",
+      notListed: false,
+      fileName: "",
     },
   ],
   education: [
@@ -752,6 +923,10 @@ export function TutorOnboardingWizard() {
 
   const canContinue = isStepValid(currentStep.key, application);
   const continueDisabled = !canContinue || (currentStep.key === "photo" && isPhotoUploading);
+  const currentStepText =
+    currentStep.key === "certification" && application.hasNoCertificates
+      ? t("certification.noCertificateText")
+      : t(`content.${currentStep.key}.text`);
 
   function updateField<K extends keyof TutorApplication>(key: K, value: TutorApplication[K]) {
     setApplication((current) => ({ ...current, [key]: value }));
@@ -845,7 +1020,7 @@ export function TutorOnboardingWizard() {
               <StepHeading
                 title={t(`content.${currentStep.key}.title`)}
                 step={currentStep.key}
-                text={t(`content.${currentStep.key}.text`)}
+                text={currentStepText}
                 eyebrow={t(`content.${currentStep.key}.eyebrow`)}
                 current={stepIndex + 1}
                 total={steps.length}
@@ -1294,7 +1469,7 @@ function StepBody({
   }, [photoCropOffset, photoCropSize, photoEditorOpen, photoMinZoom, photoRotation, photoSourceSize, photoZoom]);
 
   function startPhotoDrag(
-    event: React.PointerEvent<HTMLDivElement>,
+    event: React.PointerEvent<HTMLElement>,
     mode: "move" | "resize" = "move",
     handle?: string,
   ) {
@@ -1316,7 +1491,7 @@ function StepBody({
     };
   }
 
-  function movePhotoDrag(event: React.PointerEvent<HTMLDivElement>) {
+  function movePhotoDrag(event: React.PointerEvent<HTMLElement>) {
     const drag = photoDragRef.current;
     if (!drag || drag.pointerId !== event.pointerId) {
       return;
@@ -1366,7 +1541,7 @@ function StepBody({
     setPhotoCropOffset(clampPhotoCropOffset(nextOffset, nextSize));
   }
 
-  function stopPhotoDrag(event: React.PointerEvent<HTMLDivElement>) {
+  function stopPhotoDrag(event: React.PointerEvent<HTMLElement>) {
     if (photoDragRef.current?.pointerId === event.pointerId) {
       photoDragRef.current = null;
     }
@@ -1939,32 +2114,229 @@ function StepBody({
 
   if (step === "certification") {
     return (
-      <RepeatableBlock
-        items={application.certificates}
-        addLabel={t("certification.add")}
-        onAdd={() => setApplication((current) => ({ ...current, certificates: [...current.certificates, { id: Date.now(), subject: current.teaches, certificate: "", issuedBy: "", year: "" }] }))}
-        onRemove={(id) => setApplication((current) => ({ ...current, certificates: current.certificates.filter((item) => item.id !== id) }))}
-        render={(item, index) => (
-          <div className="grid gap-4">
-            <Field label={t("fields.subject")}>
-              <Select value={item.subject} onValueChange={(value) => updateCertificate(setApplication, item.id, "subject", value)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>{optionsFromKeys(t, "languages", teachingLanguageKeys).map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
-              </Select>
-            </Field>
-            <Field label={t("fields.certificate")}>
-              <Input value={item.certificate} onChange={(event) => updateCertificate(setApplication, item.id, "certificate", event.target.value)} placeholder={t("placeholders.certificate")} />
-            </Field>
-            <Field label={t("fields.issuedBy")}>
-              <Input value={item.issuedBy} onChange={(event) => updateCertificate(setApplication, item.id, "issuedBy", event.target.value)} />
-            </Field>
-            <Field label={t("fields.year")}>
-              <Input inputMode="numeric" value={item.year} onChange={(event) => updateCertificate(setApplication, item.id, "year", event.target.value)} />
-            </Field>
-            <p className="text-sm font-medium text-muted">{t("certification.helper", { number: index + 1 })}</p>
-          </div>
+      <div className="grid gap-5">
+        <label className="flex min-h-6 cursor-pointer items-center gap-3 text-base font-semibold text-ink">
+          <Checkbox
+            className="h-5 w-5 rounded-[4px] border-2 border-[#dcdce5] shadow-none data-[state=checked]:border-ink data-[state=checked]:bg-ink"
+            checked={application.hasNoCertificates}
+            onCheckedChange={(checked) =>
+              setApplication((current) => ({
+                ...current,
+                hasNoCertificates: checked === true,
+              }))
+            }
+            aria-label={t("certification.none")}
+          />
+          <span>{t("certification.none")}</span>
+        </label>
+
+        {application.hasNoCertificates ? null : (
+          <RepeatableBlock
+            items={application.certificates}
+            addLabel={t("certification.add")}
+            addVariant="link"
+            showTopRemove={false}
+            onAdd={() =>
+              setApplication((current) => ({
+                ...current,
+                certificates: [...current.certificates, createEmptyCertificate()],
+              }))
+            }
+            onRemove={(id) =>
+              setApplication((current) => ({
+                ...current,
+                certificates:
+                  current.certificates.length > 1
+                    ? current.certificates.filter((item) => item.id !== id)
+                    : [createEmptyCertificate()],
+              }))
+            }
+            render={(item, index) => (
+              <div className="grid gap-4">
+                <Field label={t("fields.subject")}>
+                  <div className={cn("grid items-center gap-2", item.subject ? "grid-cols-[minmax(0,1fr)_40px]" : "grid-cols-1")}>
+                    <Select
+                      value={item.subject || undefined}
+                      onValueChange={(value) =>
+                        setApplication((current) => ({
+                          ...current,
+                          certificates: current.certificates.map((certificate) =>
+                            certificate.id === item.id
+                              ? {
+                                  ...certificate,
+                                  subject: value,
+                                  certificate: "",
+                                  description: "",
+                                  issuedBy: "",
+                                  notListed: false,
+                                }
+                              : certificate,
+                          ),
+                        }))
+                      }
+                    >
+                      <SelectTrigger className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none">
+                        <SelectValue placeholder={t("placeholders.chooseSubject")} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {optionsFromKeys(t, "languages", teachingLanguageKeys).map((option) => (
+                          <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {item.subject ? (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setApplication((current) => ({
+                            ...current,
+                            certificates:
+                              current.certificates.length > 1
+                                ? current.certificates.filter((certificate) => certificate.id !== item.id)
+                                : current.certificates.map((certificate) =>
+                                    certificate.id === item.id ? createEmptyCertificate(item.id) : certificate,
+                                  ),
+                          }))
+                        }
+                        className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-transparent text-ink transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15"
+                        aria-label={t("certification.clearSubject")}
+                      >
+                        <Trash2 className="h-5 w-5" />
+                      </button>
+                    ) : null}
+                  </div>
+                </Field>
+
+                {!item.subject ? (
+                  <div className="grid gap-4">
+                    <Field label={t("fields.certificate")}>
+                      <Input
+                        value={item.certificate}
+                        onChange={(event) => updateCertificate(setApplication, item.id, "certificate", event.target.value)}
+                        className="h-12 rounded-[8px] border-2 border-[#dcdce5] text-base"
+                      />
+                    </Field>
+                    <Field label={t("fields.certificateDescription")}>
+                      <Input
+                        value={item.description}
+                        onChange={(event) => updateCertificate(setApplication, item.id, "description", event.target.value)}
+                        className="h-12 rounded-[8px] border-2 border-[#dcdce5] text-base"
+                      />
+                    </Field>
+                    <Field label={t("fields.issuedBy")}>
+                      <Input
+                        value={item.issuedBy}
+                        onChange={(event) => updateCertificate(setApplication, item.id, "issuedBy", event.target.value)}
+                        className="h-12 rounded-[8px] border-2 border-[#dcdce5] text-base"
+                      />
+                    </Field>
+                  </div>
+                ) : (
+                  <>
+                    <Field label={t("fields.certification")}>
+                      <Select
+                        value={item.notListed ? undefined : item.certificate || undefined}
+                        onValueChange={(value) => updateCertificate(setApplication, item.id, "certificate", value)}
+                        disabled={item.notListed}
+                      >
+                        <SelectTrigger className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base font-normal text-ink shadow-none disabled:bg-surface disabled:text-muted">
+                          <SelectValue placeholder={t("placeholders.verifiedCertificate")} />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-80 w-[var(--radix-select-trigger-width)] max-w-[var(--radix-select-trigger-width)] rounded-[8px]">
+                          {verifiedCertificateOptions.map((option) => (
+                            <SelectItem key={option} value={option} className="whitespace-normal break-words py-3 pl-3 pr-2 text-base leading-6 [&>span:last-child]:whitespace-normal [&>span:last-child]:break-words">
+                              {option}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                    <p className="-mt-2 text-sm leading-6 text-muted">{t("certification.exactName")}</p>
+
+                    <label className="flex min-h-11 cursor-pointer items-center gap-3 text-base font-medium text-ink">
+                      <Checkbox
+                        className="h-5 w-5 rounded-[4px] border-2 border-[#dcdce5] shadow-none data-[state=checked]:border-ink data-[state=checked]:bg-ink"
+                        checked={item.notListed}
+                        onCheckedChange={(checked) => updateCertificate(setApplication, item.id, "notListed", checked === true)}
+                        aria-label={t("certification.notListed")}
+                      />
+                      <span>{t("certification.notListed")}</span>
+                    </label>
+
+                    {item.notListed ? (
+                      <div className="grid gap-4">
+                        <Field label={t("fields.issuedBy")}>
+                          <Input
+                            value={item.issuedBy}
+                            onChange={(event) => updateCertificate(setApplication, item.id, "issuedBy", event.target.value)}
+                            className="h-12 rounded-[8px] border-2 border-[#dcdce5] text-base"
+                          />
+                        </Field>
+                        <Field label={t("fields.certificateName")}>
+                          <Input
+                            value={item.certificate}
+                            onChange={(event) => updateCertificate(setApplication, item.id, "certificate", event.target.value)}
+                            className="h-12 rounded-[8px] border-2 border-[#dcdce5] text-base"
+                          />
+                        </Field>
+                        <p className="-mt-2 text-sm leading-6 text-muted">{t("certification.exactName")}</p>
+                      </div>
+                    ) : null}
+                  </>
+                )}
+
+                <fieldset className="grid gap-2">
+                  <legend className="text-base font-normal leading-6 text-ink">{t("fields.yearsOfStudy")}</legend>
+                  <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-[11px]">
+                    <YearSelect
+                      value={item.startYear}
+                      placeholder={t("placeholders.select")}
+                      onValueChange={(value) => updateCertificate(setApplication, item.id, "startYear", value)}
+                      presentLabel={t("certification.present")}
+                    />
+                    <span className="text-base text-muted">-</span>
+                    <YearSelect
+                      value={item.endYear}
+                      placeholder={t("placeholders.select")}
+                      onValueChange={(value) => updateCertificate(setApplication, item.id, "endYear", value)}
+                      options={certificateEndYearOptions}
+                      presentLabel={t("certification.present")}
+                    />
+                  </div>
+                </fieldset>
+
+                <div className="mt-2 bg-[#f4f3f8] p-6">
+                  <h3 className="text-lg font-extrabold text-ink">
+                    {t("certification.uploadTitle")}
+                  </h3>
+                  <p className="mt-2 text-base leading-6 text-ink">
+                    {t("certification.uploadText")}
+                  </p>
+                  <label className="mt-4 flex min-h-10 w-full cursor-pointer items-center justify-center rounded-md border-2 border-ink bg-transparent px-5 text-sm font-extrabold text-ink transition-colors hover:bg-white">
+                    {t("certification.upload")}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png"
+                      className="sr-only"
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        updateCertificate(setApplication, item.id, "fileName", file?.name ?? "");
+                      }}
+                    />
+                  </label>
+                  {item.fileName ? (
+                    <p className="mt-3 text-sm font-semibold text-success">{item.fileName}</p>
+                  ) : null}
+                  <p className="mt-4 rounded-none bg-[#d9e8ff] p-4 text-base leading-6 text-ink">{t("certification.authentic")}</p>
+                  <p className="mt-4 text-base leading-6 text-ink">{t("certification.format")}</p>
+                </div>
+
+                <p className="text-sm font-medium text-muted">{t("certification.helper", { number: index + 1 })}</p>
+              </div>
+            )}
+          />
         )}
-      />
+      </div>
     );
   }
 
@@ -2283,37 +2655,85 @@ function GuidelineList({ items }: { items: string[] }) {
   );
 }
 
+function YearSelect({
+  onValueChange,
+  options = certificateYearOptions,
+  presentLabel,
+  placeholder,
+  value,
+}: {
+  onValueChange: (value: string) => void;
+  options?: string[];
+  presentLabel: string;
+  placeholder: string;
+  value: string;
+}) {
+  return (
+    <Select value={value} onValueChange={onValueChange}>
+      <SelectTrigger className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base font-normal text-ink shadow-none">
+        <SelectValue placeholder={placeholder} />
+      </SelectTrigger>
+      <SelectContent side="top" className="max-h-80 w-[var(--radix-select-trigger-width)] rounded-[8px]">
+        {options.map((year) => (
+          <SelectItem key={year} value={year} className="py-2.5 text-base leading-6">
+            {year === presentYearValue ? presentLabel : year}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
 function RepeatableBlock<T extends { id: number }>({
+  addVariant = "button",
   items,
   addLabel,
   onAdd,
   onRemove,
   render,
+  showTopRemove = true,
 }: {
+  addVariant?: "button" | "link";
   items: T[];
   addLabel: string;
   onAdd: () => void;
   onRemove: (id: number) => void;
   render: (item: T, index: number) => React.ReactNode;
+  showTopRemove?: boolean;
 }) {
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-5">
       {items.map((item, index) => (
-        <div key={item.id} className="rounded-md border border-line bg-surface p-5">
-          <div className="mb-4 flex justify-end">
-            {items.length > 1 ? (
-              <button type="button" onClick={() => onRemove(item.id)} className="inline-flex min-h-10 items-center gap-2 rounded-full px-3 text-sm font-bold text-muted hover:bg-white hover:text-ink">
-                <Trash2 className="h-4 w-4" />
+        <div key={item.id} className={cn("grid gap-4", index > 0 && "border-t border-line pt-5")}>
+          {showTopRemove && items.length > 1 ? (
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => onRemove(item.id)}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted transition-colors hover:bg-surface hover:text-ink focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15"
+                aria-label="Remove certificate"
+              >
+                <X className="h-5 w-5" />
               </button>
-            ) : null}
-          </div>
+            </div>
+          ) : null}
           {render(item, index)}
         </div>
       ))}
-      <Button type="button" variant="outline" className="w-full rounded-md" onClick={onAdd}>
-        <Plus className="h-4 w-4" />
-        {addLabel}
-      </Button>
+      {addVariant === "link" ? (
+        <button
+          type="button"
+          className="justify-self-start border-b-2 border-current pb-0.5 text-lg font-semibold leading-6 text-ink transition-colors hover:text-brand-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15"
+          onClick={onAdd}
+        >
+          {addLabel}
+        </button>
+      ) : (
+        <Button type="button" variant="outline" className="w-full rounded-md" onClick={onAdd}>
+          <Plus className="h-4 w-4" />
+          {addLabel}
+        </Button>
+      )}
     </div>
   );
 }
@@ -2365,6 +2785,21 @@ function flagFromCountryCode(countryCode: string) {
     .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt(0)));
 }
 
+function createEmptyCertificate(id = Date.now()): Certificate {
+  return {
+    id,
+    subject: "",
+    certificate: "",
+    description: "",
+    issuedBy: "",
+    year: "",
+    startYear: "",
+    endYear: "",
+    notListed: false,
+    fileName: "",
+  };
+}
+
 function updateCertificate<K extends keyof Certificate>(
   setApplication: React.Dispatch<React.SetStateAction<TutorApplication>>,
   id: number,
@@ -2405,7 +2840,7 @@ function isStepValid(step: StepKey, application: TutorApplication) {
     case "photo":
       return Boolean(application.photoReady && application.photoUrl);
     case "certification":
-      return application.certificates.some((item) => item.certificate.trim() && item.issuedBy.trim());
+      return true;
     case "education":
       return application.education.some((item) => item.school.trim() && item.degree.trim());
     case "description":
