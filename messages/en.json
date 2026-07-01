@@ -772,8 +772,8 @@
       },
       "photo": {
         "eyebrow": "Profile photo",
-        "title": "Add a clear photo that builds trust.",
-        "text": "Your photo creates the first impression. Choose a real, tidy image where your face is easy to see."
+        "title": "Profile photo",
+        "text": "Choose a photo that will help learners get to know you."
       },
       "certification": {
         "eyebrow": "Certificates",
@@ -921,17 +921,48 @@
     "photo": {
       "upload": "Choose photo",
       "replace": "Replace photo",
+      "uploadNew": "Upload new photo",
       "needsTitle": "What your photo needs",
+      "format": "JPG or PNG, max 5MB",
+      "previewFirstName": "DilUp tutor",
+      "selectedAlt": "Selected profile photo",
+      "uploading": "Uploading photo...",
+      "uploaded": "Photo uploaded and saved.",
+      "editor": {
+        "title": "Edit your photo",
+        "alt": "Photo being edited",
+        "zoom": "Zoom",
+        "rotate": "Rotate",
+        "rotateLeft": "Rotate left",
+        "rotateRight": "Rotate right",
+        "save": "Save profile photo",
+        "saving": "Saving photo..."
+      },
       "profileLine": "Teaches {language} lessons",
       "speaksLine": "Speaks {language} ({level})",
+      "sampleAlt": {
+        "0": "Tutor portrait example with clear face",
+        "1": "Tutor profile photo example",
+        "2": "Tutor photo example with calm background",
+        "3": "Tutor portrait example with natural light"
+      },
       "rules": {
-        "face": "Make sure your face is clear and centered.",
+        "face": "You should be facing forward.",
+        "shoulders": "Frame your head and shoulders.",
+        "centered": "You should be centered and upright.",
+        "visible": "Your face and eyes should be visible.",
         "light": "Use natural light and a calm background.",
         "plain": "Avoid logos, heavy filters and group photos.",
         "current": "Choose a real photo that reflects how you look now.",
         "solo": "You should be the only person in the photo.",
         "quality": "Use a high-resolution color photo.",
         "noLogos": "Avoid logos or contact information."
+      },
+      "errors": {
+        "type": "Upload a JPG or PNG image.",
+        "size": "The photo must be 5MB or smaller.",
+        "unauthorized": "Log in as a tutor before uploading your profile photo.",
+        "generic": "We could not upload the photo. Try again."
       }
     },
     "certification": {

@@ -772,8 +772,8 @@
       },
       "photo": {
         "eyebrow": "Profil fotosu",
-        "title": "Güvən verən aydın foto əlavə et.",
-        "text": "Foto ilk təəssüratı yaradır. Səliqəli, real və üzün aydın görünən şəkil seç."
+        "title": "Profil fotosu",
+        "text": "Tələbələrin səni tanımasına kömək edən aydın foto seç."
       },
       "certification": {
         "eyebrow": "Sertifikatlar",
@@ -921,17 +921,48 @@
     "photo": {
       "upload": "Foto seç",
       "replace": "Fotonu dəyiş",
+      "uploadNew": "Yeni foto yüklə",
       "needsTitle": "Foton necə olmalıdır",
+      "format": "JPG və ya PNG, maks. 5MB",
+      "previewFirstName": "DilUp müəllimi",
+      "selectedAlt": "Seçilmiş profil fotosu",
+      "uploading": "Foto yüklənir...",
+      "uploaded": "Foto yükləndi və yadda saxlandı.",
+      "editor": {
+        "title": "Fotonu redaktə et",
+        "alt": "Redaktə olunan foto",
+        "zoom": "Yaxınlaşdır",
+        "rotate": "Döndər",
+        "rotateLeft": "Sola döndər",
+        "rotateRight": "Sağa döndər",
+        "save": "Profil fotosunu saxla",
+        "saving": "Foto saxlanılır..."
+      },
       "profileLine": "{language} dərsləri keçir",
       "speaksLine": "{language} ({level}) danışır",
+      "sampleAlt": {
+        "0": "Üzü aydın görünən müəllim fotosu nümunəsi",
+        "1": "Müəllim profil fotosu nümunəsi",
+        "2": "Sakit fonlu müəllim fotosu nümunəsi",
+        "3": "Təbii işıqlı müəllim portreti nümunəsi"
+      },
       "rules": {
-        "face": "Üzün aydın görünsün və kadra mərkəzdə düşsün.",
+        "face": "Kameraya düz bax.",
+        "shoulders": "Baş və çiyinlərin kadrda görünsün.",
+        "centered": "Mərkəzdə və dik dayan.",
+        "visible": "Üzün və gözlərin aydın görünsün.",
         "light": "Təbii işıq və sakit fon seç.",
         "plain": "Loqo, ağır filter və qrup şəkli istifadə etmə.",
         "current": "Hazırkı görünüşünü əks etdirən real foto seç.",
         "solo": "Fotoda yalnız sən ol.",
         "quality": "Yüksək keyfiyyətli rəngli foto istifadə et.",
         "noLogos": "Loqo və əlaqə məlumatları əlavə etmə."
+      },
+      "errors": {
+        "type": "JPG və ya PNG şəkil yüklə.",
+        "size": "Foto 5MB və ya daha kiçik olmalıdır.",
+        "unauthorized": "Profil fotosu yükləmək üçün müəllim hesabı ilə daxil ol.",
+        "generic": "Fotonu yükləyə bilmədik. Yenidən yoxla."
       }
     },
     "certification": {

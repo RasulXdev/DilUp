@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -18,6 +19,8 @@ import {
   Mic2,
   Play,
   Plus,
+  RotateCcw,
+  RotateCw,
   RefreshCw,
   Search,
   Trash2,
@@ -27,6 +30,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -83,6 +87,7 @@ type TutorApplication = {
   phone: string;
   over18: boolean;
   photoReady: boolean;
+  photoUrl: string;
   certificates: Certificate[];
   education: Education[];
   headline: string;
@@ -112,6 +117,12 @@ const STORAGE_KEY = "dilup_tutor_application_v2";
 const teachingLanguageKeys = ["english", "russian", "turkish", "german", "french", "spanish", "arabic", "italian"];
 const activeTeachingLanguageKeys = ["english"];
 const levelKeys = ["b1", "b2", "c1", "c2", "native"];
+const photoGuidelineImages = [
+  "/images/footer/how-it-works-tutors-1.jpg",
+  "/images/footer/dilup-tutor-profile.jpg",
+  "/images/become-tutor-portrait.jpg",
+  "/images/footer/how-it-works-tutors-2.jpg",
+];
 const dropdownScrollClass =
   "overflow-y-auto overflow-x-hidden [scrollbar-gutter:stable] ![scrollbar-width:thin] ![scrollbar-color:var(--color-brand-300)_transparent] [&::-webkit-scrollbar]:!block [&::-webkit-scrollbar]:!w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-brand-300 [&::-webkit-scrollbar-track]:bg-transparent";
 const spokenLanguageCodes = [
@@ -424,6 +435,7 @@ const initialApplication: TutorApplication = {
   phone: "",
   over18: false,
   photoReady: false,
+  photoUrl: "",
   certificates: [
     {
       id: 1,
@@ -524,6 +536,79 @@ function getDisplayName(locale: string, type: "language" | "region", code: strin
   return type === "language" ? localizedLanguageNames.en[code] ?? code : code;
 }
 
+function loadPhotoElement(src: string) {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = document.createElement("img");
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = src;
+  });
+}
+
+async function createProfilePhotoFile(
+  src: string,
+  zoom: number,
+  rotation: number,
+  cropOffset: { x: number; y: number },
+  cropper: { width: number; height: number; cropSize: number },
+  sourceSize: { width: number; height: number },
+) {
+  const image = await loadPhotoElement(src);
+  const canvas = document.createElement("canvas");
+  const size = 1024;
+  canvas.width = size;
+  canvas.height = size;
+
+  const context = canvas.getContext("2d");
+  if (!context) {
+    throw new Error("Canvas is not available");
+  }
+
+  const normalizedRotation = Math.abs(rotation % 180);
+  const rotated = normalizedRotation === 90;
+  const sourceWidth = rotated ? sourceSize.height : sourceSize.width;
+  const sourceHeight = rotated ? sourceSize.width : sourceSize.height;
+  const containScale = Math.min(cropper.width / sourceWidth, cropper.height / sourceHeight) * zoom;
+  const displayWidth = image.naturalWidth * containScale;
+  const displayHeight = image.naturalHeight * containScale;
+  const cropX = (cropper.width - cropper.cropSize) / 2 + cropOffset.x;
+  const cropY = (cropper.height - cropper.cropSize) / 2 + cropOffset.y;
+
+  const stage = document.createElement("canvas");
+  stage.width = cropper.width;
+  stage.height = cropper.height;
+  const stageContext = stage.getContext("2d");
+  if (!stageContext) {
+    throw new Error("Canvas is not available");
+  }
+
+  stageContext.fillStyle = "#ffffff";
+  stageContext.fillRect(0, 0, cropper.width, cropper.height);
+  stageContext.translate(cropper.width / 2, cropper.height / 2);
+  stageContext.rotate((rotation * Math.PI) / 180);
+  stageContext.drawImage(image, -displayWidth / 2, -displayHeight / 2, displayWidth, displayHeight);
+
+  context.fillStyle = "#ffffff";
+  context.fillRect(0, 0, size, size);
+  context.drawImage(stage, cropX, cropY, cropper.cropSize, cropper.cropSize, 0, 0, size, size);
+
+  const blob = await new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (result) => {
+        if (result) {
+          resolve(result);
+          return;
+        }
+        reject(new Error("Photo could not be prepared"));
+      },
+      "image/jpeg",
+      0.9,
+    );
+  });
+
+  return new File([blob], "profile-photo.jpg", { type: "image/jpeg" });
+}
+
 export function TutorOnboardingWizard() {
   const t = useTranslations("tutorOnboarding");
   const locale = useLocale();
@@ -532,6 +617,7 @@ export function TutorOnboardingWizard() {
   const [application, setApplication] = useState<TutorApplication>(initialTutorState.application);
   const [highestUnlockedStep, setHighestUnlockedStep] = useState(initialTutorState.highestUnlockedStep);
   const [submitted, setSubmitted] = useState(false);
+  const [isPhotoUploading, setIsPhotoUploading] = useState(false);
 
   const currentStep = steps[stepIndex];
   const countryOptions = useMemo(() => {
@@ -582,6 +668,7 @@ export function TutorOnboardingWizard() {
   }, []);
 
   const canContinue = isStepValid(currentStep.key, application);
+  const continueDisabled = !canContinue || (currentStep.key === "photo" && isPhotoUploading);
 
   function updateField<K extends keyof TutorApplication>(key: K, value: TutorApplication[K]) {
     setApplication((current) => ({ ...current, [key]: value }));
@@ -600,6 +687,10 @@ export function TutorOnboardingWizard() {
     }
     setHighestUnlockedStep((current) => Math.max(current, stepIndex + 1));
     setStepIndex((current) => Math.min(current + 1, steps.length - 1));
+  }
+
+  function back() {
+    setStepIndex((current) => Math.max(current - 1, 0));
   }
 
   return (
@@ -627,7 +718,7 @@ export function TutorOnboardingWizard() {
       </header>
 
       <div className="border-y border-line bg-surface">
-        <div className="mx-auto flex h-12 max-w-[1040px] items-center overflow-x-auto px-4 sm:px-6">
+        <div className="mx-auto flex h-12 max-w-[1280px] items-center overflow-x-auto px-4 sm:px-6">
           <ol className="flex min-w-max items-center" aria-label={t("sidebar.aria")}>
             {steps.map((step, index) => {
               const active = index === stepIndex;
@@ -639,7 +730,7 @@ export function TutorOnboardingWizard() {
                     type="button"
                     onClick={() => !locked && setStepIndex(index)}
                     disabled={locked}
-                    className="group inline-flex h-10 items-center gap-2.5 px-2 text-sm font-medium text-ink disabled:opacity-55"
+                    className="group inline-flex h-10 items-center gap-2.5 whitespace-nowrap px-2 text-sm font-medium text-ink disabled:opacity-55"
                     aria-current={active ? "step" : undefined}
                     aria-label={t(`steps.${step.key}`)}
                   >
@@ -663,7 +754,7 @@ export function TutorOnboardingWizard() {
         </div>
       </div>
 
-      <section className="mx-auto w-full max-w-[498px] px-6 py-12 sm:py-13">
+      <section className="mx-auto w-full max-w-[546px] px-6 py-12 sm:px-12 sm:py-13">
         {submitted ? (
           <SubmittedView t={t} />
         ) : (
@@ -684,17 +775,30 @@ export function TutorOnboardingWizard() {
                   phoneOptions={phoneOptions}
                   spokenLanguageOptions={spokenLanguageOptions}
                   timeZoneOptions={timeZoneOptions}
+                  locale={locale}
+                  setIsPhotoUploading={setIsPhotoUploading}
                   updateField={updateField}
                   setApplication={setApplication}
                   t={t}
                 />
               </div>
-              <div className="mt-8 flex justify-center">
+              <div className="mt-8 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                {stepIndex > 0 ? (
+                  <Button
+                    type="button"
+                    size="lg"
+                    variant="outline"
+                    onClick={back}
+                    className="min-h-12 w-full rounded-md border-2 border-line bg-white px-6 text-base font-extrabold text-ink shadow-none hover:bg-surface sm:w-auto"
+                  >
+                    {t("actions.back")}
+                  </Button>
+                ) : null}
                 <Button
                   type="button"
                   size="lg"
                   onClick={next}
-                  disabled={!canContinue}
+                  disabled={continueDisabled}
                   className="min-h-12 w-full rounded-md border-2 border-ink bg-brand-500 px-8 text-base font-extrabold text-white shadow-none hover:bg-brand-600 sm:w-auto"
                 >
                   {stepIndex === steps.length - 1 ? t("actions.submit") : t("actions.saveContinue")}
@@ -744,6 +848,8 @@ function StepBody({
   phoneOptions,
   spokenLanguageOptions,
   timeZoneOptions,
+  locale,
+  setIsPhotoUploading,
   updateField,
   setApplication,
   t,
@@ -754,6 +860,8 @@ function StepBody({
   phoneOptions: PhoneCountryOption[];
   spokenLanguageOptions: SelectOption[];
   timeZoneOptions: SelectOption[];
+  locale: string;
+  setIsPhotoUploading: React.Dispatch<React.SetStateAction<boolean>>;
   updateField: <K extends keyof TutorApplication>(key: K, value: TutorApplication[K]) => void;
   setApplication: React.Dispatch<React.SetStateAction<TutorApplication>>;
   t: ReturnType<typeof useTranslations<"tutorOnboarding">>;
@@ -764,7 +872,30 @@ function StepBody({
   const [countrySearch, setCountrySearch] = useState("");
   const [languagePickerIndex, setLanguagePickerIndex] = useState<number | null>(null);
   const [languageSearch, setLanguageSearch] = useState("");
+  const [photoPreviewUrl, setPhotoPreviewUrl] = useState("");
+  const [pendingPhotoFile, setPendingPhotoFile] = useState<File | null>(null);
+  const [pendingPhotoUrl, setPendingPhotoUrl] = useState("");
+  const [photoEditorOpen, setPhotoEditorOpen] = useState(false);
+  const [photoZoom, setPhotoZoom] = useState(1);
+  const [photoRotation, setPhotoRotation] = useState(0);
+  const [photoSourceSize, setPhotoSourceSize] = useState<{ width: number; height: number } | null>(null);
+  const [photoCropOffset, setPhotoCropOffset] = useState({ x: 0, y: 0 });
+  const [photoCropSize, setPhotoCropSize] = useState(218);
+  const [photoUploading, setPhotoUploading] = useState(false);
+  const [photoUploadError, setPhotoUploadError] = useState("");
   const phonePickerRef = useRef<HTMLDivElement>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const photoCropRef = useRef<HTMLDivElement>(null);
+  const photoDragRef = useRef<{
+    mode: "move" | "resize";
+    handle?: string;
+    pointerId: number;
+    startX: number;
+    startY: number;
+    startOffsetX: number;
+    startOffsetY: number;
+    startSize: number;
+  } | null>(null);
   const selectedPhoneCountry =
     phoneOptions.find((option) => option.value === application.phoneCountry);
   const firstSpokenIndex = application.speaks.findIndex((language, index) =>
@@ -799,6 +930,269 @@ function StepBody({
 
     return () => document.removeEventListener("pointerdown", closeOnOutsidePointer);
   }, [phonePickerOpen]);
+
+  useEffect(() => {
+    return () => {
+      if (photoPreviewUrl) {
+        URL.revokeObjectURL(photoPreviewUrl);
+      }
+    };
+  }, [photoPreviewUrl]);
+
+  useEffect(() => {
+    return () => {
+      if (pendingPhotoUrl) {
+        URL.revokeObjectURL(pendingPhotoUrl);
+      }
+    };
+  }, [pendingPhotoUrl]);
+
+  function openPhotoPicker() {
+    photoInputRef.current?.click();
+  }
+
+  async function handlePhotoChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    setPhotoUploadError("");
+
+    if (!["image/jpeg", "image/png"].includes(file.type)) {
+      setPhotoUploadError(t("photo.errors.type"));
+      event.target.value = "";
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setPhotoUploadError(t("photo.errors.size"));
+      event.target.value = "";
+      return;
+    }
+
+    if (pendingPhotoUrl) {
+      URL.revokeObjectURL(pendingPhotoUrl);
+    }
+
+    setPendingPhotoFile(file);
+    const previewUrl = URL.createObjectURL(file);
+    setPendingPhotoUrl(previewUrl);
+    setPhotoZoom(1);
+    setPhotoRotation(0);
+    setPhotoSourceSize(null);
+    setPhotoCropOffset({ x: 0, y: 0 });
+    setPhotoCropSize(218);
+    setPhotoEditorOpen(true);
+    loadPhotoElement(previewUrl)
+      .then((image) => {
+        setPhotoSourceSize({ width: image.naturalWidth, height: image.naturalHeight });
+      })
+      .catch(() => {
+        setPhotoSourceSize(null);
+      });
+    event.target.value = "";
+  }
+
+  async function saveEditedPhoto() {
+    if (!pendingPhotoFile || !pendingPhotoUrl) {
+      return;
+    }
+
+    setPhotoUploadError("");
+    setPhotoUploading(true);
+    setIsPhotoUploading(true);
+
+    try {
+      const { cropperWidth, cropperHeight } = getPhotoCropMetrics();
+      const preparedPhoto = await createProfilePhotoFile(
+        pendingPhotoUrl,
+        photoZoom,
+        photoRotation,
+        photoCropOffset,
+        { width: cropperWidth, height: cropperHeight, cropSize: photoCropSize },
+        photoSourceSize ?? { width: cropperWidth, height: cropperHeight },
+      );
+      const formData = new FormData();
+      formData.append("photo", preparedPhoto);
+
+      const response = await fetch("/api/tutor-onboarding/photo", {
+        method: "POST",
+        body: formData,
+      });
+      const result = (await response.json().catch(() => null)) as { url?: string; error?: string } | null;
+
+      if (!response.ok || !result?.url) {
+        const errorKey = result?.error;
+        const message =
+          errorKey === "unauthorized"
+            ? t("photo.errors.unauthorized")
+            : errorKey === "invalid_type"
+              ? t("photo.errors.type")
+              : errorKey === "too_large"
+                ? t("photo.errors.size")
+                : t("photo.errors.generic");
+
+        setPhotoUploadError(message);
+        updateField("photoUrl", "");
+        updateField("photoReady", false);
+        return;
+      }
+
+      if (photoPreviewUrl) {
+        URL.revokeObjectURL(photoPreviewUrl);
+      }
+
+      setPhotoPreviewUrl(URL.createObjectURL(preparedPhoto));
+      updateField("photoUrl", result.url);
+      updateField("photoReady", true);
+      setPhotoEditorOpen(false);
+      setPendingPhotoFile(null);
+      setPendingPhotoUrl("");
+    } catch {
+      setPhotoUploadError(t("photo.errors.generic"));
+      updateField("photoUrl", "");
+      updateField("photoReady", false);
+    } finally {
+      setPhotoUploading(false);
+      setIsPhotoUploading(false);
+    }
+  }
+
+  function getPhotoCropMetrics() {
+    const cropperRect = photoCropRef.current?.getBoundingClientRect();
+    const cropperWidth = cropperRect?.width || 640;
+    const cropperHeight = cropperRect?.height || 364;
+    return { cropperWidth, cropperHeight };
+  }
+
+  function getPhotoImageBounds() {
+    const { cropperWidth, cropperHeight } = getPhotoCropMetrics();
+    if (!photoSourceSize) {
+      return null;
+    }
+
+    const normalizedRotation = Math.abs(photoRotation % 180);
+    const rotated = normalizedRotation === 90;
+    const sourceWidth = rotated ? photoSourceSize.height : photoSourceSize.width;
+    const sourceHeight = rotated ? photoSourceSize.width : photoSourceSize.height;
+    const containScale = Math.min(cropperWidth / sourceWidth, cropperHeight / sourceHeight) * photoZoom;
+    const displayWidth = sourceWidth * containScale;
+    const displayHeight = sourceHeight * containScale;
+    const left = (cropperWidth - displayWidth) / 2;
+    const top = (cropperHeight - displayHeight) / 2;
+    const right = left + displayWidth;
+    const bottom = top + displayHeight;
+
+    return {
+      left,
+      top,
+      right,
+      bottom,
+      width: Math.max(0, right - left),
+      height: Math.max(0, bottom - top),
+    };
+  }
+
+  function clampPhotoCropOffset(offset: { x: number; y: number }, cropSize = photoCropSize) {
+    const bounds = getPhotoImageBounds();
+    const { cropperWidth, cropperHeight } = getPhotoCropMetrics();
+    const minX = bounds ? bounds.left + cropSize / 2 - cropperWidth / 2 : -(cropperWidth - cropSize) / 2;
+    const maxX = bounds ? bounds.right - cropSize / 2 - cropperWidth / 2 : (cropperWidth - cropSize) / 2;
+    const minY = bounds ? bounds.top + cropSize / 2 - cropperHeight / 2 : -(cropperHeight - cropSize) / 2;
+    const maxY = bounds ? bounds.bottom - cropSize / 2 - cropperHeight / 2 : (cropperHeight - cropSize) / 2;
+
+    return {
+      x: Math.min(maxX, Math.max(minX, offset.x)),
+      y: Math.min(maxY, Math.max(minY, offset.y)),
+    };
+  }
+
+  function clampPhotoCropSize(nextSize: number) {
+    const bounds = getPhotoImageBounds();
+    const maxSize = Math.max(96, Math.min(320, bounds ? Math.floor(Math.min(bounds.width, bounds.height)) : 320));
+    return Math.min(maxSize, Math.max(96, nextSize));
+  }
+
+  function startPhotoDrag(
+    event: React.PointerEvent<HTMLDivElement>,
+    mode: "move" | "resize" = "move",
+    handle?: string,
+  ) {
+    if (photoUploading) {
+      return;
+    }
+
+    event.stopPropagation();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    photoDragRef.current = {
+      mode,
+      handle,
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      startOffsetX: photoCropOffset.x,
+      startOffsetY: photoCropOffset.y,
+      startSize: photoCropSize,
+    };
+  }
+
+  function movePhotoDrag(event: React.PointerEvent<HTMLDivElement>) {
+    const drag = photoDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) {
+      return;
+    }
+
+    const nextPosition = {
+      x: drag.startOffsetX + event.clientX - drag.startX,
+      y: drag.startOffsetY + event.clientY - drag.startY,
+    };
+
+    if (drag.mode === "move") {
+      setPhotoCropOffset(clampPhotoCropOffset(nextPosition, photoCropSize));
+      return;
+    }
+
+    const dx = event.clientX - drag.startX;
+    const dy = event.clientY - drag.startY;
+    const handle = drag.handle ?? "se";
+    const primaryAxis = ["e", "w"].includes(handle)
+      ? dx
+      : ["n", "s"].includes(handle)
+        ? dy
+        : Math.abs(dx) >= Math.abs(dy)
+          ? dx
+          : dy;
+    const directionalDelta =
+      handle === "e" ? dx :
+      handle === "w" ? -dx :
+      handle === "s" ? dy :
+      handle === "n" ? -dy :
+      handle === "ne" ? Math.max(dx, -dy) :
+      handle === "nw" ? Math.max(-dx, -dy) :
+      handle === "se" ? Math.max(dx, dy) :
+      handle === "sw" ? Math.max(-dx, dy) :
+      primaryAxis;
+
+    const nextSize = clampPhotoCropSize(drag.startSize + directionalDelta);
+    const sizeDelta = nextSize - drag.startSize;
+    const nextOffset = { x: drag.startOffsetX, y: drag.startOffsetY };
+
+    if (handle.includes("e")) nextOffset.x += sizeDelta / 2;
+    if (handle.includes("w")) nextOffset.x -= sizeDelta / 2;
+    if (handle.includes("s")) nextOffset.y += sizeDelta / 2;
+    if (handle.includes("n")) nextOffset.y -= sizeDelta / 2;
+
+    setPhotoCropSize(nextSize);
+    setPhotoCropOffset(clampPhotoCropOffset(nextOffset, nextSize));
+  }
+
+  function stopPhotoDrag(event: React.PointerEvent<HTMLDivElement>) {
+    if (photoDragRef.current?.pointerId === event.pointerId) {
+      photoDragRef.current = null;
+    }
+  }
 
   if (step === "about") {
     const menuProps = {
@@ -1127,48 +1521,233 @@ function StepBody({
   }
 
   if (step === "photo") {
+    const tutorName = `${application.firstName || t("photo.previewFirstName")} ${
+      application.lastName ? `${application.lastName.charAt(0)}.` : ""
+    }`.trim();
+
     return (
-      <div className="grid gap-7">
-        <div className="border-y border-line py-5">
-          <div className="flex items-center gap-5">
-            <div className="flex h-24 w-24 shrink-0 items-center justify-center bg-brand-50 text-brand-700">
-              <Camera className="h-8 w-8" />
+      <div className="grid gap-6">
+        <input
+          ref={photoInputRef}
+          type="file"
+          accept="image/jpeg,image/png"
+          className="hidden"
+          onChange={handlePhotoChange}
+        />
+        <Dialog open={photoEditorOpen} onOpenChange={(open) => !photoUploading && setPhotoEditorOpen(open)}>
+          <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-md p-5 sm:max-w-[736px] sm:p-6">
+            <DialogHeader>
+              <DialogTitle className="text-center text-2xl">{t("photo.editor.title")}</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-5">
+              <div
+                data-photo-cropper
+                ref={photoCropRef}
+                className="relative mx-auto aspect-[640/364] w-full max-w-[640px] touch-none overflow-hidden bg-surface"
+              >
+                {pendingPhotoUrl ? (
+                  <div
+                    data-photo-image
+                    className="absolute inset-0 select-none pointer-events-none"
+                    style={{ transform: `rotate(${photoRotation}deg) scale(${photoZoom})` }}
+                  >
+                    <Image
+                      src={pendingPhotoUrl}
+                      alt={t("photo.editor.alt")}
+                      fill
+                      sizes="640px"
+                      draggable={false}
+                      className="select-none object-contain"
+                      unoptimized
+                    />
+                  </div>
+                ) : null}
+                <div
+                  data-photo-crop-box
+                  className="absolute left-1/2 top-1/2 cursor-move border-2 border-[#3b82f6] bg-transparent shadow-[0_0_0_999px_rgba(0,0,0,0.42)]"
+                  style={{
+                    width: photoCropSize,
+                    height: photoCropSize,
+                    transform: `translate3d(calc(-50% + ${photoCropOffset.x}px), calc(-50% + ${photoCropOffset.y}px), 0)`,
+                  }}
+                  onPointerDown={(event) => startPhotoDrag(event, "move")}
+                  onPointerMove={movePhotoDrag}
+                  onPointerUp={stopPhotoDrag}
+                  onPointerCancel={stopPhotoDrag}
+                >
+                  <span className="pointer-events-none absolute left-1/3 top-0 h-full w-px bg-[#60a5fa]/85" />
+                  <span className="pointer-events-none absolute left-2/3 top-0 h-full w-px bg-[#60a5fa]/85" />
+                  <span className="pointer-events-none absolute left-0 top-1/3 h-px w-full bg-[#60a5fa]/85" />
+                  <span className="pointer-events-none absolute left-0 top-2/3 h-px w-full bg-[#60a5fa]/85" />
+                  {[
+                    { position: "left-[-5px] top-[-5px]", handle: "nw" },
+                    { position: "left-1/2 top-[-5px] -translate-x-1/2", handle: "n" },
+                    { position: "right-[-5px] top-[-5px]", handle: "ne" },
+                    { position: "right-[-5px] top-1/2 -translate-y-1/2", handle: "e" },
+                    { position: "bottom-[-5px] right-[-5px]", handle: "se" },
+                    { position: "bottom-[-5px] left-1/2 -translate-x-1/2", handle: "s" },
+                    { position: "bottom-[-5px] left-[-5px]", handle: "sw" },
+                    { position: "left-[-5px] top-1/2 -translate-y-1/2", handle: "w" },
+                  ].map(({ position, handle }) => (
+                    <span
+                      key={position}
+                      data-photo-handle={handle}
+                      className={cn(
+                        "absolute h-2.5 w-2.5 rounded-full border border-white bg-[#2563eb]",
+                        position,
+                        handle === "n" || handle === "s" ? "cursor-ns-resize" : handle === "e" || handle === "w" ? "cursor-ew-resize" : "cursor-nwse-resize",
+                      )}
+                      onPointerDown={(event) => startPhotoDrag(event, "resize", handle)}
+                      onPointerMove={movePhotoDrag}
+                      onPointerUp={stopPhotoDrag}
+                      onPointerCancel={stopPhotoDrag}
+                    />
+                  ))}
+                </div>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-[minmax(0,528px)_88px] sm:items-start">
+                <div className="grid gap-3">
+                  <div className="flex items-center justify-between gap-4 text-sm font-extrabold text-ink">
+                    <span>{t("photo.editor.zoom")}</span>
+                    <span className="text-ink-soft">{Math.round(photoZoom * 100)}%</span>
+                  </div>
+                  <Slider
+                    min={1}
+                    max={2}
+                    step={0.05}
+                    value={[photoZoom]}
+                    onValueChange={(value) => setPhotoZoom(value[0] ?? 1)}
+                    disabled={photoUploading}
+                    aria-label={t("photo.editor.zoom")}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <p className="text-center text-sm font-extrabold text-ink">{t("photo.editor.rotate")}</p>
+                  <div className="flex justify-center gap-2">
+                    <button
+                      type="button"
+                      aria-label={t("photo.editor.rotateLeft")}
+                      onClick={() => setPhotoRotation((current) => (current + 270) % 360)}
+                      disabled={photoUploading}
+                      className="flex h-10 w-10 items-center justify-center rounded-md text-ink transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15 disabled:opacity-50"
+                    >
+                      <RotateCcw className="h-5 w-5" />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={t("photo.editor.rotateRight")}
+                      onClick={() => setPhotoRotation((current) => (current + 90) % 360)}
+                      disabled={photoUploading}
+                      className="flex h-10 w-10 items-center justify-center rounded-md text-ink transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15 disabled:opacity-50"
+                    >
+                      <RotateCw className="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                onClick={saveEditedPhoto}
+                disabled={photoUploading}
+                className="min-h-12 w-full rounded-md border-2 border-ink bg-brand-500 text-base font-extrabold text-white shadow-none hover:bg-brand-600 sm:w-auto"
+              >
+                {photoUploading ? t("photo.editor.saving") : t("photo.editor.save")}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        <div className="border-y border-line py-6">
+          <div className="grid gap-5 sm:grid-cols-[96px_minmax(0,1fr)] sm:items-center sm:gap-6">
+            <button
+              type="button"
+              onClick={openPhotoPicker}
+              className={cn(
+                "relative flex aspect-square w-24 flex-col items-center justify-center justify-self-start overflow-hidden rounded-[4px] border border-dashed border-ink bg-white px-3 text-center text-sm font-medium leading-5 text-ink-soft transition-colors hover:border-brand-600 hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15",
+                application.photoReady && "border-brand-600 bg-brand-50 text-brand-800",
+              )}
+              aria-label={application.photoReady ? t("photo.uploadNew") : t("photo.upload")}
+            >
+              {photoPreviewUrl || application.photoUrl ? (
+                <Image
+                  src={photoPreviewUrl || application.photoUrl}
+                  alt={t("photo.selectedAlt")}
+                  fill
+                  sizes="96px"
+                  className="object-cover"
+                  unoptimized
+                />
+              ) : (
+                <>
+                  <Upload className="mb-2 h-5 w-5 text-brand-700" aria-hidden />
+                  <span>{t("photo.format")}</span>
+                </>
+              )}
+            </button>
             <div className="min-w-0">
-              <p className="text-xl font-extrabold text-ink">
-                {application.firstName || "DilUp"} {application.lastName ? `${application.lastName.charAt(0)}.` : ""}
-              </p>
-              <p className="mt-2 text-sm font-medium text-muted">
-                {t("photo.profileLine", { language: optionLabel(t, "languages", application.teaches) })}
-              </p>
-              <p className="mt-2 text-sm font-medium text-muted">
-                {t("photo.speaksLine", {
-                  language: selectedSpokenLanguage?.label ?? t("preview.empty"),
-                  level: firstSpokenLevel ? t(`levels.${firstSpokenLevel}`) : t("preview.empty"),
-                })}
-              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-2xl font-extrabold leading-8 text-ink">{tutorName}</h2>
+                {application.country ? (
+                  <span className="text-xl leading-none" aria-label={getDisplayName(locale, "region", application.country)}>
+                    {flagFromCountryCode(application.country)}
+                  </span>
+                ) : null}
+              </div>
+              <div className="mt-3 space-y-3 text-sm font-medium text-ink-soft">
+                <p className="flex items-start gap-2">
+                  <GraduationCap className="mt-0.5 h-4 w-4 shrink-0 text-muted" aria-hidden />
+                  <span>{t("photo.profileLine", { language: optionLabel(t, "languages", application.teaches) })}</span>
+                </p>
+                <p className="flex items-start gap-2">
+                  <Languages className="mt-0.5 h-4 w-4 shrink-0 text-muted" aria-hidden />
+                  <span>
+                    {t("photo.speaksLine", {
+                      language: selectedSpokenLanguage?.label ?? t("preview.empty"),
+                      level: firstSpokenLevel ? t(`levels.${firstSpokenLevel}`) : t("preview.empty"),
+                    })}
+                  </span>
+                </p>
+              </div>
             </div>
           </div>
         </div>
         <button
           type="button"
-          onClick={() => updateField("photoReady", true)}
+          onClick={openPhotoPicker}
           className={cn(
-            "flex h-12 items-center justify-center rounded-md border-2 border-ink bg-white text-sm font-extrabold transition-colors hover:bg-surface",
-            application.photoReady && "border-brand-600 text-brand-700",
+            "flex h-10 items-center justify-center rounded-md border-2 border-ink bg-brand-500 px-6 text-sm font-extrabold text-white transition-colors hover:bg-brand-600 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/20",
+            application.photoReady && "border-brand-700 bg-brand-600",
           )}
         >
           <Upload className="mr-2 h-4 w-4" />
-          {application.photoReady ? t("photo.replace") : t("photo.upload")}
+          {application.photoReady ? t("photo.uploadNew") : t("photo.upload")}
         </button>
+        {photoUploading ? (
+          <p className="text-sm font-semibold text-brand-700">{t("photo.uploading")}</p>
+        ) : null}
+        {application.photoReady && application.photoUrl ? (
+          <p className="text-sm font-semibold text-success">{t("photo.uploaded")}</p>
+        ) : null}
+        {photoUploadError ? (
+          <p className="text-sm font-semibold text-destructive">{photoUploadError}</p>
+        ) : null}
         <div>
           <h2 className="text-2xl font-extrabold text-ink">{t("photo.needsTitle")}</h2>
-          <div className="mt-6 grid grid-cols-4 gap-4">
-            {[0, 1, 2, 3].map((item) => (
-              <div key={item} className="aspect-[4/5] rounded-md bg-brand-50" />
+          <div className="mt-6 grid grid-cols-4 gap-3 sm:gap-[22px]">
+            {photoGuidelineImages.map((src, index) => (
+              <div key={src} className="relative aspect-square overflow-hidden rounded-[4px] bg-brand-50">
+                <Image
+                  src={src}
+                  alt={t(`photo.sampleAlt.${index}`)}
+                  fill
+                  sizes="(max-width: 640px) 22vw, 116px"
+                  className="object-cover"
+                />
+              </div>
             ))}
           </div>
-          <GuidelineList items={["face", "light", "plain", "current", "solo", "quality", "noLogos"].map((key) => t(`photo.rules.${key}`))} />
+          <GuidelineList items={["face", "shoulders", "centered", "visible", "solo", "quality", "noLogos"].map((key) => t(`photo.rules.${key}`))} />
         </div>
       </div>
     );
@@ -1509,16 +2088,14 @@ function CheckboxGroup({
 
 function GuidelineList({ items }: { items: string[] }) {
   return (
-    <div className="rounded-md border border-line bg-surface p-5">
-      <ul className="space-y-4">
-        {items.map((item) => (
-          <li key={item} className="flex gap-3 text-sm font-semibold leading-6 text-ink-soft">
-            <Check className="mt-0.5 h-5 w-5 shrink-0 text-brand-600" />
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <ul className="mt-6 space-y-4">
+      {items.map((item) => (
+        <li key={item} className="flex gap-2 text-base font-normal leading-6 text-ink">
+          <Check className="h-6 w-6 shrink-0 text-brand-700" />
+          <span>{item}</span>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -1642,7 +2219,7 @@ function isStepValid(step: StepKey, application: TutorApplication) {
           application.over18,
       );
     case "photo":
-      return application.photoReady;
+      return Boolean(application.photoReady && application.photoUrl);
     case "certification":
       return application.certificates.some((item) => item.certificate.trim() && item.issuedBy.trim());
     case "education":
