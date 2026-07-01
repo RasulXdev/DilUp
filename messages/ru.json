@@ -752,6 +752,7 @@
     "actions": {
       "back": "Назад",
       "continue": "Продолжить",
+      "next": "Далее",
       "saveContinue": "Сохранить и продолжить",
       "submit": "Отправить заявку",
       "addLanguage": "Добавить другой язык",
@@ -984,24 +985,118 @@
       "none": "У меня нет преподавательского сертификата",
       "notListed": "Моего сертификата нет в списке",
       "present": "По настоящее время",
+      "pending": "Документ ожидает проверки.",
       "remove": "Удалить сертификат",
       "upload": "Загрузить",
+      "uploaded": "{fileName} загружен.",
+      "uploading": "Загрузка...",
       "uploadText": "Наша команда вручную проверит отправленный документ.",
-      "uploadTitle": "Загрузи сертификат"
+      "uploadTitle": "Загрузи сертификат",
+      "errors": {
+        "type": "Загрузи документ в формате JPG или PNG.",
+        "size": "Файл сертификата должен быть не больше 20MB.",
+        "unauthorized": "Войди как репетитор, чтобы загрузить сертификаты.",
+        "generic": "Не удалось загрузить сертификат. Попробуй ещё раз."
+      }
     },
     "education": {
-      "add": "Добавить образование"
+      "add": "Добавить ещё образование",
+      "none": "У меня нет высшего образования",
+      "remove": "Удалить образование",
+      "degreeType": "Тип степени",
+      "chooseDegreeType": "Выбери тип степени...",
+      "badgeTitle": "Получить значок “Диплом подтверждён”",
+      "badgeText": "Загрузи диплом, чтобы повысить доверие. Наша команда проверит его и добавит значок в профиль. После проверки файлы будут удалены.",
+      "format": "Формат JPG или PNG; максимальный размер 20MB.",
+      "upload": "Загрузить",
+      "uploaded": "{fileName} загружен",
+      "degreeTypes": {
+        "teaching": "Педагогическая степень",
+        "subject": "Степень по предмету преподавания",
+        "other": "Другая степень"
+      },
+      "placeholders": {
+        "school": "Напр. Бакинский государственный университет",
+        "degree": "Напр. Бакалавр английского языка",
+        "field": "Напр. Преподавание английского как иностранного"
+      }
+    },
+    "description": {
+      "guidance": "Эта информация появится в публичном профиле. Напиши её на языке преподавания и следуй нашим <guidelines>правилам для одобрения</guidelines>.",
+      "optional": "• Необязательно",
+      "sections": {
+        "intro": {
+          "title": "Представься",
+          "text": "Покажи потенциальным студентам, кто ты. Расскажи об опыте преподавания, интересе к образованию, увлечениях и хобби.",
+          "placeholder": "Здравствуйте, меня зовут... и я из...",
+          "hint": "Не указывай фамилию и не оформляй информацию как CV"
+        },
+        "experience": {
+          "title": "Опыт преподавания",
+          "text": "Подробно опиши релевантный опыт преподавания. Укажи сертификаты, методику, образование и экспертизу по предмету.",
+          "placeholder": "У меня 5 лет опыта преподавания. Мои уроки..."
+        },
+        "motivation": {
+          "title": "Мотивируй студентов",
+          "text": "Побуди студентов забронировать первый урок. Подчеркни пользу обучения с тобой.",
+          "placeholder": "Забронируй урок, чтобы мы обсудили твои цели и план...",
+          "hint": "Не добавляй информацию о бесплатных пробных уроках, скидках или личные контакты"
+        },
+        "headline": {
+          "title": "Напиши цепляющий заголовок",
+          "text": "Заголовок — первое, что студенты видят о тебе. Сделай его заметным, упомяни язык преподавания и заинтересуй полным описанием.",
+          "placeholder": "Сертифицированный репетитор с 5-летним опытом"
+        }
+      }
     },
     "video": {
       "record": "Начать запись видео",
+      "testCamera": "Test camera",
+      "testing": "Testing",
+      "testRecording": "Test recording",
+      "startRecording": "Start recording",
+      "stopRecording": "Stop recording",
+      "recording": "Recording",
+      "recorded": "Recording ready",
+      "retake": "Test camera",
+      "rerecord": "Re-record",
+      "uploading": "Your video is uploading...",
+      "permissionError": "Разреши доступ к камере и микрофону, чтобы проверить запись.",
+      "recordingError": "Не удалось начать запись. Проверь разрешения браузера и попробуй снова.",
+      "minimumError": "Видео должно быть от 30 секунд до 2 минут.",
+      "introTitle": "Video introduction",
+      "horizontalTitle": "Add a horizontal video of up to 2 minutes",
+      "horizontalText": "Introduce yourself to students in the same language as your written description. If you teach a different language, include a short sample.",
+      "emptyPreview": "Your video will appear here",
+      "linkTitle": "Or paste a link to your video",
+      "linkHelp": "Learn how to upload videos to Youtube or Vimeo.",
+      "thumbnailTitle": "Add a thumbnail (optional)",
+      "thumbnailText": "Don’t worry if you don’t have a thumbnail ready, we’ll use the preview above.",
+      "showMore": "Show more",
       "upload": "Записать заново",
       "ready": "Видео готово",
       "empty": "Видео ещё не добавлено",
-      "linkPrompt": "У тебя уже есть видео на YouTube или Vimeo?",
-      "insertLink": "Добавить ссылку",
-      "requirementsTitle": "Требования к видео",
-      "requirementsText": "Убедись, что видео соответствует требованиям для одобрения.",
-      "doTitle": "Что сделать",
+      "linkPrompt": "Have a pre-recorded video on Youtube or Vimeo?",
+      "insertLink": "Insert link",
+      "requirementsTitle": "Video requirements",
+      "requirementsText": "Make sure your video meets the requirements to get approved",
+      "doTitle": "Do",
+      "dontTitle": "Don't",
+      "doRules": {
+        "length": "Your video should be between 30 seconds and 2 minutes long",
+        "horizontal": "Record in horizontal mode and at eye level",
+        "lighting": "Use good lighting and a neutral background",
+        "stable": "Use a stable surface so that your video does not appear shaky",
+        "visible": "Make sure your face and eyes are fully visible (except for religious reasons)",
+        "experience": "Highlight your teaching experience and any relevant teaching certification(s)",
+        "invite": "Greet your students warmly and invite them to book a lesson"
+      },
+      "dontRules": {
+        "contact": "Include your surname or any contact details",
+        "logos": "Include logos or links",
+        "slides": "Use slideshows or presentations",
+        "people": "Have any other people visible in your video"
+      },
       "rules": {
         "short": "Достаточно представления на 30-60 секунд.",
         "sound": "Звук должен быть чётким, фон спокойным.",

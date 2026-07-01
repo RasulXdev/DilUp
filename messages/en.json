@@ -752,6 +752,7 @@
     "actions": {
       "back": "Back",
       "continue": "Continue",
+      "next": "Next",
       "saveContinue": "Save and continue",
       "submit": "Submit application",
       "addLanguage": "Add another language",
@@ -782,8 +783,8 @@
       },
       "education": {
         "eyebrow": "Education",
-        "title": "Add your education and subject background.",
-        "text": "University, courses or teacher training details give students helpful context."
+        "title": "Education",
+        "text": "Tell students more about the higher education that you've completed or are working on."
       },
       "description": {
         "eyebrow": "Profile text",
@@ -841,9 +842,9 @@
       "issuedBy": "Issued by",
       "year": "Year",
       "yearsOfStudy": "Years of study",
-      "school": "School or institution",
-      "degree": "Degree or program",
-      "field": "Field of study",
+      "school": "University",
+      "degree": "Degree",
+      "field": "Specialization",
       "years": "Years",
       "headline": "Profile headline",
       "intro": "Short introduction",
@@ -984,16 +985,94 @@
       "none": "I don’t have a teaching certificate",
       "notListed": "My certificate is not on the list",
       "present": "Present",
+      "pending": "Document is waiting for review.",
       "remove": "Remove certificate",
       "upload": "Upload",
+      "uploaded": "{fileName} uploaded.",
+      "uploading": "Uploading...",
       "uploadText": "Our team will manually review your submission.",
-      "uploadTitle": "Upload your certificate"
+      "uploadTitle": "Upload your certificate",
+      "errors": {
+        "type": "Upload a JPG or PNG document.",
+        "size": "Certificate file must be 20MB or smaller.",
+        "unauthorized": "Log in with your tutor account to upload certificates.",
+        "generic": "We could not upload the certificate. Try again."
+      }
     },
     "education": {
-      "add": "Add education"
+      "add": "Add another education",
+      "none": "I don’t have a higher education degree",
+      "remove": "Remove education",
+      "degreeType": "Degree type",
+      "chooseDegreeType": "Choose degree type...",
+      "badgeTitle": "Get a “Diploma verified” badge",
+      "badgeText": "Upload your diploma to boost your credibility! Our team will review it and add the badge to your profile. Once reviewed, your files will be deleted.",
+      "format": "JPG or PNG format; maximum size of 20MB.",
+      "upload": "Upload",
+      "uploaded": "{fileName} uploaded",
+      "degreeTypes": {
+        "teaching": "Teaching degree",
+        "subject": "Degree in the subject you teach",
+        "other": "Other degree"
+      },
+      "placeholders": {
+        "school": "E.g. Mount Royal University",
+        "degree": "E.g. Bachelor’s degree in the English Language",
+        "field": "E.g. Teaching English as a Foreign Language"
+      }
+    },
+    "description": {
+      "guidance": "This info will go on your public profile. Write it in the language you’ll be teaching and make sure to follow our <guidelines>guidelines to get approved</guidelines>.",
+      "optional": "• Optional",
+      "sections": {
+        "intro": {
+          "title": "Introduce yourself",
+          "text": "Show potential students who you are! Share your teaching experience and passion for education and briefly mention your interests and hobbies.",
+          "placeholder": "Hello, my name is... and I’m from...",
+          "hint": "Don’t include your last name or present your information in a CV format"
+        },
+        "experience": {
+          "title": "Teaching experience",
+          "text": "Provide a detailed description of your relevant teaching experience. Include certifications, teaching methodology, education, and subject expertise.",
+          "placeholder": "I have 5 years of teaching experience. I’m TEFL Certified, and my classes are..."
+        },
+        "motivation": {
+          "title": "Motivate potential students",
+          "text": "Encourage students to book their first lesson. Highlight the benefits of learning with you!",
+          "placeholder": "Book a trial lesson with me so we can discuss your goals and how I can help you reach them...",
+          "hint": "Do not include free trial lessons, discounts, or personal contact details"
+        },
+        "headline": {
+          "title": "Write a catchy headline",
+          "text": "Your headline is the first thing students see about you. Make it attention-grabbing, mention your specific teaching language and encourage students to read your full description.",
+          "placeholder": "Certified tutor with 5 years of experience"
+        }
+      }
     },
     "video": {
       "record": "Start recording video",
+      "testCamera": "Test camera",
+      "testing": "Testing",
+      "testRecording": "Test recording",
+      "startRecording": "Start recording",
+      "stopRecording": "Stop recording",
+      "recording": "Recording",
+      "recorded": "Recording ready",
+      "retake": "Retake test",
+      "rerecord": "Re-record",
+      "uploading": "Your video is uploading...",
+      "permissionError": "Allow camera and microphone access to test recording.",
+      "recordingError": "Recording could not start. Check your browser permissions and try again.",
+      "minimumError": "Your video should be between 30 seconds and 2 minutes long.",
+      "introTitle": "Video introduction",
+      "horizontalTitle": "Add a horizontal video of up to 2 minutes",
+      "horizontalText": "Introduce yourself to students in the same language as your written description. If you teach a different language, include a short sample.",
+      "emptyPreview": "Your video will appear here",
+      "linkTitle": "Or paste a link to your video",
+      "linkHelp": "Learn how to upload videos to YouTube or Vimeo.",
+      "thumbnailTitle": "Add a thumbnail (optional)",
+      "thumbnailText": "Don’t worry if you don’t have a thumbnail ready, we’ll use the preview above.",
+      "showMore": "Show more",
       "upload": "Re-record",
       "ready": "Video ready",
       "empty": "No video added yet",
@@ -1002,6 +1081,22 @@
       "requirementsTitle": "Video requirements",
       "requirementsText": "Make sure your video meets the requirements to get approved.",
       "doTitle": "Do",
+      "dontTitle": "Don’t",
+      "doRules": {
+        "length": "Your video should be between 30 seconds and 2 minutes long",
+        "horizontal": "Record in horizontal mode and at eye level",
+        "lighting": "Use good lighting and a neutral background",
+        "stable": "Use a stable surface so that your video does not appear shaky",
+        "visible": "Make sure your face and eyes are fully visible",
+        "experience": "Highlight your teaching experience and relevant certification(s)",
+        "invite": "Greet your students warmly and invite them to book a lesson"
+      },
+      "dontRules": {
+        "contact": "Include your surname or any contact details",
+        "logos": "Include logos or links",
+        "slides": "Use slideshows or presentations",
+        "people": "Have any other people visible in your video"
+      },
       "rules": {
         "short": "A 30-60 second introduction is enough.",
         "sound": "Keep your sound clear and background quiet.",

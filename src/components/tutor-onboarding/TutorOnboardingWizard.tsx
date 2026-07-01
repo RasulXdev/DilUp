@@ -17,7 +17,6 @@ import {
   HelpCircle,
   Languages,
   Mic2,
-  Play,
   Plus,
   RotateCcw,
   RotateCw,
@@ -62,6 +61,7 @@ type PhoneCountryOption = SelectOption & {
 
 type Certificate = {
   id: number;
+  certificateRecordId: string;
   subject: string;
   certificate: string;
   description: string;
@@ -71,14 +71,19 @@ type Certificate = {
   endYear: string;
   notListed: boolean;
   fileName: string;
+  storagePath: string;
+  verificationStatus: string;
 };
 
 type Education = {
   id: number;
   school: string;
   degree: string;
+  degreeType: string;
   field: string;
-  years: string;
+  startYear: string;
+  endYear: string;
+  diplomaFileName: string;
 };
 
 type TutorApplication = {
@@ -97,6 +102,7 @@ type TutorApplication = {
   hasNoCertificates: boolean;
   certificates: Certificate[];
   education: Education[];
+  hasNoEducationDegree: boolean;
   headline: string;
   intro: string;
   experience: string;
@@ -282,6 +288,9 @@ const verifiedCertificateOptions = [
 const presentYearValue = "present";
 const certificateYearOptions = Array.from({ length: new Date().getFullYear() - 1919 }, (_, index) => String(new Date().getFullYear() - index));
 const certificateEndYearOptions = [presentYearValue, ...certificateYearOptions];
+const degreeTypeKeys = ["teaching", "subject", "other"];
+const descriptionSectionKeys = ["intro", "experience", "motivation", "headline"] as const;
+const profileDescriptionLimit = 400;
 const photoGuidelineImages = [
   "/images/footer/how-it-works-tutors-1.jpg",
   "/images/footer/dilup-tutor-profile.jpg",
@@ -611,6 +620,7 @@ const initialApplication: TutorApplication = {
   certificates: [
     {
       id: 1,
+      certificateRecordId: "",
       subject: "",
       certificate: "",
       description: "",
@@ -620,6 +630,8 @@ const initialApplication: TutorApplication = {
       endYear: "",
       notListed: false,
       fileName: "",
+      storagePath: "",
+      verificationStatus: "",
     },
   ],
   education: [
@@ -627,10 +639,14 @@ const initialApplication: TutorApplication = {
       id: 1,
       school: "",
       degree: "",
+      degreeType: "",
       field: "",
-      years: "",
+      startYear: "",
+      endYear: "",
+      diplomaFileName: "",
     },
   ],
+  hasNoEducationDegree: false,
   headline: "",
   intro: "",
   experience: "",
@@ -667,6 +683,30 @@ function getInitialTutorState() {
       application.phoneCountry = initialApplication.phoneCountry;
     }
     application.spokenLanguageLevels ??= application.languageLevel ? [application.languageLevel] : [];
+    application.certificates = (application.certificates?.length ? application.certificates : initialApplication.certificates).map((certificate, index) => ({
+      ...initialApplication.certificates[0],
+      ...certificate,
+      id: certificate.id || index + 1,
+      certificateRecordId: certificate.certificateRecordId ?? "",
+      fileName: certificate.fileName ?? "",
+      storagePath: certificate.storagePath ?? "",
+      verificationStatus: certificate.verificationStatus ?? "",
+    }));
+    application.hasNoEducationDegree = Boolean(application.hasNoEducationDegree);
+    application.education = (application.education?.length ? application.education : initialApplication.education).map((education, index) => {
+      const legacyYears = "years" in education ? String((education as Education & { years?: string }).years ?? "") : "";
+      const [legacyStartYear = "", legacyEndYear = ""] = legacyYears.split("-").map((item) => item.trim());
+
+      return {
+        ...createEmptyEducation(index + 1),
+        ...education,
+        id: education.id || index + 1,
+        degreeType: education.degreeType ?? "",
+        startYear: education.startYear || legacyStartYear,
+        endYear: education.endYear || legacyEndYear,
+        diplomaFileName: education.diplomaFileName ?? "",
+      };
+    });
     const restoredIndex = steps.findLastIndex((step) => isStepValid(step.key, application));
 
     return {
@@ -872,6 +912,9 @@ export function TutorOnboardingWizard() {
   const [highestUnlockedStep, setHighestUnlockedStep] = useState(initialTutorState.highestUnlockedStep);
   const [submitted, setSubmitted] = useState(false);
   const [isPhotoUploading, setIsPhotoUploading] = useState(false);
+  const [videoSubstep, setVideoSubstep] = useState<"test" | "intro">(initialTutorState.application.videoReady ? "intro" : "test");
+  const [videoTestReady, setVideoTestReady] = useState(initialTutorState.application.videoReady);
+  const [isVideoUploading, setIsVideoUploading] = useState(false);
 
   const currentStep = steps[stepIndex];
   const countryOptions = useMemo(() => {
@@ -921,8 +964,14 @@ export function TutorOnboardingWizard() {
     }));
   }, []);
 
-  const canContinue = isStepValid(currentStep.key, application);
-  const continueDisabled = !canContinue || (currentStep.key === "photo" && isPhotoUploading);
+  const canContinue =
+    currentStep.key === "video" && videoSubstep === "test"
+      ? videoTestReady
+      : isStepValid(currentStep.key, application);
+  const continueDisabled =
+    !canContinue ||
+    (currentStep.key === "photo" && isPhotoUploading) ||
+    (currentStep.key === "video" && videoSubstep === "intro" && isVideoUploading);
   const currentStepText =
     currentStep.key === "certification" && application.hasNoCertificates
       ? t("certification.noCertificateText")
@@ -934,6 +983,22 @@ export function TutorOnboardingWizard() {
 
   function next() {
     if (!canContinue) {
+      return;
+    }
+
+    if (currentStep.key === "video" && videoSubstep === "test") {
+      setVideoSubstep("intro");
+      return;
+    }
+
+    if (currentStep.key === "video" && videoSubstep === "intro") {
+      setIsVideoUploading(true);
+      window.setTimeout(() => {
+        setIsVideoUploading(false);
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(application));
+        setHighestUnlockedStep((current) => Math.max(current, stepIndex + 1));
+        setStepIndex((current) => Math.min(current + 1, steps.length - 1));
+      }, 1200);
       return;
     }
 
@@ -1012,20 +1077,27 @@ export function TutorOnboardingWizard() {
         </div>
       </div>
 
-      <section className="mx-auto w-full max-w-[546px] px-6 py-12 sm:px-12 sm:py-13">
+      <section
+        className={cn(
+          "mx-auto w-full px-6 py-12 sm:px-12 sm:py-13",
+          currentStep.key === "video" ? "max-w-[940px]" : "max-w-[546px]",
+        )}
+      >
         {submitted ? (
           <SubmittedView t={t} />
         ) : (
           <>
-              <StepHeading
-                title={t(`content.${currentStep.key}.title`)}
-                step={currentStep.key}
-                text={currentStepText}
-                eyebrow={t(`content.${currentStep.key}.eyebrow`)}
-                current={stepIndex + 1}
-                total={steps.length}
-              />
-              <div className="mt-7">
+              {currentStep.key !== "video" ? (
+                <StepHeading
+                  title={t(`content.${currentStep.key}.title`)}
+                  step={currentStep.key}
+                  text={currentStepText}
+                  eyebrow={t(`content.${currentStep.key}.eyebrow`)}
+                  current={stepIndex + 1}
+                  total={steps.length}
+                />
+              ) : null}
+              <div className={cn(currentStep.key === "video" ? "mt-0" : "mt-7")}>
                 <StepBody
                   step={currentStep.key}
                   application={application}
@@ -1035,7 +1107,10 @@ export function TutorOnboardingWizard() {
                   timeZoneOptions={timeZoneOptions}
                   locale={locale}
                   setIsPhotoUploading={setIsPhotoUploading}
+                  setVideoTestReady={setVideoTestReady}
                   updateField={updateField}
+                  videoSubstep={videoSubstep}
+                  videoTestReady={videoTestReady}
                   setApplication={setApplication}
                   t={t}
                 />
@@ -1059,7 +1134,13 @@ export function TutorOnboardingWizard() {
                   disabled={continueDisabled}
                   className="min-h-12 w-full rounded-md border-2 border-ink bg-brand-500 px-8 text-base font-extrabold text-white shadow-none hover:bg-brand-600 sm:w-auto"
                 >
-                  {stepIndex === steps.length - 1 ? t("actions.submit") : t("actions.saveContinue")}
+                  {currentStep.key === "video" && videoSubstep === "test"
+                    ? t("actions.next")
+                    : currentStep.key === "video" && isVideoUploading
+                      ? t("video.uploading")
+                      : stepIndex === steps.length - 1
+                        ? t("actions.submit")
+                        : t("actions.saveContinue")}
                 </Button>
               </div>
           </>
@@ -1108,7 +1189,10 @@ function StepBody({
   timeZoneOptions,
   locale,
   setIsPhotoUploading,
+  setVideoTestReady,
   updateField,
+  videoSubstep,
+  videoTestReady,
   setApplication,
   t,
 }: {
@@ -1120,7 +1204,10 @@ function StepBody({
   timeZoneOptions: SelectOption[];
   locale: string;
   setIsPhotoUploading: React.Dispatch<React.SetStateAction<boolean>>;
+  setVideoTestReady: React.Dispatch<React.SetStateAction<boolean>>;
   updateField: <K extends keyof TutorApplication>(key: K, value: TutorApplication[K]) => void;
+  videoSubstep: "test" | "intro";
+  videoTestReady: boolean;
   setApplication: React.Dispatch<React.SetStateAction<TutorApplication>>;
   t: ReturnType<typeof useTranslations<"tutorOnboarding">>;
 }) {
@@ -1142,6 +1229,24 @@ function StepBody({
   const [photoCropSize, setPhotoCropSize] = useState(218);
   const [photoUploading, setPhotoUploading] = useState(false);
   const [photoUploadError, setPhotoUploadError] = useState("");
+  const [certificateUploadingIds, setCertificateUploadingIds] = useState<number[]>([]);
+  const [certificateUploadErrors, setCertificateUploadErrors] = useState<Record<number, string>>({});
+  const [activeDescriptionSection, setActiveDescriptionSection] = useState<(typeof descriptionSectionKeys)[number]>("intro");
+  const [videoPhase, setVideoPhase] = useState<"camera" | "cameraLoading" | "recordingReady" | "countdown" | "recording" | "recorded">(
+    application.videoReady ? "recorded" : "camera",
+  );
+  const [recordingMode, setRecordingMode] = useState<"test" | "main">("test");
+  const [countdownSeconds, setCountdownSeconds] = useState(3);
+  const [videoLinkOpen, setVideoLinkOpen] = useState(false);
+  const [videoLink, setVideoLink] = useState("");
+  const [videoError, setVideoError] = useState("");
+  const [recordingSeconds, setRecordingSeconds] = useState(0);
+  const [recordedVideoUrl, setRecordedVideoUrl] = useState("");
+  const liveVideoRef = useRef<HTMLVideoElement>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const recordedChunksRef = useRef<Blob[]>([]);
+  const recordingSecondsRef = useRef(0);
   const phonePickerRef = useRef<HTMLDivElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const photoCropRef = useRef<HTMLDivElement>(null);
@@ -1205,6 +1310,38 @@ function StepBody({
       }
     };
   }, [pendingPhotoUrl]);
+
+  useEffect(() => {
+    if (liveVideoRef.current && mediaStreamRef.current && videoPhase !== "recorded") {
+      liveVideoRef.current.srcObject = mediaStreamRef.current;
+    }
+  }, [videoPhase]);
+
+  useEffect(() => {
+    if (videoPhase !== "recording") {
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setRecordingSeconds((current) => {
+        const nextValue = current + 1;
+        recordingSecondsRef.current = nextValue;
+        return nextValue;
+      });
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [videoPhase]);
+
+  useEffect(() => {
+    return () => {
+      mediaRecorderRef.current?.stream.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
+      if (recordedVideoUrl) {
+        URL.revokeObjectURL(recordedVideoUrl);
+      }
+    };
+  }, [recordedVideoUrl]);
 
   function openPhotoPicker() {
     photoInputRef.current?.click();
@@ -1544,6 +1681,81 @@ function StepBody({
   function stopPhotoDrag(event: React.PointerEvent<HTMLElement>) {
     if (photoDragRef.current?.pointerId === event.pointerId) {
       photoDragRef.current = null;
+    }
+  }
+
+  async function uploadCertificateDocument(item: Certificate, file: File) {
+    setCertificateUploadErrors((current) => ({ ...current, [item.id]: "" }));
+
+    if (!["image/jpeg", "image/png"].includes(file.type)) {
+      setCertificateUploadErrors((current) => ({ ...current, [item.id]: t("certification.errors.type") }));
+      return;
+    }
+
+    if (file.size > 20 * 1024 * 1024) {
+      setCertificateUploadErrors((current) => ({ ...current, [item.id]: t("certification.errors.size") }));
+      return;
+    }
+
+    setCertificateUploadingIds((current) => [...new Set([...current, item.id])]);
+
+    try {
+      const formData = new FormData();
+      formData.append("certificate", file);
+      formData.append("certificateId", item.certificateRecordId);
+      formData.append("subject", item.subject);
+      formData.append("certificateName", item.certificate);
+      formData.append("description", item.description);
+      formData.append("issuedBy", item.issuedBy);
+      formData.append("startYear", item.startYear);
+      formData.append("endYear", item.endYear);
+      formData.append("notListed", String(item.notListed));
+
+      const response = await fetch("/api/tutor-onboarding/certificates", {
+        method: "POST",
+        body: formData,
+      });
+      const result = (await response.json().catch(() => null)) as {
+        id?: string;
+        fileName?: string;
+        path?: string;
+        status?: string;
+        error?: string;
+      } | null;
+
+      if (!response.ok || !result?.id) {
+        const errorKey = result?.error;
+        const message =
+          errorKey === "unauthorized"
+            ? t("certification.errors.unauthorized")
+            : errorKey === "invalid_type"
+              ? t("certification.errors.type")
+              : errorKey === "too_large"
+                ? t("certification.errors.size")
+                : t("certification.errors.generic");
+
+        setCertificateUploadErrors((current) => ({ ...current, [item.id]: message }));
+        return;
+      }
+
+      setApplication((current) => ({
+        ...current,
+        certificates: current.certificates.map((certificate) =>
+          certificate.id === item.id
+            ? {
+                ...certificate,
+                certificateRecordId: result.id ?? "",
+                fileName: result.fileName ?? file.name,
+                storagePath: result.path ?? "",
+                verificationStatus: result.status ?? "pending",
+              }
+            : certificate,
+        ),
+      }));
+    } catch {
+      setCertificateUploadErrors((current) => ({ ...current, [item.id]: t("certification.errors.generic") }));
+    } finally {
+      setCertificateUploadingIds((current) => current.filter((id) => id !== item.id));
     }
   }
 
@@ -2172,7 +2384,11 @@ function StepBody({
                     : [createEmptyCertificate()],
               }))
             }
-            render={(item, index) => (
+            render={(item, index) => {
+              const certificateUploading = certificateUploadingIds.includes(item.id);
+              const certificateUploadError = certificateUploadErrors[item.id];
+
+              return (
               <div className="grid gap-4">
                 <Field label={t("fields.subject")}>
                   <div className={cn("grid items-center gap-2", item.subject ? "grid-cols-[minmax(0,1fr)_40px]" : "grid-cols-1")}>
@@ -2333,20 +2549,37 @@ function StepBody({
                   <p className="mt-2 text-base leading-6 text-ink">
                     {t("certification.uploadText")}
                   </p>
-                  <label className="mt-4 flex min-h-10 w-full cursor-pointer items-center justify-center rounded-md border-2 border-ink bg-transparent px-5 text-sm font-extrabold text-ink transition-colors hover:bg-white">
-                    {t("certification.upload")}
+                  <label
+                    className={cn(
+                      "mt-4 flex min-h-10 w-full cursor-pointer items-center justify-center rounded-md border-2 border-ink bg-transparent px-5 text-sm font-extrabold text-ink transition-colors hover:bg-white",
+                      certificateUploading && "pointer-events-none opacity-60",
+                    )}
+                  >
+                    {certificateUploading ? t("certification.uploading") : t("certification.upload")}
                     <input
                       type="file"
                       accept="image/jpeg,image/png"
                       className="sr-only"
                       onChange={(event) => {
                         const file = event.target.files?.[0];
-                        updateCertificate(setApplication, item.id, "fileName", file?.name ?? "");
+                        if (file) {
+                          void uploadCertificateDocument(item, file);
+                        }
+                        event.target.value = "";
                       }}
+                      disabled={certificateUploading}
                     />
                   </label>
                   {item.fileName ? (
-                    <p className="mt-3 text-sm font-semibold text-success">{item.fileName}</p>
+                    <p className="mt-3 text-sm font-semibold text-success">
+                      {t("certification.uploaded", { fileName: item.fileName })}
+                    </p>
+                  ) : null}
+                  {item.verificationStatus === "pending" ? (
+                    <p className="mt-2 text-sm font-semibold text-brand-700">{t("certification.pending")}</p>
+                  ) : null}
+                  {certificateUploadError ? (
+                    <p className="mt-3 text-sm font-semibold text-destructive">{certificateUploadError}</p>
                   ) : null}
                   <p className="mt-4 rounded-none bg-[#d9e8ff] p-4 text-base leading-6 text-ink">{t("certification.authentic")}</p>
                   <p className="mt-4 text-base leading-6 text-ink">{t("certification.format")}</p>
@@ -2354,7 +2587,8 @@ function StepBody({
 
                 <p className="text-sm font-medium text-muted">{t("certification.helper", { number: index + 1 })}</p>
               </div>
-            )}
+              );
+            }}
           />
         )}
       </div>
@@ -2362,96 +2596,538 @@ function StepBody({
   }
 
   if (step === "education") {
+    const addEducation = () => setApplication((current) => ({
+      ...current,
+      hasNoEducationDegree: false,
+      education: [...current.education, createEmptyEducation(Date.now())],
+    }));
+    const updateNoDegree = (checked: boolean) => {
+      setApplication((current) => ({
+        ...current,
+        hasNoEducationDegree: checked,
+        education: checked ? current.education : current.education.length ? current.education : [createEmptyEducation()],
+      }));
+    };
+
     return (
-      <RepeatableBlock
-        items={application.education}
-        addLabel={t("education.add")}
-        onAdd={() => setApplication((current) => ({ ...current, education: [...current.education, { id: Date.now(), school: "", degree: "", field: "", years: "" }] }))}
-        onRemove={(id) => setApplication((current) => ({ ...current, education: current.education.filter((item) => item.id !== id) }))}
-        render={(item) => (
-          <div className="grid gap-4">
-            <Field label={t("fields.school")}>
-              <Input value={item.school} onChange={(event) => updateEducation(setApplication, item.id, "school", event.target.value)} />
-            </Field>
-            <Field label={t("fields.degree")}>
-              <Input value={item.degree} onChange={(event) => updateEducation(setApplication, item.id, "degree", event.target.value)} />
-            </Field>
-            <Field label={t("fields.field")}>
-              <Input value={item.field} onChange={(event) => updateEducation(setApplication, item.id, "field", event.target.value)} />
-            </Field>
-            <Field label={t("fields.years")}>
-              <Input value={item.years} onChange={(event) => updateEducation(setApplication, item.id, "years", event.target.value)} placeholder="2018-2022" />
-            </Field>
-          </div>
-        )}
-      />
+      <div className="grid gap-6">
+        <label className="flex min-h-10 items-center gap-3 text-base font-extrabold text-ink">
+          <Checkbox
+            checked={application.hasNoEducationDegree}
+            onCheckedChange={(checked) => updateNoDegree(checked === true)}
+            className="h-5 w-5 rounded-[3px] border-2 border-[#dcdce5] bg-white shadow-none data-[state=checked]:border-ink data-[state=checked]:bg-ink data-[state=checked]:text-white"
+          />
+          <span>{t("education.none")}</span>
+        </label>
+
+        {!application.hasNoEducationDegree ? (
+          <RepeatableBlock
+            addVariant="link"
+            items={application.education}
+            addLabel={t("education.add")}
+            onAdd={addEducation}
+            onRemove={(id) => setApplication((current) => {
+              const nextEducation = current.education.filter((item) => item.id !== id);
+
+              return {
+                ...current,
+                education: nextEducation.length ? nextEducation : [createEmptyEducation()],
+              };
+            })}
+            render={(item) => (
+              <div className="grid gap-5">
+                <Field label={t("fields.school")}>
+                  <div className="relative">
+                    <Input
+                      value={item.school}
+                      onChange={(event) => updateEducation(setApplication, item.id, "school", event.target.value)}
+                      placeholder={t("education.placeholders.school")}
+                      className={cn(
+                        "h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none",
+                        isEducationTouched(item) && "pr-12",
+                      )}
+                    />
+                    {isEducationTouched(item) ? (
+                      <button
+                        type="button"
+                        onClick={() => setApplication((current) => {
+                          const nextEducation = current.education.filter((education) => education.id !== item.id);
+
+                          return {
+                            ...current,
+                            education: nextEducation.length ? nextEducation : [createEmptyEducation()],
+                          };
+                        })}
+                        className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md text-ink transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15"
+                        aria-label={t("education.remove")}
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    ) : null}
+                  </div>
+                </Field>
+                <Field label={t("fields.degree")}>
+                  <Input
+                    value={item.degree}
+                    onChange={(event) => updateEducation(setApplication, item.id, "degree", event.target.value)}
+                    placeholder={t("education.placeholders.degree")}
+                    className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none"
+                  />
+                </Field>
+                <Field label={t("education.degreeType")}>
+                  <Select value={item.degreeType || undefined} onValueChange={(value) => updateEducation(setApplication, item.id, "degreeType", value)}>
+                    <SelectTrigger className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none">
+                      <SelectValue placeholder={t("education.chooseDegreeType")} />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-[8px]">
+                      {degreeTypeKeys.map((degreeType) => (
+                        <SelectItem key={degreeType} value={degreeType} className="py-3 text-base">
+                          {t(`education.degreeTypes.${degreeType}`)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
+                <Field label={t("fields.field")}>
+                  <Input
+                    value={item.field}
+                    onChange={(event) => updateEducation(setApplication, item.id, "field", event.target.value)}
+                    placeholder={t("education.placeholders.field")}
+                    className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none"
+                  />
+                </Field>
+                <Field label={t("fields.yearsOfStudy")}>
+                  <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3">
+                    <YearSelect
+                      onValueChange={(value) => updateEducation(setApplication, item.id, "startYear", value)}
+                      placeholder={t("placeholders.select")}
+                      presentLabel={t("certification.present")}
+                      value={item.startYear}
+                    />
+                    <span className="text-base text-muted">-</span>
+                    <YearSelect
+                      onValueChange={(value) => updateEducation(setApplication, item.id, "endYear", value)}
+                      options={certificateEndYearOptions}
+                      placeholder={t("placeholders.select")}
+                      presentLabel={t("certification.present")}
+                      value={item.endYear}
+                    />
+                  </div>
+                </Field>
+                <div className="bg-surface p-6">
+                  <h2 className="text-xl font-extrabold leading-7 text-ink">{t("education.badgeTitle")}</h2>
+                  <p className="mt-3 text-sm leading-6 text-ink">{t("education.badgeText")}</p>
+                  <p className="mt-4 text-sm leading-6 text-ink">{t("education.format")}</p>
+                  <label className="mt-5 inline-flex min-h-11 cursor-pointer items-center justify-center rounded-md border-2 border-ink bg-white px-5 text-sm font-extrabold text-ink transition-colors hover:bg-brand-50 focus-within:ring-4 focus-within:ring-brand-500/15">
+                    <Upload className="mr-2 h-4 w-4" />
+                    {item.diplomaFileName ? t("education.uploaded", { fileName: item.diplomaFileName }) : t("education.upload")}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png"
+                      className="sr-only"
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        if (file) {
+                          updateEducation(setApplication, item.id, "diplomaFileName", file.name);
+                        }
+                        event.target.value = "";
+                      }}
+                    />
+                  </label>
+                </div>
+              </div>
+            )}
+            showTopRemove={false}
+          />
+        ) : null}
+      </div>
     );
   }
 
   if (step === "description") {
+    const profileTextLength = application.intro.length + application.experience.length + application.motivation.length;
+    const activeSectionIndex = descriptionSectionKeys.indexOf(activeDescriptionSection);
+    const activeText =
+      activeDescriptionSection === "headline"
+        ? application.headline
+        : application[activeDescriptionSection];
+    const canContinueDescriptionSection = Boolean(activeText.trim());
+    const continueDescriptionSection = () => {
+      if (!canContinueDescriptionSection || activeSectionIndex >= descriptionSectionKeys.length - 1) {
+        return;
+      }
+
+      setActiveDescriptionSection(descriptionSectionKeys[activeSectionIndex + 1]);
+    };
+
     return (
       <div className="grid gap-5">
-        <Field label={t("fields.headline")} hint={t("hints.headline")}>
-          <Input value={application.headline} onChange={(event) => updateField("headline", event.target.value)} placeholder={t("placeholders.headline")} />
-        </Field>
-        <Field label={t("fields.intro")} hint={t("hints.intro")}>
-          <Textarea value={application.intro} onChange={(event) => updateField("intro", event.target.value)} className="min-h-32" />
-        </Field>
-        <Field label={t("fields.experience")}>
-          <Textarea value={application.experience} onChange={(event) => updateField("experience", event.target.value)} className="min-h-28" />
-        </Field>
-        <Field label={t("fields.motivation")}>
-          <Textarea value={application.motivation} onChange={(event) => updateField("motivation", event.target.value)} className="min-h-28" />
-        </Field>
+        <p className="text-base leading-6 text-ink">
+          {t.rich("description.guidance", {
+            guidelines: (chunks) => (
+              <a
+                href="https://help.preply.com/en/articles/4175164-profile-description-guidelines"
+                target="_blank"
+                rel="noreferrer"
+                className="font-extrabold underline underline-offset-2"
+              >
+                {chunks}
+              </a>
+            ),
+          })}
+        </p>
+        <div className="grid gap-2">
+          {descriptionSectionKeys.map((section, index) => {
+            const active = activeDescriptionSection === section;
+            const value = section === "headline" ? application.headline : application[section];
+            const sectionCopy = t.raw(`description.sections.${section}`) as { hint?: string };
+
+            return (
+              <section key={section} className="border-b border-line pb-4">
+                <button
+                  type="button"
+                  onClick={() => setActiveDescriptionSection(section)}
+                  className="flex w-full items-center justify-between gap-4 py-2 text-left"
+                >
+                  <h2 className="text-xl font-extrabold leading-7 text-ink">
+                    {index + 1}. {t(`description.sections.${section}.title`)}
+                  </h2>
+                  {value.trim() ? <Check className="h-5 w-5 shrink-0 text-brand-700" /> : null}
+                </button>
+                {active ? (
+                  <div className="mt-3 grid gap-3">
+                    <p className="text-sm leading-6 text-ink">{t(`description.sections.${section}.text`)}</p>
+                    <p className="text-sm font-bold text-muted">{t("description.optional")}</p>
+                    {section === "headline" ? (
+                      <Input
+                        value={application.headline}
+                        onChange={(event) => updateField("headline", event.target.value)}
+                        placeholder={t("description.sections.headline.placeholder")}
+                        className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none"
+                      />
+                    ) : (
+                      <Textarea
+                        value={application[section]}
+                        maxLength={profileDescriptionLimit}
+                        onChange={(event) => updateField(section, event.target.value)}
+                        placeholder={t(`description.sections.${section}.placeholder`)}
+                        className="min-h-34 rounded-[8px] border-2 border-[#dcdce5] px-4 py-3 text-base shadow-none"
+                      />
+                    )}
+                    {sectionCopy.hint ? (
+                      <p className="text-sm leading-6 text-muted">{t(`description.sections.${section}.hint`)}</p>
+                    ) : null}
+                    {section !== "headline" ? (
+                      <Button
+                        type="button"
+                        onClick={continueDescriptionSection}
+                        disabled={!canContinueDescriptionSection}
+                        className="mt-1 min-h-11 w-fit rounded-md border-2 border-ink bg-brand-500 px-6 text-base font-extrabold text-white shadow-none hover:bg-brand-600"
+                      >
+                        {t("actions.continue")}
+                      </Button>
+                    ) : null}
+                  </div>
+                ) : null}
+              </section>
+            );
+          })}
+        </div>
+        <h3 className="text-right text-lg font-extrabold text-ink">
+          {profileTextLength} / {profileDescriptionLimit}
+        </h3>
       </div>
     );
   }
 
   if (step === "video") {
-    return (
-      <div className="grid gap-9 md:grid-cols-[minmax(0,1fr)_300px]">
-        <div>
-          <div className="overflow-hidden rounded-md bg-ink">
-            <div className="flex aspect-video items-center justify-center">
+    const startCamera = async () => {
+      setVideoError("");
+      setVideoPhase("cameraLoading");
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
+        mediaStreamRef.current = stream;
+
+        if (liveVideoRef.current) {
+          liveVideoRef.current.srcObject = stream;
+          await liveVideoRef.current.play().catch(() => undefined);
+        }
+
+        setVideoPhase("recordingReady");
+      } catch {
+        setVideoPhase("camera");
+        setVideoError(t("video.permissionError"));
+      }
+    };
+    const beginRecording = (mode: "test" | "main", streamOverride?: MediaStream) => {
+      const activeStream = streamOverride ?? mediaStreamRef.current;
+      if (!activeStream) {
+        void startCamera();
+        return;
+      }
+
+      mediaStreamRef.current = activeStream;
+      setRecordingMode(mode);
+      setVideoError("");
+      setRecordingSeconds(0);
+      recordingSecondsRef.current = 0;
+      recordedChunksRef.current = [];
+
+      const startRecorder = () => {
+        if (!mediaStreamRef.current) {
+          setVideoPhase("camera");
+          return;
+        }
+
+        try {
+          const recorder = new MediaRecorder(mediaStreamRef.current);
+          mediaRecorderRef.current = recorder;
+
+          recorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+              recordedChunksRef.current.push(event.data);
+            }
+          };
+          recorder.onstop = () => {
+            const blob = new Blob(recordedChunksRef.current, { type: recorder.mimeType || "video/webm" });
+            if (recordedVideoUrl) {
+              URL.revokeObjectURL(recordedVideoUrl);
+            }
+            const nextUrl = URL.createObjectURL(blob);
+
+            setRecordedVideoUrl(nextUrl);
+            mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
+            mediaStreamRef.current = null;
+            setVideoPhase("recorded");
+
+            if (mode === "test") {
+              setVideoTestReady(true);
+            } else if (recordingSecondsRef.current >= 30) {
+              updateField("videoReady", true);
+            } else {
+              updateField("videoReady", false);
+              setVideoError(t("video.minimumError"));
+            }
+          };
+          recorder.start();
+          setVideoPhase("recording");
+        } catch {
+          setVideoPhase("recordingReady");
+          setVideoError(t("video.recordingError"));
+        }
+      };
+
+      if (mode === "main") {
+        setCountdownSeconds(3);
+        setVideoPhase("countdown");
+        let nextCount = 3;
+        const countdown = window.setInterval(() => {
+          nextCount -= 1;
+          setCountdownSeconds(nextCount);
+
+          if (nextCount <= 0) {
+            window.clearInterval(countdown);
+            startRecorder();
+          }
+        }, 1000);
+        return;
+      }
+
+      startRecorder();
+    };
+    const ensureCameraAndRecord = async (mode: "test" | "main") => {
+      if (mediaStreamRef.current) {
+        beginRecording(mode);
+        return;
+      }
+
+      setVideoError("");
+      setVideoPhase("cameraLoading");
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        mediaStreamRef.current = stream;
+        if (liveVideoRef.current) {
+          liveVideoRef.current.srcObject = stream;
+          await liveVideoRef.current.play().catch(() => undefined);
+        }
+        beginRecording(mode, stream);
+      } catch {
+        setVideoPhase("camera");
+        setVideoError(t("video.permissionError"));
+      }
+    };
+    const stopRecording = () => {
+      if (mediaRecorderRef.current?.state === "recording") {
+        mediaRecorderRef.current.stop();
+      }
+    };
+    const resetVideo = async (mode: "test" | "main" = videoSubstep === "test" ? "test" : "main") => {
+      mediaRecorderRef.current?.stream.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current = null;
+
+      if (recordedVideoUrl) {
+        URL.revokeObjectURL(recordedVideoUrl);
+        setRecordedVideoUrl("");
+      }
+
+      setRecordingMode(mode);
+      setRecordingSeconds(0);
+      recordingSecondsRef.current = 0;
+      setCountdownSeconds(3);
+      setVideoError("");
+      if (mode === "test") {
+        setVideoTestReady(false);
+      } else {
+        updateField("videoReady", false);
+      }
+      setVideoPhase("camera");
+      await startCamera();
+    };
+    const activeVideoLabel =
+      videoPhase === "camera" ? t("video.testCamera") :
+      videoPhase === "cameraLoading" ? t("video.testing") :
+      videoPhase === "recordingReady" ? (videoSubstep === "test" ? t("video.testRecording") : t("video.startRecording")) :
+      videoPhase === "recording" ? t("video.stopRecording") :
+      t("video.recorded");
+
+    if (videoSubstep === "intro") {
+      return (
+        <div className="grid gap-7">
+          <h1 className="text-2xl font-extrabold leading-8 text-ink">{t("video.introTitle")}</h1>
+          <section className="grid gap-4">
+            <h2 className="text-xl font-extrabold leading-7 text-ink">{t("video.horizontalTitle")}</h2>
+            <p className="text-sm leading-6 text-ink">{t("video.horizontalText")}</p>
+            <div className="overflow-hidden bg-black">
+              <div className="relative flex aspect-video items-center justify-center">
+                {videoPhase === "recorded" && recordedVideoUrl && application.videoReady ? (
+                  <video src={recordedVideoUrl} className="absolute inset-0 h-full w-full object-cover" controls playsInline />
+                ) : videoPhase !== "camera" && videoPhase !== "cameraLoading" && !(videoPhase === "recorded" && !application.videoReady) ? (
+                  <video ref={liveVideoRef} className="absolute inset-0 h-full w-full object-cover" autoPlay muted playsInline />
+                ) : (
+                  <p className="text-base font-semibold text-white/75">{t("video.emptyPreview")}</p>
+                )}
+                {videoPhase === "countdown" ? (
+                  <h3 className="relative text-5xl font-extrabold text-white">{countdownSeconds}</h3>
+                ) : videoPhase === "recording" ? (
+                  <h3 className="absolute top-5 text-xl font-extrabold text-white">{formatRecordingTime(recordingSeconds)}</h3>
+                ) : null}
+                {videoPhase === "camera" || videoPhase === "cameraLoading" || videoPhase === "recordingReady" || (videoPhase === "recorded" && !application.videoReady) ? (
+                  <button
+                    type="button"
+                    onClick={() => void ensureCameraAndRecord("main")}
+                    disabled={videoPhase === "cameraLoading"}
+                    className="absolute bottom-6 inline-flex min-h-12 min-w-[156px] items-center justify-center rounded-md border-2 border-white bg-black px-6 text-base font-extrabold text-white disabled:opacity-60"
+                  >
+                    {videoPhase === "cameraLoading" ? t("video.testing") : t("video.startRecording")}
+                  </button>
+                ) : null}
+                {videoPhase === "recording" || videoPhase === "countdown" ? (
+                  <button
+                    type="button"
+                    onClick={stopRecording}
+                    disabled={videoPhase === "countdown"}
+                    className="absolute bottom-6 inline-flex min-h-12 min-w-[156px] items-center justify-center rounded-md border-2 border-white bg-black px-6 text-base font-extrabold text-white disabled:opacity-60"
+                  >
+                    {t("video.stopRecording")}
+                  </button>
+                ) : null}
+              </div>
+            </div>
+            {application.videoReady ? (
               <button
                 type="button"
-                onClick={() => updateField("videoReady", true)}
-                className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-ink transition-transform hover:scale-105"
-                aria-label={t("video.record")}
+                onClick={() => void resetVideo("main")}
+                className="w-fit rounded-md border-2 border-ink bg-white px-5 py-3 text-sm font-extrabold text-ink transition-colors hover:bg-surface"
               >
-                <Play className="ml-1 h-7 w-7 fill-current" />
+                {t("video.rerecord")}
               </button>
-            </div>
+            ) : null}
+            {recordingMode === "main" && videoPhase === "recorded" && recordingSeconds < 30 ? (
+              <p className="text-sm font-semibold text-destructive">{t("video.minimumError")}</p>
+            ) : null}
+            {videoError ? <p className="text-sm font-semibold text-destructive">{videoError}</p> : null}
+          </section>
+          <section className="grid gap-3">
+            {videoLinkOpen ? (
+              <>
+                <h2 className="text-xl font-extrabold text-ink">{t("video.linkTitle")}</h2>
+                <p className="text-sm leading-6 text-ink">{t("video.linkHelp")}</p>
+                <p className="text-sm font-bold text-muted">{t("description.optional")}</p>
+                <Input
+                  value={videoLink}
+                  onChange={(event) => {
+                    setVideoLink(event.target.value);
+                    if (event.target.value.trim()) {
+                      updateField("videoReady", true);
+                    }
+                  }}
+                  placeholder="www.youtube.com/watch?v=l5aZJBLAu1E"
+                  className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none"
+                />
+              </>
+            ) : (
+              <p className="text-sm leading-6 text-ink">
+                {t("video.linkPrompt")}{" "}
+                <button type="button" onClick={() => setVideoLinkOpen(true)} className="font-extrabold underline underline-offset-2">
+                  {t("video.insertLink")}
+                </button>
+              </p>
+            )}
+          </section>
+          <section className="grid gap-2">
+            <h2 className="text-xl font-extrabold text-ink">{t("video.thumbnailTitle")}</h2>
+            <p className="text-sm leading-6 text-ink">{t("video.thumbnailText")}</p>
+            <button type="button" className="w-fit text-sm font-extrabold underline underline-offset-2">{t("video.showMore")}</button>
+          </section>
+          <VideoRequirements t={t} />
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid gap-6">
+        <div className="overflow-hidden bg-black">
+          <div className="relative flex aspect-video items-center justify-center">
+            {videoPhase === "recorded" && recordedVideoUrl ? (
+              <video src={recordedVideoUrl} className="absolute inset-0 h-full w-full object-cover" controls playsInline />
+            ) : videoPhase !== "camera" && videoPhase !== "cameraLoading" ? (
+              <video ref={liveVideoRef} className="absolute inset-0 h-full w-full object-cover" autoPlay muted playsInline />
+            ) : null}
+            {videoPhase === "recording" ? (
+              <h3 className="absolute top-5 text-xl font-extrabold text-white">{formatRecordingTime(recordingSeconds)}</h3>
+            ) : null}
+            {videoPhase !== "recorded" ? (
+              <button
+                type="button"
+                onClick={videoPhase === "camera" ? startCamera : videoPhase === "recordingReady" ? () => beginRecording("test") : videoPhase === "recording" ? stopRecording : undefined}
+                disabled={videoPhase === "cameraLoading"}
+                className="relative inline-flex min-h-12 min-w-[156px] items-center justify-center gap-2 rounded-md border-2 border-white bg-black px-6 text-base font-extrabold text-white transition-colors hover:bg-white hover:text-ink disabled:cursor-default disabled:hover:bg-black disabled:hover:text-white"
+              >
+                {videoPhase === "cameraLoading" || videoPhase === "recording" ? (
+                  <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                ) : videoPhase === "recordingReady" ? (
+                  <Camera className="h-5 w-5" />
+                ) : null}
+                {activeVideoLabel}
+              </button>
+            ) : null}
           </div>
+        </div>
+        {videoError ? <p className="text-sm font-semibold text-destructive">{videoError}</p> : null}
+        {videoTestReady ? (
           <button
             type="button"
-            onClick={() => updateField("videoReady", true)}
-            className="mt-5 flex h-11 w-[220px] items-center justify-center rounded-md border-2 border-ink bg-white text-sm font-extrabold transition-colors hover:bg-surface"
+            onClick={() => void resetVideo("test")}
+            className="w-fit rounded-md border-2 border-ink bg-white px-5 py-3 text-sm font-extrabold text-ink transition-colors hover:bg-surface"
           >
-            <RefreshCw className="mr-2 h-4 w-4" />
-            {application.videoReady ? t("video.ready") : t("video.upload")}
+            <RefreshCw className="mr-2 inline h-4 w-4" />
+            {t("video.retake")}
           </button>
-          <p className="mt-4 text-sm leading-6 text-ink">
-            {t("video.linkPrompt")} <button type="button" className="font-extrabold underline">{t("video.insertLink")}</button>
-          </p>
-        </div>
-        <div>
-          <div className="bg-surface p-6">
-            <h2 className="text-2xl font-extrabold text-ink">{t("video.requirementsTitle")}</h2>
-            <p className="mt-4 text-sm leading-6 text-ink">{t("video.requirementsText")}</p>
-          </div>
-          <div className="mt-8">
-            <h3 className="flex items-center gap-3 text-lg font-extrabold text-ink">
-              <Check className="h-5 w-5 text-success" />
-              {t("video.doTitle")}
-            </h3>
-            <ul className="mt-5 space-y-5 text-sm leading-6 text-ink">
-              {["short", "sound", "promise", "invite", "lighting", "stable"].map((key) => (
-                <li key={key} className="list-disc marker:text-muted">{t(`video.rules.${key}`)}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
+        ) : null}
       </div>
     );
   }
@@ -2528,6 +3204,35 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
       {children}
       {hint ? <p className="text-sm font-medium leading-6 text-muted">{hint}</p> : null}
     </div>
+  );
+}
+
+function VideoRequirements({ t }: { t: ReturnType<typeof useTranslations<"tutorOnboarding">> }) {
+  return (
+    <section className="grid gap-4">
+      <div>
+        <h2 className="text-xl font-extrabold text-ink">{t("video.requirementsTitle")}</h2>
+        <p className="mt-2 text-sm leading-6 text-ink">{t("video.requirementsText")}</p>
+      </div>
+      <div className="grid gap-6">
+        <div>
+          <h3 className="text-lg font-extrabold text-ink">{t("video.doTitle")}</h3>
+          <ul className="mt-4 space-y-3 text-sm leading-6 text-ink">
+            {["length", "horizontal", "lighting", "stable", "visible", "experience", "invite"].map((key) => (
+              <li key={key} className="list-disc marker:text-muted">{t(`video.doRules.${key}`)}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h3 className="text-lg font-extrabold text-ink">{t("video.dontTitle")}</h3>
+          <ul className="mt-4 space-y-3 text-sm leading-6 text-ink">
+            {["contact", "logos", "slides", "people"].map((key) => (
+              <li key={key} className="list-disc marker:text-muted">{t(`video.dontRules.${key}`)}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -2809,6 +3514,7 @@ function flagFromCountryCode(countryCode: string) {
 function createEmptyCertificate(id = Date.now()): Certificate {
   return {
     id,
+    certificateRecordId: "",
     subject: "",
     certificate: "",
     description: "",
@@ -2818,7 +3524,34 @@ function createEmptyCertificate(id = Date.now()): Certificate {
     endYear: "",
     notListed: false,
     fileName: "",
+    storagePath: "",
+    verificationStatus: "",
   };
+}
+
+function createEmptyEducation(id = Date.now()): Education {
+  return {
+    id,
+    school: "",
+    degree: "",
+    degreeType: "",
+    field: "",
+    startYear: "",
+    endYear: "",
+    diplomaFileName: "",
+  };
+}
+
+function isEducationTouched(item: Education) {
+  return Boolean(
+    item.school.trim() ||
+      item.degree.trim() ||
+      item.degreeType ||
+      item.field.trim() ||
+      item.startYear ||
+      item.endYear ||
+      item.diplomaFileName,
+  );
 }
 
 function updateCertificate<K extends keyof Certificate>(
@@ -2863,9 +3596,19 @@ function isStepValid(step: StepKey, application: TutorApplication) {
     case "certification":
       return true;
     case "education":
-      return application.education.some((item) => item.school.trim() && item.degree.trim());
+      return Boolean(
+        application.hasNoEducationDegree ||
+          application.education.some((item) =>
+            item.school.trim() &&
+            item.degree.trim() &&
+            item.degreeType &&
+            item.field.trim() &&
+            item.startYear &&
+            item.endYear,
+          ),
+      );
     case "description":
-      return Boolean(application.headline.trim() && application.intro.trim() && application.experience.trim());
+      return Boolean(application.headline.trim() && application.intro.trim() && application.experience.trim() && application.motivation.trim());
     case "video":
       return application.videoReady;
     case "availability":
@@ -2882,4 +3625,11 @@ function formatMoney(value: number) {
     minimumFractionDigits: value % 1 ? 2 : 0,
     maximumFractionDigits: 2,
   }).format(value);
+}
+
+function formatRecordingTime(totalSeconds: number) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }

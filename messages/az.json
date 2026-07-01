@@ -752,6 +752,7 @@
     "actions": {
       "back": "Geri",
       "continue": "Davam et",
+      "next": "Növbəti",
       "saveContinue": "Yadda saxla və davam et",
       "submit": "Müraciəti göndər",
       "addLanguage": "Başqa dil əlavə et",
@@ -782,8 +783,8 @@
       },
       "education": {
         "eyebrow": "Təhsil",
-        "title": "Təhsil və ixtisas fonunu əlavə et.",
-        "text": "Universitet, kurs və ya pedaqoji hazırlıq barədə qısa məlumat tələbəyə kontekst verir."
+        "title": "Təhsil",
+        "text": "Tamamladığın və ya hazırda davam etdirdiyin ali təhsil haqqında tələbələrə daha çox məlumat ver."
       },
       "description": {
         "eyebrow": "Profil mətni",
@@ -841,9 +842,9 @@
       "issuedBy": "Təşkilat",
       "year": "İl",
       "yearsOfStudy": "Təhsil illəri",
-      "school": "Təhsil müəssisəsi",
-      "degree": "Dərəcə və ya proqram",
-      "field": "İxtisas sahəsi",
+      "school": "Universitet",
+      "degree": "Dərəcə",
+      "field": "İxtisaslaşma",
       "years": "İllər",
       "headline": "Profil başlığı",
       "intro": "Qısa təqdimat",
@@ -984,24 +985,118 @@
       "none": "Tədris sertifikatım yoxdur",
       "notListed": "Sertifikatım siyahıda yoxdur",
       "present": "Hazırda",
+      "pending": "Sənəd yoxlanış üçün gözləyir.",
       "remove": "Sertifikatı sil",
       "upload": "Yüklə",
+      "uploaded": "{fileName} yükləndi.",
+      "uploading": "Yüklənir...",
       "uploadText": "Komandamız göndərdiyin sənədi əl ilə yoxlayacaq.",
-      "uploadTitle": "Sertifikatını yüklə"
+      "uploadTitle": "Sertifikatını yüklə",
+      "errors": {
+        "type": "JPG və ya PNG sənəd yüklə.",
+        "size": "Sertifikat faylı 20MB və ya daha kiçik olmalıdır.",
+        "unauthorized": "Sertifikat yükləmək üçün müəllim hesabı ilə daxil ol.",
+        "generic": "Sertifikatı yükləyə bilmədik. Yenidən yoxla."
+      }
     },
     "education": {
-      "add": "Təhsil əlavə et"
+      "add": "Başqa təhsil əlavə et",
+      "none": "Mənim ali təhsil dərəcəm yoxdur",
+      "remove": "Təhsili sil",
+      "degreeType": "Dərəcə növü",
+      "chooseDegreeType": "Dərəcə növünü seç...",
+      "badgeTitle": "“Diplom təsdiqləndi” nişanı al",
+      "badgeText": "Etibarlılığını artırmaq üçün diplomunu yüklə. Komandamız onu yoxlayıb profilinə nişan əlavə edəcək. Yoxlanışdan sonra faylların silinəcək.",
+      "format": "JPG və ya PNG formatı; maksimum 20MB.",
+      "upload": "Yüklə",
+      "uploaded": "{fileName} yükləndi",
+      "degreeTypes": {
+        "teaching": "Pedaqoji dərəcə",
+        "subject": "Öyrətdiyin fənn üzrə dərəcə",
+        "other": "Digər dərəcə"
+      },
+      "placeholders": {
+        "school": "Məs. Bakı Dövlət Universiteti",
+        "degree": "Məs. İngilis dili üzrə bakalavr dərəcəsi",
+        "field": "Məs. İngilis dilinin xarici dil kimi tədrisi"
+      }
+    },
+    "description": {
+      "guidance": "Bu məlumat ictimai profilində görünəcək. Onu öyrədəcəyin dildə yaz və təsdiq üçün <guidelines>qaydalarımıza</guidelines> əməl et.",
+      "optional": "• İstəyə bağlı",
+      "sections": {
+        "intro": {
+          "title": "Özünü təqdim et",
+          "text": "Potensial tələbələrə kim olduğunu göstər. Tədris təcrübəni, təhsilə həvəsini, maraq və hobbilərini qısa paylaş.",
+          "placeholder": "Salam, mənim adım... və mən...",
+          "hint": "Soyadını yazma və məlumatını CV formatında təqdim etmə"
+        },
+        "experience": {
+          "title": "Tədris təcrübəsi",
+          "text": "Uyğun tədris təcrübəni ətraflı təsvir et. Sertifikatları, metodikanı, təhsili və fənn biliklərini qeyd et.",
+          "placeholder": "5 illik tədris təcrübəm var. Dərslərim..."
+        },
+        "motivation": {
+          "title": "Tələbələri motivasiya et",
+          "text": "Tələbəni ilk dərsi bron etməyə təşviq et. Səninlə öyrənməyin faydasını vurğula.",
+          "placeholder": "Məqsədlərini və onlara necə çatacağını müzakirə etmək üçün dərs bron et...",
+          "hint": "Pulsuz trial, endirim və şəxsi əlaqə məlumatları əlavə etmə"
+        },
+        "headline": {
+          "title": "Yadda qalan başlıq yaz",
+          "text": "Başlıq tələbələrin sənin haqqında gördüyü ilk mətndir. Diqqət çəkən, öyrətdiyin dili göstərən və tam təsviri oxumağa həvəsləndirən başlıq yaz.",
+          "placeholder": "5 illik təcrübəsi olan sertifikatlı müəllim"
+        }
+      }
     },
     "video": {
       "record": "Video yazmağa başla",
+      "testCamera": "Test camera",
+      "testing": "Testing",
+      "testRecording": "Test recording",
+      "startRecording": "Start recording",
+      "stopRecording": "Stop recording",
+      "recording": "Recording",
+      "recorded": "Recording ready",
+      "retake": "Test camera",
+      "rerecord": "Re-record",
+      "uploading": "Your video is uploading...",
+      "permissionError": "Yazını yoxlamaq üçün kamera və mikrofon icazəsinə icazə ver.",
+      "recordingError": "Yazı başlaya bilmədi. Brauzer icazələrini yoxla və yenidən cəhd et.",
+      "minimumError": "Video 30 saniyə ilə 2 dəqiqə arasında olmalıdır.",
+      "introTitle": "Video introduction",
+      "horizontalTitle": "Add a horizontal video of up to 2 minutes",
+      "horizontalText": "Introduce yourself to students in the same language as your written description. If you teach a different language, include a short sample.",
+      "emptyPreview": "Your video will appear here",
+      "linkTitle": "Or paste a link to your video",
+      "linkHelp": "Learn how to upload videos to Youtube or Vimeo.",
+      "thumbnailTitle": "Add a thumbnail (optional)",
+      "thumbnailText": "Don’t worry if you don’t have a thumbnail ready, we’ll use the preview above.",
+      "showMore": "Show more",
       "upload": "Yenidən yaz",
       "ready": "Video hazırdır",
       "empty": "Video hələ əlavə edilməyib",
-      "linkPrompt": "Hazır videon YouTube və ya Vimeo-dadır?",
-      "insertLink": "Link əlavə et",
-      "requirementsTitle": "Video tələbləri",
-      "requirementsText": "Video təsdiqlənmək üçün bu tələblərə uyğun olmalıdır.",
-      "doTitle": "Et",
+      "linkPrompt": "Have a pre-recorded video on Youtube or Vimeo?",
+      "insertLink": "Insert link",
+      "requirementsTitle": "Video requirements",
+      "requirementsText": "Make sure your video meets the requirements to get approved",
+      "doTitle": "Do",
+      "dontTitle": "Don't",
+      "doRules": {
+        "length": "Your video should be between 30 seconds and 2 minutes long",
+        "horizontal": "Record in horizontal mode and at eye level",
+        "lighting": "Use good lighting and a neutral background",
+        "stable": "Use a stable surface so that your video does not appear shaky",
+        "visible": "Make sure your face and eyes are fully visible (except for religious reasons)",
+        "experience": "Highlight your teaching experience and any relevant teaching certification(s)",
+        "invite": "Greet your students warmly and invite them to book a lesson"
+      },
+      "dontRules": {
+        "contact": "Include your surname or any contact details",
+        "logos": "Include logos or links",
+        "slides": "Use slideshows or presentations",
+        "people": "Have any other people visible in your video"
+      },
       "rules": {
         "short": "30-60 saniyəlik qısa təqdimat kifayətdir.",
         "sound": "Səsin aydın, fon isə sakit olsun.",
