@@ -40,6 +40,11 @@ export async function POST(request: Request) {
 
   const extension = extensionForMimeType(file.type);
   const objectPath = `${auth.user.id}/profile-photo-${Date.now()}.${extension}`;
+  const { data: previousPhoto } = await supabase
+    .from("tutor_photos")
+    .select("storage_path")
+    .eq("user_id", auth.user.id)
+    .maybeSingle();
   const { error: uploadError } = await supabase.storage
     .from(PHOTO_BUCKET)
     .upload(objectPath, file, {
@@ -56,6 +61,26 @@ export async function POST(request: Request) {
     data: { publicUrl },
   } = supabase.storage.from(PHOTO_BUCKET).getPublicUrl(objectPath);
 
+  const { error: photoMetadataError } = await supabase
+    .from("tutor_photos")
+    .upsert(
+      {
+        user_id: auth.user.id,
+        storage_bucket: PHOTO_BUCKET,
+        storage_path: objectPath,
+        public_url: publicUrl,
+        mime_type: file.type,
+        file_size_bytes: file.size,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" },
+    );
+
+  if (photoMetadataError) {
+    await supabase.storage.from(PHOTO_BUCKET).remove([objectPath]);
+    return NextResponse.json({ error: photoMetadataError.message }, { status: 500 });
+  }
+
   const { error: profileError } = await supabase
     .from("profiles")
     .update({
@@ -66,7 +91,12 @@ export async function POST(request: Request) {
 
   if (profileError) {
     await supabase.storage.from(PHOTO_BUCKET).remove([objectPath]);
+    await supabase.from("tutor_photos").delete().eq("storage_path", objectPath);
     return NextResponse.json({ error: profileError.message }, { status: 500 });
+  }
+
+  if (previousPhoto?.storage_path && previousPhoto.storage_path !== objectPath) {
+    await supabase.storage.from(PHOTO_BUCKET).remove([previousPhoto.storage_path]);
   }
 
   return NextResponse.json({

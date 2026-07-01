@@ -864,6 +864,50 @@ export type Database = {
           },
         ]
       }
+      tutor_photos: {
+        Row: {
+          created_at: string | null
+          file_size_bytes: number
+          id: string
+          mime_type: string
+          public_url: string
+          storage_bucket: string
+          storage_path: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          file_size_bytes: number
+          id?: string
+          mime_type: string
+          public_url: string
+          storage_bucket?: string
+          storage_path: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          file_size_bytes?: number
+          id?: string
+          mime_type?: string
+          public_url?: string
+          storage_bucket?: string
+          storage_path?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tutor_photos_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tutor_profiles: {
         Row: {
           about: string | null
