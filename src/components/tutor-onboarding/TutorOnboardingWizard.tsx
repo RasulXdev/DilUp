@@ -123,6 +123,12 @@ const photoGuidelineImages = [
   "/images/become-tutor-portrait.jpg",
   "/images/footer/how-it-works-tutors-2.jpg",
 ];
+const PHOTO_CROPPER_FALLBACK_WIDTH = 640;
+const PHOTO_CROPPER_FALLBACK_HEIGHT = 364;
+const PHOTO_INITIAL_CROP_SIZE = 218;
+const PHOTO_MIN_CROP_SIZE = 96;
+const PHOTO_MAX_CROP_SIZE = 320;
+const PHOTO_DEFAULT_MAX_ZOOM = 2;
 const dropdownScrollClass =
   "overflow-y-auto overflow-x-hidden [scrollbar-gutter:stable] ![scrollbar-width:thin] ![scrollbar-color:var(--color-brand-300)_transparent] [&::-webkit-scrollbar]:!block [&::-webkit-scrollbar]:!w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-brand-300 [&::-webkit-scrollbar-track]:bg-transparent";
 const spokenLanguageCodes = [
@@ -545,6 +551,86 @@ function loadPhotoElement(src: string) {
   });
 }
 
+function getRotatedPhotoSize(sourceSize: { width: number; height: number }, rotation: number) {
+  const normalizedRotation = Math.abs(rotation % 180);
+  const rotated = normalizedRotation === 90;
+
+  return {
+    width: rotated ? sourceSize.height : sourceSize.width,
+    height: rotated ? sourceSize.width : sourceSize.height,
+  };
+}
+
+function getContainedPhotoSize(
+  cropper: { width: number; height: number },
+  sourceSize: { width: number; height: number },
+  zoom: number,
+) {
+  const containScale = Math.min(cropper.width / sourceSize.width, cropper.height / sourceSize.height) * zoom;
+
+  return {
+    width: sourceSize.width * containScale,
+    height: sourceSize.height * containScale,
+  };
+}
+
+function getPhotoMinimumZoom(
+  cropper: { width: number; height: number },
+  sourceSize: { width: number; height: number },
+  rotation: number,
+  cropSize: number,
+) {
+  const rotatedSize = getRotatedPhotoSize(sourceSize, rotation);
+  const baseDisplaySize = getContainedPhotoSize(cropper, rotatedSize, 1);
+  const requiredZoom = Math.max(cropSize / baseDisplaySize.width, cropSize / baseDisplaySize.height, 1);
+
+  return Math.ceil(requiredZoom * 100) / 100;
+}
+
+function getPhotoImageBoundsFor(
+  cropper: { width: number; height: number },
+  sourceSize: { width: number; height: number },
+  rotation: number,
+  zoom: number,
+) {
+  const rotatedSize = getRotatedPhotoSize(sourceSize, rotation);
+  const displaySize = getContainedPhotoSize(cropper, rotatedSize, zoom);
+  const left = (cropper.width - displaySize.width) / 2;
+  const top = (cropper.height - displaySize.height) / 2;
+  const right = left + displaySize.width;
+  const bottom = top + displaySize.height;
+
+  return {
+    left,
+    top,
+    right,
+    bottom,
+    width: Math.max(0, right - left),
+    height: Math.max(0, bottom - top),
+  };
+}
+
+function clampPhotoCropOffsetFor(
+  cropper: { width: number; height: number },
+  bounds: { left: number; top: number; right: number; bottom: number } | null,
+  offset: { x: number; y: number },
+  cropSize: number,
+) {
+  const minX = bounds ? bounds.left + cropSize / 2 - cropper.width / 2 : -(cropper.width - cropSize) / 2;
+  const maxX = bounds ? bounds.right - cropSize / 2 - cropper.width / 2 : (cropper.width - cropSize) / 2;
+  const minY = bounds ? bounds.top + cropSize / 2 - cropper.height / 2 : -(cropper.height - cropSize) / 2;
+  const maxY = bounds ? bounds.bottom - cropSize / 2 - cropper.height / 2 : (cropper.height - cropSize) / 2;
+
+  return {
+    x: minX > maxX ? (minX + maxX) / 2 : Math.min(maxX, Math.max(minX, offset.x)),
+    y: minY > maxY ? (minY + maxY) / 2 : Math.min(maxY, Math.max(minY, offset.y)),
+  };
+}
+
+function getInitialPhotoCropSize(cropper: { width: number; height: number }) {
+  return Math.min(PHOTO_INITIAL_CROP_SIZE, Math.max(64, Math.floor(Math.min(cropper.width, cropper.height) * 0.82)));
+}
+
 async function createProfilePhotoFile(
   src: string,
   zoom: number,
@@ -564,11 +650,8 @@ async function createProfilePhotoFile(
     throw new Error("Canvas is not available");
   }
 
-  const normalizedRotation = Math.abs(rotation % 180);
-  const rotated = normalizedRotation === 90;
-  const sourceWidth = rotated ? sourceSize.height : sourceSize.width;
-  const sourceHeight = rotated ? sourceSize.width : sourceSize.height;
-  const containScale = Math.min(cropper.width / sourceWidth, cropper.height / sourceHeight) * zoom;
+  const rotatedSize = getRotatedPhotoSize(sourceSize, rotation);
+  const containScale = Math.min(cropper.width / rotatedSize.width, cropper.height / rotatedSize.height) * zoom;
   const displayWidth = image.naturalWidth * containScale;
   const displayHeight = image.naturalHeight * containScale;
   const cropX = (cropper.width - cropper.cropSize) / 2 + cropOffset.x;
@@ -877,6 +960,7 @@ function StepBody({
   const [pendingPhotoUrl, setPendingPhotoUrl] = useState("");
   const [photoEditorOpen, setPhotoEditorOpen] = useState(false);
   const [photoZoom, setPhotoZoom] = useState(1);
+  const [photoMinZoom, setPhotoMinZoom] = useState(1);
   const [photoRotation, setPhotoRotation] = useState(0);
   const [photoSourceSize, setPhotoSourceSize] = useState<{ width: number; height: number } | null>(null);
   const [photoCropOffset, setPhotoCropOffset] = useState({ x: 0, y: 0 });
@@ -979,15 +1063,29 @@ function StepBody({
     setPendingPhotoFile(file);
     const previewUrl = URL.createObjectURL(file);
     setPendingPhotoUrl(previewUrl);
+    const cropperMetrics = getPhotoCropMetrics();
+    const initialCropSize = getInitialPhotoCropSize({ width: cropperMetrics.cropperWidth, height: cropperMetrics.cropperHeight });
+
     setPhotoZoom(1);
+    setPhotoMinZoom(1);
     setPhotoRotation(0);
     setPhotoSourceSize(null);
     setPhotoCropOffset({ x: 0, y: 0 });
-    setPhotoCropSize(218);
+    setPhotoCropSize(initialCropSize);
     setPhotoEditorOpen(true);
     loadPhotoElement(previewUrl)
       .then((image) => {
-        setPhotoSourceSize({ width: image.naturalWidth, height: image.naturalHeight });
+        const sourceSize = { width: image.naturalWidth, height: image.naturalHeight };
+        const minimumZoom = getPhotoMinimumZoom(
+          { width: cropperMetrics.cropperWidth, height: cropperMetrics.cropperHeight },
+          sourceSize,
+          0,
+          initialCropSize,
+        );
+
+        setPhotoSourceSize(sourceSize);
+        setPhotoMinZoom(minimumZoom);
+        setPhotoZoom(minimumZoom);
       })
       .catch(() => {
         setPhotoSourceSize(null);
@@ -1006,13 +1104,25 @@ function StepBody({
 
     try {
       const { cropperWidth, cropperHeight } = getPhotoCropMetrics();
+      const sourceSize = photoSourceSize ?? { width: cropperWidth, height: cropperHeight };
+      const safeZoom = Math.max(
+        photoZoom,
+        getPhotoMinimumZoom(
+          { width: cropperWidth, height: cropperHeight },
+          sourceSize,
+          photoRotation,
+          photoCropSize,
+        ),
+      );
+      const safeCropSize = clampPhotoCropSize(photoCropSize, safeZoom);
+      const safeCropOffset = clampPhotoCropOffset(photoCropOffset, safeCropSize, safeZoom);
       const preparedPhoto = await createProfilePhotoFile(
         pendingPhotoUrl,
-        photoZoom,
+        safeZoom,
         photoRotation,
-        photoCropOffset,
-        { width: cropperWidth, height: cropperHeight, cropSize: photoCropSize },
-        photoSourceSize ?? { width: cropperWidth, height: cropperHeight },
+        safeCropOffset,
+        { width: cropperWidth, height: cropperHeight, cropSize: safeCropSize },
+        sourceSize,
       );
       const formData = new FormData();
       formData.append("photo", preparedPhoto);
@@ -1062,58 +1172,126 @@ function StepBody({
 
   function getPhotoCropMetrics() {
     const cropperRect = photoCropRef.current?.getBoundingClientRect();
-    const cropperWidth = cropperRect?.width || 640;
-    const cropperHeight = cropperRect?.height || 364;
+    const cropperWidth = cropperRect?.width || PHOTO_CROPPER_FALLBACK_WIDTH;
+    const cropperHeight = cropperRect?.height || PHOTO_CROPPER_FALLBACK_HEIGHT;
     return { cropperWidth, cropperHeight };
   }
 
-  function getPhotoImageBounds() {
+  function getPhotoImageBounds(zoom = photoZoom, rotation = photoRotation) {
     const { cropperWidth, cropperHeight } = getPhotoCropMetrics();
     if (!photoSourceSize) {
       return null;
     }
 
-    const normalizedRotation = Math.abs(photoRotation % 180);
-    const rotated = normalizedRotation === 90;
-    const sourceWidth = rotated ? photoSourceSize.height : photoSourceSize.width;
-    const sourceHeight = rotated ? photoSourceSize.width : photoSourceSize.height;
-    const containScale = Math.min(cropperWidth / sourceWidth, cropperHeight / sourceHeight) * photoZoom;
-    const displayWidth = sourceWidth * containScale;
-    const displayHeight = sourceHeight * containScale;
-    const left = (cropperWidth - displayWidth) / 2;
-    const top = (cropperHeight - displayHeight) / 2;
-    const right = left + displayWidth;
-    const bottom = top + displayHeight;
-
-    return {
-      left,
-      top,
-      right,
-      bottom,
-      width: Math.max(0, right - left),
-      height: Math.max(0, bottom - top),
-    };
+    return getPhotoImageBoundsFor(
+      { width: cropperWidth, height: cropperHeight },
+      photoSourceSize,
+      rotation,
+      zoom,
+    );
   }
 
-  function clampPhotoCropOffset(offset: { x: number; y: number }, cropSize = photoCropSize) {
-    const bounds = getPhotoImageBounds();
+  function clampPhotoCropOffset(offset: { x: number; y: number }, cropSize = photoCropSize, zoom = photoZoom, rotation = photoRotation) {
+    const bounds = getPhotoImageBounds(zoom, rotation);
     const { cropperWidth, cropperHeight } = getPhotoCropMetrics();
-    const minX = bounds ? bounds.left + cropSize / 2 - cropperWidth / 2 : -(cropperWidth - cropSize) / 2;
-    const maxX = bounds ? bounds.right - cropSize / 2 - cropperWidth / 2 : (cropperWidth - cropSize) / 2;
-    const minY = bounds ? bounds.top + cropSize / 2 - cropperHeight / 2 : -(cropperHeight - cropSize) / 2;
-    const maxY = bounds ? bounds.bottom - cropSize / 2 - cropperHeight / 2 : (cropperHeight - cropSize) / 2;
 
-    return {
-      x: Math.min(maxX, Math.max(minX, offset.x)),
-      y: Math.min(maxY, Math.max(minY, offset.y)),
+    return clampPhotoCropOffsetFor(
+      { width: cropperWidth, height: cropperHeight },
+      bounds,
+      offset,
+      cropSize,
+    );
+  }
+
+  function clampPhotoCropSize(nextSize: number, zoom = photoZoom, rotation = photoRotation) {
+    const bounds = getPhotoImageBounds(zoom, rotation);
+    const maxSize = Math.min(PHOTO_MAX_CROP_SIZE, bounds ? Math.floor(Math.min(bounds.width, bounds.height)) : PHOTO_MAX_CROP_SIZE);
+    const minSize = Math.min(PHOTO_MIN_CROP_SIZE, maxSize);
+    return Math.min(maxSize, Math.max(minSize, nextSize));
+  }
+
+  function getCurrentPhotoMinimumZoom(cropSize = photoCropSize, rotation = photoRotation) {
+    const { cropperWidth, cropperHeight } = getPhotoCropMetrics();
+
+    if (!photoSourceSize) {
+      return 1;
+    }
+
+    return getPhotoMinimumZoom(
+      { width: cropperWidth, height: cropperHeight },
+      photoSourceSize,
+      rotation,
+      cropSize,
+    );
+  }
+
+  function rotatePhoto(direction: "left" | "right") {
+    const nextRotation = (photoRotation + (direction === "left" ? 270 : 90)) % 360;
+    const minimumZoom = getCurrentPhotoMinimumZoom(photoCropSize, nextRotation);
+    const safeZoom = Math.max(photoZoom, minimumZoom);
+    const safeCropSize = clampPhotoCropSize(photoCropSize, safeZoom, nextRotation);
+
+    setPhotoRotation(nextRotation);
+    setPhotoMinZoom(minimumZoom);
+    setPhotoZoom(safeZoom);
+    setPhotoCropSize(safeCropSize);
+    setPhotoCropOffset(clampPhotoCropOffset(photoCropOffset, safeCropSize, safeZoom, nextRotation));
+  }
+
+  useEffect(() => {
+    if (!photoEditorOpen) {
+      return;
+    }
+
+    const cropper = photoCropRef.current;
+    if (!cropper) {
+      return;
+    }
+
+    let frame = 0;
+    const syncCropperSize = () => {
+      const rect = cropper.getBoundingClientRect();
+      const cropperSize = { width: rect.width, height: rect.height };
+      const nextCropSize = Math.min(photoCropSize, getInitialPhotoCropSize(cropperSize));
+      const minimumZoom = photoSourceSize
+        ? getPhotoMinimumZoom(cropperSize, photoSourceSize, photoRotation, nextCropSize)
+        : 1;
+      const nextZoom = Math.max(photoZoom, minimumZoom);
+      const nextBounds = photoSourceSize
+        ? getPhotoImageBoundsFor(cropperSize, photoSourceSize, photoRotation, nextZoom)
+        : null;
+      const nextOffset = clampPhotoCropOffsetFor(cropperSize, nextBounds, photoCropOffset, nextCropSize);
+
+      if (minimumZoom !== photoMinZoom) {
+        setPhotoMinZoom(minimumZoom);
+      }
+
+      if (nextCropSize !== photoCropSize) {
+        setPhotoCropSize(nextCropSize);
+      }
+
+      if (nextZoom !== photoZoom) {
+        setPhotoZoom(nextZoom);
+      }
+
+      if (nextOffset.x !== photoCropOffset.x || nextOffset.y !== photoCropOffset.y) {
+        setPhotoCropOffset(nextOffset);
+      }
     };
-  }
+    const scheduleSync = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(syncCropperSize);
+    };
+    const observer = new ResizeObserver(scheduleSync);
 
-  function clampPhotoCropSize(nextSize: number) {
-    const bounds = getPhotoImageBounds();
-    const maxSize = Math.max(96, Math.min(320, bounds ? Math.floor(Math.min(bounds.width, bounds.height)) : 320));
-    return Math.min(maxSize, Math.max(96, nextSize));
-  }
+    observer.observe(cropper);
+    scheduleSync();
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
+  }, [photoCropOffset, photoCropSize, photoEditorOpen, photoMinZoom, photoRotation, photoSourceSize, photoZoom]);
 
   function startPhotoDrag(
     event: React.PointerEvent<HTMLDivElement>,
@@ -1524,6 +1702,8 @@ function StepBody({
     const tutorName = `${application.firstName || t("photo.previewFirstName")} ${
       application.lastName ? `${application.lastName.charAt(0)}.` : ""
     }`.trim();
+    const photoMaximumZoom = Math.max(PHOTO_DEFAULT_MAX_ZOOM, Math.ceil(photoMinZoom * 2 * 20) / 20);
+    const visiblePhotoZoom = Math.min(photoMaximumZoom, Math.max(photoMinZoom, photoZoom));
 
     return (
       <div className="grid gap-6">
@@ -1549,7 +1729,7 @@ function StepBody({
                   <div
                     data-photo-image
                     className="absolute inset-0 select-none pointer-events-none"
-                    style={{ transform: `rotate(${photoRotation}deg) scale(${photoZoom})` }}
+                    style={{ transform: `rotate(${photoRotation}deg) scale(${visiblePhotoZoom})` }}
                   >
                     <Image
                       src={pendingPhotoUrl}
@@ -1609,14 +1789,18 @@ function StepBody({
                 <div className="grid gap-3">
                   <div className="flex items-center justify-between gap-4 text-sm font-extrabold text-ink">
                     <span>{t("photo.editor.zoom")}</span>
-                    <span className="text-ink-soft">{Math.round(photoZoom * 100)}%</span>
+                    <span className="text-ink-soft">{Math.round(visiblePhotoZoom * 100)}%</span>
                   </div>
                   <Slider
-                    min={1}
-                    max={2}
+                    min={photoMinZoom}
+                    max={photoMaximumZoom}
                     step={0.05}
-                    value={[photoZoom]}
-                    onValueChange={(value) => setPhotoZoom(value[0] ?? 1)}
+                    value={[visiblePhotoZoom]}
+                    onValueChange={(value) => {
+                      const nextZoom = Math.max(photoMinZoom, value[0] ?? photoMinZoom);
+                      setPhotoZoom(nextZoom);
+                      setPhotoCropOffset(clampPhotoCropOffset(photoCropOffset, photoCropSize, nextZoom));
+                    }}
                     disabled={photoUploading}
                     aria-label={t("photo.editor.zoom")}
                   />
@@ -1627,7 +1811,7 @@ function StepBody({
                     <button
                       type="button"
                       aria-label={t("photo.editor.rotateLeft")}
-                      onClick={() => setPhotoRotation((current) => (current + 270) % 360)}
+                      onClick={() => rotatePhoto("left")}
                       disabled={photoUploading}
                       className="flex h-10 w-10 items-center justify-center rounded-md text-ink transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15 disabled:opacity-50"
                     >
@@ -1636,7 +1820,7 @@ function StepBody({
                     <button
                       type="button"
                       aria-label={t("photo.editor.rotateRight")}
-                      onClick={() => setPhotoRotation((current) => (current + 90) % 360)}
+                      onClick={() => rotatePhoto("right")}
                       disabled={photoUploading}
                       className="flex h-10 w-10 items-center justify-center rounded-md text-ink transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15 disabled:opacity-50"
                     >
