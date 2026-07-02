@@ -757,6 +757,7 @@
       "submit": "Müraciəti göndər",
       "addLanguage": "Başqa dil əlavə et",
       "removeLanguage": "Dili sil",
+      "close": "Bağla",
       "ready": "Bu addım tamamdır.",
       "missing": "Davam etmək üçün tələb olunan sahələri tamamla."
     },
@@ -767,6 +768,7 @@
         "country": "Doğulduğun ölkəni seç.",
         "teaches": "Öyrətdiyin fənni seç.",
         "speaks": "Ən azı bir dil və səviyyə əlavə et.",
+        "required": "Bu sahə tələb olunur.",
         "over18": "18 yaşdan yuxarı olduğunu təsdiqlə."
       },
       "photo": {
@@ -880,10 +882,16 @@
       "chooseSubject": "Fənn seç...",
       "chooseLanguage": "Dil...",
       "chooseLevel": "Səviyyə",
+      "phoneNumber": "Telefon nömrəsi",
       "phoneCode": "Kod",
       "searchLanguage": "Dil axtar...",
       "searchCountry": "Ölkə axtar...",
       "searchPhoneCountry": "Ölkə və ya kod axtar..."
+    },
+    "subjectLevelModal": {
+      "title": "Öyrətdiyin dil üçün səviyyən nədir?",
+      "text": "Müraciətə davam etmək üçün öyrətdiyin dil üzrə səviyyəni əlavə et.",
+      "addLanguage": "Dili əlavə et"
     },
     "labels": {
       "comingSoon": "tezliklə",

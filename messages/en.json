@@ -757,6 +757,7 @@
       "submit": "Submit application",
       "addLanguage": "Add another language",
       "removeLanguage": "Remove language",
+      "close": "Close",
       "ready": "This step is ready.",
       "missing": "Complete the required fields to continue."
     },
@@ -767,6 +768,7 @@
         "country": "Choose your country of birth.",
         "teaches": "Choose the subject you teach.",
         "speaks": "Add at least one language and level.",
+        "required": "This field is required.",
         "over18": "Confirm that you are over 18."
       },
       "photo": {
@@ -880,10 +882,16 @@
       "chooseSubject": "Choose subject...",
       "chooseLanguage": "Language...",
       "chooseLevel": "Level",
+      "phoneNumber": "Phone number",
       "phoneCode": "Code",
       "searchLanguage": "Search language...",
       "searchCountry": "Search country...",
       "searchPhoneCountry": "Search country or code..."
+    },
+    "subjectLevelModal": {
+      "title": "What's your language level for the subject you teach?",
+      "text": "Please provide your level for the language you teach in order to continue with your application.",
+      "addLanguage": "Add language"
     },
     "labels": {
       "comingSoon": "coming soon",

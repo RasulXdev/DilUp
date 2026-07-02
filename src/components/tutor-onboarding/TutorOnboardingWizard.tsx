@@ -130,6 +130,17 @@ const STORAGE_META_KEY = "dilup_tutor_application_meta_v1";
 
 const teachingLanguageKeys = ["english", "russian", "turkish", "german", "french", "spanish", "arabic", "italian"];
 const activeTeachingLanguageKeys = ["english"];
+const teachingLanguageToSpokenCode: Record<string, string> = {
+  english: "en",
+  russian: "ru",
+  turkish: "tr",
+  german: "de",
+  french: "fr",
+  spanish: "es",
+  arabic: "ar",
+  italian: "it",
+  azerbaijani: "az",
+};
 const levelKeys = ["b1", "b2", "c1", "c2", "native"];
 const verifiedCertificateOptions = [
   "Bridge EDU • 60-Hour Succeeding as an English Teacherpreneur",
@@ -477,72 +488,6 @@ const callingCodesByCountry: Record<string, string> = {
   TV: "+688", TW: "+886", TZ: "+255", UA: "+380", UG: "+256", UM: "+1", US: "+1", UY: "+598", UZ: "+998",
   VA: "+39", VC: "+1784", VE: "+58", VG: "+1284", VI: "+1340", VN: "+84", VU: "+678", WF: "+681", WS: "+685",
   YE: "+967", YT: "+262", ZA: "+27", ZM: "+260", ZW: "+263",
-};
-const phoneNumberExamples: Record<string, string> = {
-  AE: "50 123 4567",
-  AF: "70 123 4567",
-  AL: "69 123 4567",
-  AR: "11 2345 6789",
-  AT: "664 123456",
-  AU: "412 345 678",
-  AZ: "50 123 45 67",
-  BA: "61 123 456",
-  BD: "1712 345678",
-  BE: "470 12 34 56",
-  BG: "88 123 4567",
-  BR: "11 91234 5678",
-  BY: "29 123 45 67",
-  CA: "416 555 0123",
-  CH: "78 123 45 67",
-  CL: "9 1234 5678",
-  CN: "131 2345 6789",
-  CO: "300 123 4567",
-  CZ: "601 123 456",
-  DE: "151 23456789",
-  DK: "20 12 34 56",
-  EG: "100 123 4567",
-  ES: "612 345 678",
-  FI: "40 123 4567",
-  FR: "6 12 34 56 78",
-  GB: "7400 123456",
-  GE: "555 12 34 56",
-  GR: "691 234 5678",
-  HK: "5123 4567",
-  HU: "20 123 4567",
-  ID: "812 3456 7890",
-  IE: "85 123 4567",
-  IL: "50 123 4567",
-  IN: "98765 43210",
-  IQ: "750 123 4567",
-  IR: "912 345 6789",
-  IT: "312 345 6789",
-  JP: "90 1234 5678",
-  KZ: "701 123 4567",
-  KR: "10 1234 5678",
-  KW: "500 12345",
-  KG: "700 123 456",
-  MA: "612 345678",
-  MD: "69 123 456",
-  MX: "55 1234 5678",
-  MY: "12 345 6789",
-  NL: "6 12345678",
-  NO: "406 12 345",
-  NZ: "21 123 4567",
-  PK: "301 2345678",
-  PL: "512 345 678",
-  PT: "912 345 678",
-  RO: "712 345 678",
-  RU: "912 345 67 89",
-  SA: "50 123 4567",
-  SE: "70 123 45 67",
-  SG: "8123 4567",
-  TH: "81 234 5678",
-  TR: "501 234 56 78",
-  UA: "67 123 45 67",
-  US: "201 555 0123",
-  UZ: "90 123 45 67",
-  VN: "91 234 56 78",
-  ZA: "71 123 4567",
 };
 const fallbackTimeZones = ["Asia/Baku", "Europe/Istanbul", "Europe/London", "America/New_York", "Asia/Dubai"];
 const dayKeys = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
@@ -1008,6 +953,8 @@ export function TutorOnboardingWizard() {
   const [videoTestReady, setVideoTestReady] = useState(initialTutorState.videoTestReady);
   const [isVideoUploading, setIsVideoUploading] = useState(false);
   const [descriptionContinueState, setDescriptionContinueState] = useState<DescriptionContinueState>(getInitialDescriptionContinueState);
+  const [subjectLevelPromptOpen, setSubjectLevelPromptOpen] = useState(false);
+  const [subjectLevelDraft, setSubjectLevelDraft] = useState("");
   const [validationAttempts, setValidationAttempts] = useState<Record<StepKey, boolean>>({
     about: false,
     photo: false,
@@ -1101,12 +1048,23 @@ export function TutorOnboardingWizard() {
       ? t("certification.noCertificateText")
       : t(`content.${currentStep.key}.text`);
   const descriptionCounterIsInvalid = currentStep.key === "description" && validationAttempts.description && !canContinue;
+  const missingTeachingLanguageCode = getMissingTeachingLanguageCode(application);
+  const missingTeachingLanguageLabel = missingTeachingLanguageCode
+    ? getDisplayName(locale, "language", missingTeachingLanguageCode)
+    : "";
 
   function updateField<K extends keyof TutorApplication>(key: K, value: TutorApplication[K]) {
     setApplication((current) => ({ ...current, [key]: value }));
   }
 
   function next() {
+    if (currentStep.key === "about" && application.teaches && missingTeachingLanguageCode) {
+      setValidationAttempts((current) => ({ ...current, about: true }));
+      setSubjectLevelDraft("");
+      setSubjectLevelPromptOpen(true);
+      return;
+    }
+
     if (!canContinue) {
       setValidationAttempts((current) => ({ ...current, [currentStep.key]: true }));
       if (currentStep.key === "certification") {
@@ -1153,6 +1111,16 @@ export function TutorOnboardingWizard() {
     }
     setHighestUnlockedStep((current) => Math.max(current, stepIndex + 1));
     setStepIndex((current) => Math.min(current + 1, steps.length - 1));
+  }
+
+  function addTeachingLanguageLevel() {
+    if (!missingTeachingLanguageCode || !subjectLevelDraft) {
+      return;
+    }
+
+    setApplication((current) => addOrUpdateSpokenLanguage(current, missingTeachingLanguageCode, subjectLevelDraft));
+    setSubjectLevelPromptOpen(false);
+    setSubjectLevelDraft("");
   }
 
   function back() {
@@ -1305,6 +1273,60 @@ export function TutorOnboardingWizard() {
           </>
         )}
       </section>
+      <Dialog open={subjectLevelPromptOpen} onOpenChange={setSubjectLevelPromptOpen}>
+        <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-[8px] p-6 sm:max-w-[676px] sm:p-10">
+          <DialogHeader className="space-y-3 text-left">
+            <DialogTitle className="font-display text-[2rem] font-extrabold leading-9 text-ink">
+              {t("subjectLevelModal.title", { language: missingTeachingLanguageLabel })}
+            </DialogTitle>
+            <p className="max-w-[520px] text-base leading-6 text-ink-soft">
+              {t("subjectLevelModal.text")}
+            </p>
+          </DialogHeader>
+          <div className="grid gap-4 py-5 sm:grid-cols-[minmax(0,1fr)_minmax(180px,0.75fr)]">
+            <Field label={t("fields.speaksExtra")}>
+              <div className="flex h-12 items-center rounded-[8px] border-2 border-[#dcdce5] bg-surface px-4 text-base font-semibold text-ink">
+                {missingTeachingLanguageLabel}
+              </div>
+            </Field>
+            <Field label={t("fields.level")}>
+              <Select value={subjectLevelDraft || undefined} onValueChange={setSubjectLevelDraft}>
+                <SelectTrigger className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none">
+                  <SelectValue placeholder={t("placeholders.chooseLevel")} />
+                </SelectTrigger>
+                <SelectContent align="start" avoidCollisions={false} className="max-h-96 rounded-md text-base" side="bottom">
+                  {levelKeys.map((level) => (
+                    <SelectItem key={level} value={level} className="min-h-12 py-3 pl-9 pr-3 text-base">
+                      {t(`levels.${level}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+          </div>
+          <DialogFooter className="flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <button
+              type="button"
+              className="min-h-12 rounded-md px-3 text-base font-extrabold text-ink transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15"
+              onClick={() => {
+                setSubjectLevelPromptOpen(false);
+                setSubjectLevelDraft("");
+              }}
+            >
+              {t("actions.close")}
+            </button>
+            <Button
+              type="button"
+              size="lg"
+              disabled={!subjectLevelDraft}
+              onClick={addTeachingLanguageLevel}
+              className="min-h-12 rounded-md border-2 border-ink bg-brand-500 px-8 text-base font-extrabold text-white shadow-none hover:bg-brand-600"
+            >
+              {t("subjectLevelModal.addLanguage")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }
@@ -1972,30 +1994,41 @@ function StepBody({
 
       return option.label.toLocaleLowerCase().includes(query);
     });
-    const phoneCode = selectedPhoneCountry?.code ?? "";
-    const phoneExample = selectedPhoneCountry
-      ? phoneNumberExamples[selectedPhoneCountry.value] ?? "123 456 7890"
-      : t("fields.phone").replace(/\s*\(.+\)\s*$/, "");
-    const phoneLocalValue =
-      phoneCode && application.phone.startsWith(phoneCode)
-        ? application.phone.slice(phoneCode.length).trimStart()
-        : application.phone.replace(/^\+\d+\s*/, "");
-    const updatePhoneLocalValue = (value: string) => {
-      if (!phoneCode) {
-        updateField("phone", value);
-        return;
-      }
+    const updatePhoneValue = (value: string) => {
+      hideAboutFieldErrors();
+      const rawValue = value.trimStart();
+      const digits = rawValue.replace(/\D/g, "");
+      const normalizedValue = digits ? `+${digits}` : rawValue ? "+" : "";
+      const dialCandidate = normalizedValue;
+      const matchedCountry = findCountryFromPhoneValue(dialCandidate);
 
-      updateField("phone", value.trim() ? `${phoneCode} ${value}` : phoneCode);
+      setApplication((current) => {
+        if (!normalizedValue) {
+          return {
+            ...current,
+            phone: "",
+          };
+        }
+
+        if (matchedCountry) {
+          return {
+            ...current,
+            phone: dialCandidate,
+            phoneCountry: matchedCountry,
+          };
+        }
+
+        return {
+          ...current,
+          phone: normalizedValue,
+        };
+      });
     };
     const syncPhoneCountry = (country: string) => {
       setApplication((current) => {
         const oldCode = callingCodesByCountry[current.phoneCountry];
         const nextCode = callingCodesByCountry[country];
-        const currentLocalValue =
-          oldCode && current.phone.startsWith(oldCode)
-            ? current.phone.slice(oldCode.length).trimStart()
-            : current.phone.replace(/^\+\d+\s*/, "");
+        const currentLocalValue = getPhoneLocalValue(current.phone, oldCode);
         const shouldReplacePhone = Boolean(nextCode);
 
         return {
@@ -2009,10 +2042,7 @@ function StepBody({
       setApplication((current) => {
         const oldCode = callingCodesByCountry[current.phoneCountry];
         const nextCode = callingCodesByCountry[country];
-        const currentLocalValue =
-          oldCode && current.phone.startsWith(oldCode)
-            ? current.phone.slice(oldCode.length).trimStart()
-            : current.phone.replace(/^\+\d+\s*/, "");
+        const currentLocalValue = getPhoneLocalValue(current.phone, oldCode);
         const shouldReplacePhone = Boolean(nextCode);
 
         return {
@@ -2085,6 +2115,13 @@ function StepBody({
     const aboutErrors = validationAttempts.about
       ? getAboutErrors(application, t)
       : ({} as ReturnType<typeof getAboutErrors>);
+    const hasAnyCompleteSpokenRow = spokenRows.some((row) => row.language && row.level);
+    const spokenRowErrors = validationAttempts.about
+      ? spokenRows.map((row) => ({
+          language: !row.language ? t("validation.about.required") : "",
+          level: row.language && !row.level ? t("validation.about.required") : "",
+        }))
+      : [];
 
     return (
       <div className="grid gap-4">
@@ -2187,13 +2224,17 @@ function StepBody({
             <div
               key={index}
               className={cn(
-                "grid items-end gap-2",
+                "grid items-start gap-2",
                 canRemoveSpokenRows
                   ? "grid-cols-[minmax(0,1fr)_minmax(128px,0.85fr)_48px]"
                 : "grid-cols-[minmax(0,1fr)_minmax(128px,0.85fr)]",
               )}
             >
-              <Field label={index === 0 ? t("fields.speaks") : t("fields.speaksExtra")} error={aboutErrors.speaks}>
+              <Field
+                label={index === 0 ? t("fields.speaks") : t("fields.speaksExtra")}
+                hideLabel={index > 0}
+                error={spokenRowErrors[index]?.language || (!hasAnyCompleteSpokenRow && index === 0 ? aboutErrors.speaks : "")}
+              >
                 <SearchableOptionSelect
                   emptyText={t("labels.noResults")}
                   onOpenChange={(open) => {
@@ -2216,10 +2257,14 @@ function StepBody({
                   search={languagePickerIndex === index ? languageSearch : ""}
                   searchPlaceholder={t("placeholders.searchLanguage")}
                   value={row.language}
-                  error={Boolean(aboutErrors.speaks)}
+                  error={Boolean(spokenRowErrors[index]?.language || (!hasAnyCompleteSpokenRow && index === 0 && aboutErrors.speaks))}
                 />
               </Field>
-              <Field label={index === 0 ? t("fields.level") : t("fields.levelExtra")} error={aboutErrors.level}>
+              <Field
+                label={index === 0 ? t("fields.level") : t("fields.levelExtra")}
+                hideLabel={index > 0}
+                error={spokenRowErrors[index]?.level}
+              >
                 <Select
                   value={row.level || undefined}
                   onOpenChange={(open) => {
@@ -2236,7 +2281,7 @@ function StepBody({
                     aria-invalid={Boolean(aboutErrors.level)}
                     className={cn(
                       "h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none",
-                      aboutErrors.level && "border-destructive bg-destructive/10",
+                      spokenRowErrors[index]?.level && "border-destructive bg-destructive/10",
                     )}
                   >
                     <SelectValue placeholder={t("placeholders.chooseLevel")} />
@@ -2255,7 +2300,10 @@ function StepBody({
                     hideAboutFieldErrors();
                     removeSpokenLanguage(index);
                   }}
-                  className="flex h-12 w-12 items-center justify-center rounded-[8px] border-2 border-transparent text-ink-soft transition-colors hover:bg-surface hover:text-ink focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15"
+                  className={cn(
+                    "flex h-12 w-12 items-center justify-center rounded-[8px] border-2 border-transparent text-ink-soft transition-colors hover:bg-surface hover:text-ink focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15",
+                    index === 0 && "mt-8",
+                  )}
                   aria-label={t("actions.removeLanguage")}
                 >
                   <Trash2 className="h-5 w-5" />
@@ -2274,42 +2322,41 @@ function StepBody({
               spokenLanguageLevels: current.spokenLanguageLevels.length ? [...current.spokenLanguageLevels, ""] : ["", ""],
             }));
           }}
-          className="-mt-1 w-fit text-base font-extrabold underline underline-offset-2"
+          className="-mt-1 w-fit border-b-2 border-ink pb-0.5 text-base font-extrabold leading-5 transition-colors hover:border-brand-700 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15"
         >
           {t("actions.addLanguage")}
         </button>
         <Field label={t("fields.phone")}>
           <div ref={phonePickerRef} className="relative max-w-[300px]">
-            <div className="flex h-12 items-center overflow-hidden rounded-[8px] border-2 border-[#dcdce5] bg-white focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-500/15">
+            <div className="relative h-12">
+              <input
+                value={application.phone}
+                onFocus={hideAboutFieldErrors}
+                onChange={(event) => updatePhoneValue(event.target.value)}
+                className="h-12 w-full rounded-[8px] border-2 border-[#dcdce5] bg-white pl-[60px] pr-3 text-base leading-normal outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 placeholder:text-muted"
+                inputMode="tel"
+                placeholder={t("placeholders.phoneNumber")}
+                type="tel"
+              />
               <button
                 type="button"
                 onClick={() => {
                   hideAboutFieldErrors();
-                  setPhonePickerOpen((current) => !current);
+                  setPhonePickerOpen((current) => {
+                    const nextOpen = !current;
+                    if (!nextOpen) {
+                      setPhoneSearch("");
+                    }
+                    return nextOpen;
+                  });
                 }}
-                className="flex h-full w-12 shrink-0 items-center justify-center gap-1 border-r border-line bg-white text-base outline-none transition-colors hover:bg-surface focus-visible:bg-surface"
+                className="absolute left-[2px] top-[2px] flex h-[44px] w-[50px] items-center justify-center gap-0.5 rounded-l-[6px] bg-transparent outline-none transition-colors hover:bg-surface focus-visible:bg-surface"
                 aria-label={t("placeholders.phoneCode")}
                 aria-expanded={phonePickerOpen}
               >
-                <span aria-hidden>{selectedPhoneCountry?.flag ?? ""}</span>
-                <ChevronDown className="h-3.5 w-3.5 text-muted" />
+                <span className="text-[24px] leading-none" aria-hidden>{selectedPhoneCountry?.flag ?? ""}</span>
+                <ChevronDown className="h-2 w-2 text-muted" strokeWidth={2.4} />
               </button>
-              {phoneCode ? (
-                <span className="flex h-full shrink-0 items-center pl-3 pr-1 text-base text-ink" aria-hidden>
-                  {phoneCode}
-                </span>
-              ) : null}
-              <input
-                value={phoneLocalValue}
-                onFocus={hideAboutFieldErrors}
-                onChange={(event) => {
-                  hideAboutFieldErrors();
-                  updatePhoneLocalValue(event.target.value);
-                }}
-                className="h-full min-w-0 flex-1 px-3 pl-1 text-base outline-none placeholder:text-muted"
-                inputMode="tel"
-                placeholder={phoneExample}
-              />
             </div>
             {phonePickerOpen ? (
               <div className="absolute left-0 top-[calc(100%+4px)] z-50 w-full rounded-[8px] border border-line bg-white p-1 text-base shadow-card">
@@ -2329,29 +2376,29 @@ function StepBody({
                   </div>
                 </div>
                 <div className={cn("max-h-80", dropdownScrollClass)}>
-                {filteredPhoneOptions.map((option) => (
-                  <button
-                    key={`${option.value}-${option.code}`}
-                    type="button"
-                    onClick={() => {
-                      hideAboutFieldErrors();
-                      syncPhoneCountry(option.value);
-                      setPhonePickerOpen(false);
-                      setPhoneSearch("");
-                    }}
-                    className={cn(
-                      "flex min-h-12 w-full items-center gap-3 rounded-md px-3 text-left text-base outline-none transition-colors hover:bg-brand-50 focus-visible:bg-brand-50",
-                      option.value === application.phoneCountry && "bg-brand-50 text-brand-700",
-                    )}
-                  >
-                    <span className="text-lg leading-none" aria-hidden>{option.flag}</span>
-                    <span className="min-w-0 flex-1 truncate">{option.label}</span>
-                    <span className="shrink-0 font-semibold text-ink-soft">{option.code}</span>
-                  </button>
-                ))}
-                {filteredPhoneOptions.length === 0 ? (
-                  <p className="px-3 py-4 text-base text-muted">{t("labels.noResults")}</p>
-                ) : null}
+                  {filteredPhoneOptions.map((option) => (
+                    <button
+                      key={`${option.value}-${option.code}`}
+                      type="button"
+                      onClick={() => {
+                        hideAboutFieldErrors();
+                        syncPhoneCountry(option.value);
+                        setPhonePickerOpen(false);
+                        setPhoneSearch("");
+                      }}
+                      className={cn(
+                        "flex min-h-12 w-full items-center gap-3 rounded-md px-3 text-left text-base outline-none transition-colors hover:bg-brand-50 focus-visible:bg-brand-50",
+                        option.value === application.phoneCountry && "bg-brand-50 text-brand-700",
+                      )}
+                    >
+                      <span className="text-[24px] leading-none" aria-hidden>{option.flag}</span>
+                      <span className="min-w-0 flex-1 truncate">{option.label}</span>
+                      <span className="shrink-0 font-semibold text-ink-soft">{option.code}</span>
+                    </button>
+                  ))}
+                  {filteredPhoneOptions.length === 0 ? (
+                    <p className="px-3 py-4 text-base text-muted">{t("labels.noResults")}</p>
+                  ) : null}
                 </div>
               </div>
             ) : null}
@@ -3797,10 +3844,22 @@ function StepBody({
   );
 }
 
-function Field({ label, hint, error, children }: { label: string; hint?: string; error?: string; children: React.ReactNode }) {
+function Field({
+  label,
+  hint,
+  error,
+  hideLabel = false,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  error?: string;
+  hideLabel?: boolean;
+  children: React.ReactNode;
+}) {
   return (
     <div className="grid gap-2">
-      <Label className="text-base font-normal leading-6 text-ink">{label}</Label>
+      <Label className={cn("text-base font-normal leading-6 text-ink", hideLabel && "sr-only")}>{label}</Label>
       {children}
       {error ? <p className="text-sm font-semibold leading-5 text-destructive">{error}</p> : null}
       {hint ? <p className="text-sm font-medium leading-6 text-muted">{hint}</p> : null}
@@ -4303,7 +4362,7 @@ function getAboutErrors(
   const hasSpokenLanguage = application.speaks.some((language, index) =>
     Boolean(language && (application.spokenLanguageLevels[index] || (index === 0 && application.languageLevel))),
   );
-  const hasSpokenLevel = application.spokenLanguageLevels.some((level, index) => Boolean(level || (index === 0 && application.languageLevel)));
+  const hasValidSpokenRows = hasCompleteSpokenLanguageRows(application);
 
   if (!application.firstName.trim()) {
     errors.firstName = t("validation.about.firstName");
@@ -4317,7 +4376,7 @@ function getAboutErrors(
   if (!application.teaches) {
     errors.teaches = t("validation.about.teaches");
   }
-  if (!hasSpokenLanguage || !hasSpokenLevel) {
+  if (!hasSpokenLanguage || !hasValidSpokenRows) {
     errors.speaks = t("validation.about.speaks");
     errors.level = t("validation.about.speaks");
   }
@@ -4326,6 +4385,80 @@ function getAboutErrors(
   }
 
   return errors;
+}
+
+function getSpokenRowLevel(application: TutorApplication, index: number) {
+  return application.spokenLanguageLevels[index] || (index === 0 ? application.languageLevel : "");
+}
+
+function hasCompleteSpokenLanguageRows(application: TutorApplication) {
+  const rows = application.speaks.length ? application.speaks : [""];
+
+  return rows.every((language, index) => Boolean(language && getSpokenRowLevel(application, index)));
+}
+
+function getMissingTeachingLanguageCode(application: TutorApplication) {
+  const teachingLanguageCode = teachingLanguageToSpokenCode[application.teaches];
+
+  if (!teachingLanguageCode) {
+    return "";
+  }
+
+  const hasTeachingLanguageLevel = application.speaks.some((language, index) => {
+    if (language !== teachingLanguageCode) {
+      return false;
+    }
+
+    return Boolean(getSpokenRowLevel(application, index));
+  });
+
+  return hasTeachingLanguageLevel ? "" : teachingLanguageCode;
+}
+
+function findCountryFromPhoneValue(value: string) {
+  const normalizedValue = value.replace(/\s+/g, "");
+
+  if (!normalizedValue.startsWith("+")) {
+    return "";
+  }
+
+  const matches = Object.entries(callingCodesByCountry)
+    .filter(([, code]) => normalizedValue.startsWith(code))
+    .sort(([, codeA], [, codeB]) => codeB.length - codeA.length);
+
+  return matches[0]?.[0] ?? "";
+}
+
+function getPhoneLocalValue(phone: string, code?: string) {
+  if (!phone || phone === "+") {
+    return "";
+  }
+
+  if (code && phone.startsWith(code)) {
+    return phone.slice(code.length).trimStart();
+  }
+
+  return phone.replace(/^\+\d+\s*/, "");
+}
+
+function addOrUpdateSpokenLanguage(application: TutorApplication, language: string, level: string): TutorApplication {
+  const speaks = application.speaks.length ? [...application.speaks] : [""];
+  const spokenLanguageLevels = application.spokenLanguageLevels.length
+    ? [...application.spokenLanguageLevels]
+    : [application.languageLevel];
+  const existingIndex = speaks.findIndex((item) => item === language);
+  const targetIndex = existingIndex >= 0 ? existingIndex : speaks.findIndex((item) => !item);
+  const nextIndex = targetIndex >= 0 ? targetIndex : speaks.length;
+
+  speaks[nextIndex] = language;
+  spokenLanguageLevels[nextIndex] = level;
+
+  return {
+    ...application,
+    languageLevel: nextIndex === 0 ? level : application.languageLevel,
+    speaks,
+    spokenLanguageLevels,
+  };
 }
 
 function updateCertificate<K extends keyof Certificate>(
@@ -4361,8 +4494,9 @@ function isStepValid(step: StepKey, application: TutorApplication) {
           application.country &&
           application.teaches &&
           application.speaks.some((language, index) =>
-            Boolean(language && (application.spokenLanguageLevels[index] || (index === 0 && application.languageLevel))),
+            Boolean(language && getSpokenRowLevel(application, index)),
           ) &&
+          hasCompleteSpokenLanguageRows(application) &&
           application.over18,
       );
     case "photo":
