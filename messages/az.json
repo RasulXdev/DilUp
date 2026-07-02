@@ -1062,34 +1062,37 @@
       }
     },
     "description": {
-      "guidance": "Bu mətn DilUp profilinin yazılı hissəsi olacaq. Öyrətdiyin dildə yaz və davam etməzdən əvvəl <guidelines>profil keyfiyyəti qeydlərinə</guidelines> bax.",
+      "guidance": "Bu məlumat ictimai profilində görünəcək. Öyrədəcəyin dildə yaz və davam etməzdən əvvəl <guidelines>profil keyfiyyəti qeydlərinə</guidelines> bax.",
       "optional": "• İstəyə bağlı",
       "sections": {
         "intro": {
           "title": "Özünü təqdim et",
-          "text": "Tələbələrə dərsin arxasında kimin dayandığını göstər. Tədris istiqamətini, üslubunu və dərslərini daha canlı edən bir neçə marağını qeyd et.",
-          "placeholder": "Salam, mən ... dərsi keçirəm. Dərslərim...",
-          "hint": "Yalnız adından istifadə et və CV kimi yox, təbii danışıqla yaz."
+          "text": "Potensial tələbələrə kim olduğunu göstər. Tədris təcrübəni, təhsilə marağını və qısa şəkildə maraq/hobbilərini qeyd et.",
+          "placeholder": "Salam, mənim adım... və mən...",
+          "hint": "Soyadını yazma və məlumatlarını CV formatında təqdim etmə."
         },
         "experience": {
           "title": "Tədris təcrübəsi",
-          "text": "Hansı tələbələrlə işlədiyini, hansı metodlardan istifadə etdiyini və tələbədə güvən yaradan təlim və fənn biliklərini təsvir et.",
-          "placeholder": "Mən ... tələbələrlə işləmişəm. Yanaşmam..."
+          "text": "Uyğun tədris təcrübəni ətraflı təsvir et. Sertifikatları, metodikanı, təhsili və fənn üzrə biliklərini daxil et.",
+          "placeholder": "5 illik tədris təcrübəm var. Dərslərim..."
         },
         "motivation": {
-          "title": "Tələbəni səninlə öyrənməyə dəvət et",
-          "text": "Tələbəyə səni seçmək üçün aydın səbəb ver. Hansı irəliləyişi gözləyə biləcəyini və ilk dərsin necə keçəcəyini izah et.",
-          "placeholder": "İlk dərsimizdə məqsədlərini müəyyən edib...",
-          "hint": "Endirim, pulsuz dərs, kənar link və şəxsi əlaqə məlumatı qeyd etmə."
+          "title": "Potensial tələbələri motivasiya et",
+          "text": "Tələbələri ilk dərsi bron etməyə həvəsləndir. Səninlə öyrənməyin faydalarını vurğula.",
+          "placeholder": "Mənimlə dərs bron et ki, məqsədlərini və onlara necə çatacağını müzakirə edək...",
+          "hint": "Pulsuz sınaq dərsi, endirim və ya şəxsi əlaqə məlumatı qeyd etmə."
         },
         "headline": {
-          "title": "Güclü başlıq yaz",
-          "text": "Tədris vədini, dili və tələbənin əldə edəcəyi nəticəni qısa bir cümlədə göstər.",
-          "placeholder": "Real danışıq üçün özgüvənli İngilis dili dərsləri"
+          "title": "Diqqətçəkən başlıq yaz",
+          "text": "Başlıq tələbələrin sənin haqqında ilk gördüyü mətndir. Onu diqqətçəkən et, tədris dilini qeyd et və tələbəni təsviri oxumağa həvəsləndir.",
+          "placeholder": "5 illik təcrübəsi olan sertifikatlı İngilis dili müəllimi"
         }
       },
       "errors": {
         "minimum": "Davam etmək üçün profil mətnində ən azı {count} simvol yaz.",
+        "required": "Bu sahə mütləq doldurulmalıdır.",
+        "tooLong": "Bu sahə ən çox {max} simvol ola bilər (hazırda {count}).",
+        "continueRequired": "Yadda saxlamazdan əvvəl hər təsvir bölməsində Davam et düyməsinə bas.",
         "reviewSections": "Yadda saxlamazdan əvvəl işarələnmiş bölməni yoxla.",
         "lastName": "İctimai profilin məxfi qalsın deyə soyadını sil.",
         "contact": "Link, e-poçt, telefon nömrəsi və sosial hesab məlumatlarını sil.",
@@ -1141,7 +1144,7 @@
       "emptyPreview": "Your video will appear here",
       "linkTitle": "Or paste a link to your video",
       "linkHelp": "Learn how to upload videos to Youtube or Vimeo.",
-      "thumbnailTitle": "Add a thumbnail (optional)",
+      "thumbnailTitle": "Thumbnail əlavə et",
       "thumbnailText": "Don’t worry if you don’t have a thumbnail ready, we’ll use the preview above.",
       "showMore": "Show more",
       "upload": "Yenidən yaz",

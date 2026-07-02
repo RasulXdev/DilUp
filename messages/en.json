@@ -844,7 +844,7 @@
       "speaksExtra": "Language",
       "level": "Level",
       "levelExtra": "Level",
-      "phone": "Phone number (optional)",
+      "phone": "Phone number",
       "over18": "I confirm I am over 18",
       "specialties": "Teaching specialties",
       "subject": "Subject",
@@ -1062,34 +1062,37 @@
       }
     },
     "description": {
-      "guidance": "This will become the written part of your DilUp profile. Write in the language you teach and review our <guidelines>profile quality notes</guidelines> before continuing.",
+      "guidance": "This info will go on your public profile. Write it in the language you’ll be teaching and make sure to follow our <guidelines>profile quality notes</guidelines> before continuing.",
       "optional": "• Optional",
       "sections": {
         "intro": {
           "title": "Introduce yourself",
-          "text": "Help students understand who is behind the lesson. Mention your teaching focus, personality and a few interests that make your classes feel human.",
-          "placeholder": "Hi, I teach... My lessons are...",
-          "hint": "Use your first name only and write naturally, not like a resume."
+          "text": "Show potential students who you are. Share your teaching experience, your passion for education, and briefly mention your interests or hobbies.",
+          "placeholder": "Hello, my name is... and I’m from...",
+          "hint": "Don’t include your last name or present your information in a CV format."
         },
         "experience": {
           "title": "Teaching experience",
-          "text": "Describe the learners you have worked with, the methods you use, and any training or subject expertise that helps students trust you.",
-          "placeholder": "I have taught... My approach combines..."
+          "text": "Provide a detailed description of your relevant teaching experience. Include certifications, teaching methodology, education, and subject expertise.",
+          "placeholder": "I have 5 years of teaching experience. My classes are..."
         },
         "motivation": {
-          "title": "Invite students to learn with you",
-          "text": "Give students a clear reason to choose you. Explain the progress they can expect and how the first lesson will feel.",
-          "placeholder": "In our first lesson, we will map your goals and...",
-          "hint": "Do not mention discounts, free lessons, external links, or private contact details."
+          "title": "Motivate potential students",
+          "text": "Encourage students to book their first lesson. Highlight the benefits of learning with you.",
+          "placeholder": "Book a lesson with me so we can discuss your goals and how I can help you reach them...",
+          "hint": "Do not include information about free trial lessons, discounts, or personal contact details."
         },
         "headline": {
-          "title": "Write a strong headline",
-          "text": "Create a short line that summarizes your teaching promise, language and student outcome.",
-          "placeholder": "English lessons for confident real-life conversations"
+          "title": "Write a catchy headline",
+          "text": "Your headline is the first thing students see about you. Make it attention-grabbing, mention your teaching language, and encourage students to read your full description.",
+          "placeholder": "Certified English tutor with 5 years of experience"
         }
       },
       "errors": {
         "minimum": "Write at least {count} characters across your profile text before continuing.",
+        "required": "This field is required.",
+        "tooLong": "Ensure this value has at most {max} characters (it has {count}).",
+        "continueRequired": "Press Continue on each description section before saving.",
         "reviewSections": "Review the highlighted section before saving.",
         "lastName": "Remove your last name so your public profile stays privacy-safe.",
         "contact": "Remove links, email addresses, phone numbers, or social handles.",
@@ -1141,7 +1144,7 @@
       "emptyPreview": "Your video will appear here",
       "linkTitle": "Or paste a link to your video",
       "linkHelp": "Learn how to upload videos to YouTube or Vimeo.",
-      "thumbnailTitle": "Add a thumbnail (optional)",
+      "thumbnailTitle": "Add a thumbnail",
       "thumbnailText": "Don’t worry if you don’t have a thumbnail ready, we’ll use the preview above.",
       "showMore": "Show more",
       "upload": "Re-record",

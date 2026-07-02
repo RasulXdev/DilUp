@@ -291,8 +291,12 @@ const certificateYearOptions = Array.from({ length: new Date().getFullYear() - 1
 const certificateEndYearOptions = [presentYearValue, ...certificateYearOptions];
 const degreeTypeKeys = ["teaching", "subject", "other"];
 const descriptionSectionKeys = ["intro", "experience", "motivation", "headline"] as const;
-const headlineCharacterLimit = 400;
+const descriptionContinueSectionKeys = ["intro", "experience", "motivation"] as const;
+const descriptionCounterTarget = 400;
+const descriptionFieldCharacterLimit = 250;
 type DescriptionSectionKey = (typeof descriptionSectionKeys)[number];
+type DescriptionContinueSectionKey = (typeof descriptionContinueSectionKeys)[number];
+type DescriptionContinueState = Record<DescriptionContinueSectionKey, boolean>;
 type TutorOnboardingDraftMeta = {
   stepIndex?: number;
   highestUnlockedStep?: number;
@@ -944,6 +948,10 @@ function getDescriptionIssueKey(section: DescriptionSectionKey, value: string, a
     return "";
   }
 
+  if (value.length > descriptionFieldCharacterLimit) {
+    return "tooLong";
+  }
+
   if (lastName.length > 1 && normalized.includes(lastName)) {
     return "lastName";
   }
@@ -967,6 +975,26 @@ function hasDescriptionIssues(application: TutorApplication) {
   });
 }
 
+function getDescriptionTextLength(application: TutorApplication) {
+  return descriptionSectionKeys.reduce((total, section) => {
+    const value = section === "headline" ? application.headline : application[section];
+
+    return total + value.length;
+  }, 0);
+}
+
+function getInitialDescriptionContinueState(): DescriptionContinueState {
+  return {
+    intro: false,
+    experience: false,
+    motivation: false,
+  };
+}
+
+function areDescriptionSectionsContinued(state: DescriptionContinueState) {
+  return descriptionContinueSectionKeys.every((section) => state[section]);
+}
+
 export function TutorOnboardingWizard() {
   const t = useTranslations("tutorOnboarding");
   const locale = useLocale();
@@ -979,6 +1007,7 @@ export function TutorOnboardingWizard() {
   const [videoSubstep, setVideoSubstep] = useState<"test" | "intro">(initialTutorState.videoSubstep);
   const [videoTestReady, setVideoTestReady] = useState(initialTutorState.videoTestReady);
   const [isVideoUploading, setIsVideoUploading] = useState(false);
+  const [descriptionContinueState, setDescriptionContinueState] = useState<DescriptionContinueState>(getInitialDescriptionContinueState);
   const [validationAttempts, setValidationAttempts] = useState<Record<StepKey, boolean>>({
     about: false,
     photo: false,
@@ -1059,7 +1088,9 @@ export function TutorOnboardingWizard() {
   }, [highestUnlockedStep, stepIndex, videoSubstep, videoTestReady]);
 
   const canContinue =
-    currentStep.key === "video" && videoSubstep === "test"
+    currentStep.key === "description"
+      ? isStepValid(currentStep.key, application) && areDescriptionSectionsContinued(descriptionContinueState)
+      : currentStep.key === "video" && videoSubstep === "test"
       ? videoTestReady
       : isStepValid(currentStep.key, application);
   const continueDisabled =
@@ -1069,6 +1100,7 @@ export function TutorOnboardingWizard() {
     currentStep.key === "certification" && application.hasNoCertificates
       ? t("certification.noCertificateText")
       : t(`content.${currentStep.key}.text`);
+  const descriptionCounterIsInvalid = currentStep.key === "description" && validationAttempts.description && !canContinue;
 
   function updateField<K extends keyof TutorApplication>(key: K, value: TutorApplication[K]) {
     setApplication((current) => ({ ...current, [key]: value }));
@@ -1225,12 +1257,24 @@ export function TutorOnboardingWizard() {
                   setApplication={setApplication}
                   setFieldValidationAttempts={setFieldValidationAttempts}
                   setValidationAttempts={setValidationAttempts}
+                  descriptionContinueState={descriptionContinueState}
+                  setDescriptionContinueState={setDescriptionContinueState}
                   fieldValidationAttempts={fieldValidationAttempts}
                   validationAttempts={validationAttempts}
                   t={t}
                 />
               </div>
-              <div className="mt-8 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <div className="mt-8 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
+                {currentStep.key === "description" ? (
+                  <p
+                    className={cn(
+                      "flex min-h-12 w-full items-center text-left text-lg font-extrabold sm:w-auto",
+                      descriptionCounterIsInvalid ? "text-destructive" : "text-brand-800",
+                    )}
+                  >
+                    {getDescriptionTextLength(application)} / {descriptionCounterTarget}
+                  </p>
+                ) : null}
                 {stepIndex > 0 ? (
                   <Button
                     type="button"
@@ -1311,6 +1355,8 @@ function StepBody({
   setApplication,
   setFieldValidationAttempts,
   setValidationAttempts,
+  descriptionContinueState,
+  setDescriptionContinueState,
   fieldValidationAttempts,
   validationAttempts,
   t,
@@ -1330,6 +1376,8 @@ function StepBody({
   setApplication: React.Dispatch<React.SetStateAction<TutorApplication>>;
   setFieldValidationAttempts: React.Dispatch<React.SetStateAction<{ certification: boolean; education: boolean }>>;
   setValidationAttempts: React.Dispatch<React.SetStateAction<Record<StepKey, boolean>>>;
+  descriptionContinueState: DescriptionContinueState;
+  setDescriptionContinueState: React.Dispatch<React.SetStateAction<DescriptionContinueState>>;
   fieldValidationAttempts: { certification: boolean; education: boolean };
   validationAttempts: Record<StepKey, boolean>;
   t: ReturnType<typeof useTranslations<"tutorOnboarding">>;
@@ -1355,7 +1403,7 @@ function StepBody({
   const [certificateUploadingIds, setCertificateUploadingIds] = useState<number[]>([]);
   const [certificateUploadErrors, setCertificateUploadErrors] = useState<Record<number, string>>({});
   const [diplomaUploadErrors, setDiplomaUploadErrors] = useState<Record<number, string>>({});
-  const [activeDescriptionSection, setActiveDescriptionSection] = useState<DescriptionSectionKey>("intro");
+  const [activeDescriptionSection, setActiveDescriptionSection] = useState<DescriptionSectionKey | null>("intro");
   const [videoPhase, setVideoPhase] = useState<"camera" | "cameraLoading" | "recordingReady" | "countdown" | "recording" | "recorded">(
     application.videoReady ? "recorded" : "camera",
   );
@@ -3226,24 +3274,47 @@ function StepBody({
   }
 
   if (step === "description") {
-    const headlineLength = application.headline.trim().length;
-    const activeSectionIndex = descriptionSectionKeys.indexOf(activeDescriptionSection);
-    const activeText =
-      activeDescriptionSection === "headline"
+    const activeSectionIndex = activeDescriptionSection ? descriptionSectionKeys.indexOf(activeDescriptionSection) : -1;
+    const activeText = activeDescriptionSection
+      ? activeDescriptionSection === "headline"
         ? application.headline
-        : application[activeDescriptionSection];
-    const activeIssueKey = getDescriptionIssueKey(activeDescriptionSection, activeText, application);
-    const headlineIssueKey = getDescriptionIssueKey("headline", application.headline, application);
+        : application[activeDescriptionSection]
+      : "";
+    const activeIssueKey = activeDescriptionSection
+      ? getDescriptionIssueKey(activeDescriptionSection, activeText, application)
+      : "";
     const showHeadlineRequiredError = validationAttempts.description && !application.headline.trim();
     const showPolicyError = validationAttempts.description && hasDescriptionIssues(application);
+    const showContinueRequiredError =
+      validationAttempts.description &&
+      isStepValid("description", application) &&
+      !areDescriptionSectionsContinued(descriptionContinueState);
+    const hideDescriptionErrors = () => {
+      setValidationAttempts((current) => current.description ? { ...current, description: false } : current);
+    };
+    const updateDescriptionText = (section: DescriptionSectionKey, value: string) => {
+      updateField(section, value);
+      if (section !== "headline") {
+        setDescriptionContinueState((current) => ({
+          ...current,
+          [section]: false,
+        }));
+      }
+    };
     const continueDescriptionSection = () => {
-      if (!activeText.trim() || activeIssueKey || activeSectionIndex >= descriptionSectionKeys.length - 1) {
+      if (!activeDescriptionSection || !activeText.trim() || activeIssueKey || activeSectionIndex >= descriptionSectionKeys.length - 1) {
         if (activeIssueKey) {
           setValidationAttempts((current) => ({ ...current, description: true }));
         }
         return;
       }
 
+      if (activeDescriptionSection !== "headline") {
+        setDescriptionContinueState((current) => ({
+          ...current,
+          [activeDescriptionSection]: true,
+        }));
+      }
       setActiveDescriptionSection(descriptionSectionKeys[activeSectionIndex + 1]);
     };
 
@@ -3274,36 +3345,43 @@ function StepBody({
               <section key={section} className="border-b border-line pb-4">
                 <button
                   type="button"
-                  onClick={() => setActiveDescriptionSection(section)}
+                  onClick={() => {
+                    hideDescriptionErrors();
+                    setActiveDescriptionSection((current) => (current === section ? null : section));
+                  }}
                   className="flex w-full items-center justify-between gap-4 py-2 text-left"
                   aria-expanded={active}
                 >
                   <h2 className="text-xl font-extrabold leading-7 text-ink">
                     {index + 1}. {t(`description.sections.${section}.title`)}
                   </h2>
-                  {value.trim() && !sectionIssueKey ? <Check className="h-5 w-5 shrink-0 text-ink" /> : null}
+                  {value.trim() &&
+                  !sectionIssueKey &&
+                  (section === "headline" || descriptionContinueState[section]) ? (
+                    <Check className="h-5 w-5 shrink-0 text-ink" />
+                  ) : null}
                 </button>
                 {active ? (
                   <div className="mt-3 grid gap-3">
                     <p className="text-sm leading-6 text-ink">{t(`description.sections.${section}.text`)}</p>
-                    <p className="text-sm font-bold text-muted">{t("description.optional")}</p>
                     {section === "headline" ? (
                       <Textarea
                         value={application.headline}
-                        onChange={(event) => updateField("headline", event.target.value)}
-                        maxLength={headlineCharacterLimit}
+                        onChange={(event) => updateDescriptionText("headline", event.target.value)}
+                        onFocus={hideDescriptionErrors}
                         placeholder={t("description.sections.headline.placeholder")}
                         aria-invalid={Boolean(sectionIssueKey || showRequiredError)}
                         aria-describedby={describedBy}
                         className={cn(
-                          "h-12 min-h-12 resize-none overflow-hidden rounded-[8px] border-2 border-[#dcdce5] px-4 py-3 text-base leading-6 shadow-none focus-visible:ring-4 focus-visible:ring-brand-500/15",
+                          "min-h-42 rounded-[8px] border-2 border-[#dcdce5] px-4 py-3 text-base leading-6 shadow-none focus-visible:ring-4 focus-visible:ring-brand-500/15",
                           (sectionIssueKey || showRequiredError) && "border-destructive focus-visible:ring-destructive/15",
                         )}
                       />
                     ) : (
                       <Textarea
                         value={application[section]}
-                        onChange={(event) => updateField(section, event.target.value)}
+                        onChange={(event) => updateDescriptionText(section, event.target.value)}
+                        onFocus={hideDescriptionErrors}
                         placeholder={t(`description.sections.${section}.placeholder`)}
                         aria-invalid={Boolean(sectionIssueKey)}
                         aria-describedby={describedBy}
@@ -3315,11 +3393,23 @@ function StepBody({
                     )}
                     {sectionIssueKey || showRequiredError ? (
                       <p id={describedBy} className="text-sm font-semibold leading-5 text-destructive">
-                        {showRequiredError ? t("description.errors.required") : t(`description.errors.${sectionIssueKey}`)}
+                        {showRequiredError
+                          ? t("description.errors.required")
+                          : sectionIssueKey === "tooLong"
+                            ? t("description.errors.tooLong", {
+                                count: value.length,
+                                max: descriptionFieldCharacterLimit,
+                              })
+                            : t(`description.errors.${sectionIssueKey}`)}
                       </p>
                     ) : null}
                     {sectionCopy.hint ? (
-                      <p className="text-sm leading-6 text-muted">{t(`description.sections.${section}.hint`)}</p>
+                      <div className="rounded-md border border-brand-100 bg-brand-50 px-4 py-3">
+                        <div className="flex gap-3">
+                          <Info className="mt-0.5 h-4 w-4 shrink-0 text-brand-800" aria-hidden />
+                          <p className="text-sm font-semibold leading-6 text-ink">{t(`description.sections.${section}.hint`)}</p>
+                        </div>
+                      </div>
                     ) : null}
                     {section !== "headline" ? (
                       <Button
@@ -3337,21 +3427,16 @@ function StepBody({
             );
           })}
         </div>
-        <div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-start">
+        {showContinueRequiredError ? (
           <div aria-live="polite">
-            {showPolicyError ? (
-              <p className="text-sm font-semibold leading-5 text-destructive">{t("description.errors.reviewSections")}</p>
-            ) : null}
+            <p className="text-sm font-semibold leading-5 text-destructive">{t("description.errors.continueRequired")}</p>
           </div>
-          <h3
-            className={cn(
-              "text-right text-lg font-extrabold",
-              (showHeadlineRequiredError || headlineIssueKey) && validationAttempts.description ? "text-destructive" : "text-brand-800",
-            )}
-          >
-            {headlineLength} / {headlineCharacterLimit}
-          </h3>
-        </div>
+        ) : null}
+        {showPolicyError ? (
+          <div aria-live="polite">
+            <p className="text-sm font-semibold leading-5 text-destructive">{t("description.errors.reviewSections")}</p>
+          </div>
+        ) : null}
       </div>
     );
   }
@@ -3572,7 +3657,6 @@ function StepBody({
               <>
                 <h2 className="text-xl font-extrabold text-ink">{t("video.linkTitle")}</h2>
                 <p className="text-sm leading-6 text-ink">{t("video.linkHelp")}</p>
-                <p className="text-sm font-bold text-muted">{t("description.optional")}</p>
                 <Input
                   value={videoLink}
                   onChange={(event) => {
