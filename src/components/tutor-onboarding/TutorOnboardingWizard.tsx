@@ -1402,10 +1402,18 @@ function StepBody({
     startOffsetY: number;
     startSize: number;
   } | null>(null);
+  const hideCertificationFieldErrors = () => {
+    setFieldValidationAttempts((current) => current.certification ? { ...current, certification: false } : current);
+  };
+  const hideEducationFieldErrors = () => {
+    setFieldValidationAttempts((current) => current.education ? { ...current, education: false } : current);
+  };
   const updateCertificateDraft = <K extends keyof Certificate>(id: number, key: K, value: Certificate[K]) => {
+    hideCertificationFieldErrors();
     updateCertificate(setApplication, id, key, value);
   };
   const updateEducationDraft = <K extends keyof Education>(id: number, key: K, value: Education[K]) => {
+    hideEducationFieldErrors();
     updateEducation(setApplication, id, key, value);
   };
   const selectedPhoneCountry =
@@ -2636,6 +2644,7 @@ function StepBody({
                     <Field label={t("fields.certificate")} error={certificationErrors.certificate}>
                       <Input
                         value={item.certificate}
+                        onFocus={hideCertificationFieldErrors}
                         onChange={(event) => updateCertificateDraft(item.id, "certificate", event.target.value)}
                         aria-invalid={Boolean(certificationErrors.certificate)}
                         className={cn(
@@ -2647,6 +2656,7 @@ function StepBody({
                     <Field label={t("fields.certificateDescription")} error={certificationErrors.description}>
                       <Input
                         value={item.description}
+                        onFocus={hideCertificationFieldErrors}
                         onChange={(event) => updateCertificateDraft(item.id, "description", event.target.value)}
                         aria-invalid={Boolean(certificationErrors.description)}
                         className={cn(
@@ -2658,6 +2668,7 @@ function StepBody({
                     <Field label={t("fields.issuedBy")} error={certificationErrors.issuedBy}>
                       <Input
                         value={item.issuedBy}
+                        onFocus={hideCertificationFieldErrors}
                         onChange={(event) => updateCertificateDraft(item.id, "issuedBy", event.target.value)}
                         aria-invalid={Boolean(certificationErrors.issuedBy)}
                         className={cn(
@@ -2672,6 +2683,11 @@ function StepBody({
                     <Field label={t("fields.certification")} error={certificationErrors.certificate}>
                       <Select
                         value={item.notListed ? undefined : item.certificate || undefined}
+                        onOpenChange={(open) => {
+                          if (open) {
+                            hideCertificationFieldErrors();
+                          }
+                        }}
                         onValueChange={(value) => {
                           const certificateMeta = getVerifiedCertificateMeta(value);
                           setApplication((current) => ({
@@ -2715,6 +2731,7 @@ function StepBody({
                         className="h-5 w-5 rounded-[4px] border-2 border-[#dcdce5] shadow-none data-[state=checked]:border-ink data-[state=checked]:bg-ink"
                         checked={item.notListed}
                         onCheckedChange={(checked) => {
+                          setFieldValidationAttempts((current) => ({ ...current, certification: false }));
                           setApplication((current) => ({
                             ...current,
                             certificates: current.certificates.map((certificate) =>
@@ -2740,6 +2757,7 @@ function StepBody({
                         <Field label={t("fields.issuedBy")} error={certificationErrors.issuedBy}>
                           <Input
                             value={item.issuedBy}
+                            onFocus={hideCertificationFieldErrors}
                             onChange={(event) => updateCertificateDraft(item.id, "issuedBy", event.target.value)}
                             aria-invalid={Boolean(certificationErrors.issuedBy)}
                             className={cn(
@@ -2751,6 +2769,7 @@ function StepBody({
                         <Field label={t("fields.certificateName")} error={certificationErrors.certificate}>
                           <Input
                             value={item.certificate}
+                            onFocus={hideCertificationFieldErrors}
                             onChange={(event) => updateCertificateDraft(item.id, "certificate", event.target.value)}
                             aria-invalid={Boolean(certificationErrors.certificate)}
                             className={cn(
@@ -2763,19 +2782,20 @@ function StepBody({
                       </div>
                     ) : null}
 
-                    <Field label={t("fields.certificateDescription")} error={certificationErrors.description}>
-                      <Input
-                        value={item.description}
-                        onChange={(event) => updateCertificateDraft(item.id, "description", event.target.value)}
-                        readOnly={Boolean(item.certificate && !item.notListed)}
-                        aria-invalid={Boolean(certificationErrors.description)}
-                        className={cn(
-                          "h-12 rounded-[8px] border-2 border-[#dcdce5] text-base",
-                          item.certificate && !item.notListed && "bg-surface text-muted",
-                          certificationErrors.description && "border-destructive bg-destructive/10 text-ink",
-                        )}
-                      />
-                    </Field>
+                    {item.notListed ? (
+                      <Field label={t("fields.certificateDescription")} error={certificationErrors.description}>
+                        <Input
+                          value={item.description}
+                          onFocus={hideCertificationFieldErrors}
+                          onChange={(event) => updateCertificateDraft(item.id, "description", event.target.value)}
+                          aria-invalid={Boolean(certificationErrors.description)}
+                          className={cn(
+                            "h-12 rounded-[8px] border-2 border-[#dcdce5] text-base",
+                            certificationErrors.description && "border-destructive bg-destructive/10 text-ink",
+                          )}
+                        />
+                      </Field>
+                    ) : null}
                   </>
                 )}
 
@@ -2785,6 +2805,11 @@ function StepBody({
                     <YearSelect
                       value={item.startYear}
                       placeholder={t("placeholders.select")}
+                      onOpenChange={(open) => {
+                        if (open) {
+                          setFieldValidationAttempts((current) => ({ ...current, certification: false }));
+                        }
+                      }}
                       onValueChange={(value) => updateCertificateDraft(item.id, "startYear", value)}
                       presentLabel={t("certification.present")}
                       error={Boolean(certificationErrors.startYear || certificationErrors.years)}
@@ -2793,6 +2818,11 @@ function StepBody({
                     <YearSelect
                       value={item.endYear}
                       placeholder={t("placeholders.select")}
+                      onOpenChange={(open) => {
+                        if (open) {
+                          setFieldValidationAttempts((current) => ({ ...current, certification: false }));
+                        }
+                      }}
                       onValueChange={(value) => updateCertificateDraft(item.id, "endYear", value)}
                       options={certificateEndYearOptions}
                       presentLabel={t("certification.present")}
@@ -2938,6 +2968,7 @@ function StepBody({
                   <div className={cn("grid items-center gap-2", isEducationTouched(item) ? "grid-cols-[minmax(0,1fr)_40px]" : "grid-cols-1")}>
                     <Input
                       value={item.school}
+                      onFocus={hideEducationFieldErrors}
                       onChange={(event) => updateEducationDraft(item.id, "school", event.target.value)}
                       placeholder={t("education.placeholders.school")}
                       aria-invalid={Boolean(showErrors && errors.school)}
@@ -2968,6 +2999,7 @@ function StepBody({
                 <Field label={t("fields.degree")} error={showErrors ? errors.degree : undefined}>
                   <Input
                     value={item.degree}
+                    onFocus={hideEducationFieldErrors}
                     onChange={(event) => updateEducationDraft(item.id, "degree", event.target.value)}
                     placeholder={t("education.placeholders.degree")}
                     aria-invalid={Boolean(showErrors && errors.degree)}
@@ -2978,7 +3010,15 @@ function StepBody({
                   />
                 </Field>
                 <Field label={t("education.degreeType")} error={showErrors ? errors.degreeType : undefined}>
-                  <Select value={item.degreeType || undefined} onValueChange={(value) => updateEducationDraft(item.id, "degreeType", value)}>
+                  <Select
+                    value={item.degreeType || undefined}
+                    onOpenChange={(open) => {
+                      if (open) {
+                        hideEducationFieldErrors();
+                      }
+                    }}
+                    onValueChange={(value) => updateEducationDraft(item.id, "degreeType", value)}
+                  >
                     <SelectTrigger
                       aria-invalid={Boolean(showErrors && errors.degreeType)}
                       className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus:border-brand-500 focus:ring-brand-500/15 aria-[invalid=true]:border-destructive aria-[invalid=true]:bg-destructive/10 aria-[invalid=true]:ring-destructive/15"
@@ -2997,6 +3037,7 @@ function StepBody({
                 <Field label={t("fields.field")} error={showErrors ? errors.field : undefined}>
                   <Input
                     value={item.field}
+                    onFocus={hideEducationFieldErrors}
                     onChange={(event) => updateEducationDraft(item.id, "field", event.target.value)}
                     placeholder={t("education.placeholders.field")}
                     aria-invalid={Boolean(showErrors && errors.field)}
@@ -3010,6 +3051,11 @@ function StepBody({
                   <legend className="text-base font-normal leading-6 text-ink">{t("fields.yearsOfStudy")}</legend>
                   <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3">
                     <YearSelect
+                      onOpenChange={(open) => {
+                        if (open) {
+                          hideEducationFieldErrors();
+                        }
+                      }}
                       onValueChange={(value) => updateEducationDraft(item.id, "startYear", value)}
                       placeholder={t("placeholders.select")}
                       presentLabel={t("certification.present")}
@@ -3018,6 +3064,11 @@ function StepBody({
                     />
                     <span className="text-base text-muted">-</span>
                     <YearSelect
+                      onOpenChange={(open) => {
+                        if (open) {
+                          hideEducationFieldErrors();
+                        }
+                      }}
                       onValueChange={(value) => updateEducationDraft(item.id, "endYear", value)}
                       options={certificateEndYearOptions}
                       placeholder={t("placeholders.select")}
@@ -3867,6 +3918,7 @@ function GuidelineList({ items }: { items: string[] }) {
 
 function YearSelect({
   error = false,
+  onOpenChange,
   onValueChange,
   options = certificateYearOptions,
   presentLabel,
@@ -3874,6 +3926,7 @@ function YearSelect({
   value,
 }: {
   error?: boolean;
+  onOpenChange?: (open: boolean) => void;
   onValueChange: (value: string) => void;
   options?: string[];
   presentLabel: string;
@@ -3881,7 +3934,7 @@ function YearSelect({
   value: string;
 }) {
   return (
-    <Select value={value} onValueChange={onValueChange}>
+    <Select value={value} onOpenChange={onOpenChange} onValueChange={onValueChange}>
       <SelectTrigger
         aria-invalid={error}
         className={cn(
