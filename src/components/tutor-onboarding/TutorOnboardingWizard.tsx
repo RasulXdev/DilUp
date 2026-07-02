@@ -2619,17 +2619,21 @@ function StepBody({
                     {item.subject ? (
                       <button
                         type="button"
-                        onClick={() =>
+                        onClick={() => {
+                          setFieldValidationAttempts((current) => ({ ...current, certification: false }));
+                          setCertificateUploadingIds((current) => current.filter((id) => id !== item.id));
+                          setCertificateUploadErrors((current) => {
+                            const next = { ...current };
+                            delete next[item.id];
+                            return next;
+                          });
                           setApplication((current) => ({
                             ...current,
-                            certificates:
-                              current.certificates.length > 1
-                                ? current.certificates.filter((certificate) => certificate.id !== item.id)
-                                : current.certificates.map((certificate) =>
-                                    certificate.id === item.id ? createEmptyCertificate(item.id) : certificate,
-                                  ),
-                          }))
-                        }
+                            certificates: current.certificates.length > 1
+                              ? current.certificates.filter((certificate) => certificate.id !== item.id)
+                              : [createEmptyCertificate(Date.now())],
+                          }));
+                        }}
                         className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-transparent text-ink transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15"
                         aria-label={t("certification.remove")}
                       >
