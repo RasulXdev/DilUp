@@ -1408,6 +1408,9 @@ function StepBody({
   const hideEducationFieldErrors = () => {
     setFieldValidationAttempts((current) => current.education ? { ...current, education: false } : current);
   };
+  const hideAboutFieldErrors = () => {
+    setValidationAttempts((current) => current.about ? { ...current, about: false } : current);
+  };
   const updateCertificateDraft = <K extends keyof Certificate>(id: number, key: K, value: Certificate[K]) => {
     hideCertificationFieldErrors();
     updateCertificate(setApplication, id, key, value);
@@ -1991,6 +1994,7 @@ function StepBody({
       });
     };
     const updateSpokenLanguage = (index: number, value: string) => {
+      hideAboutFieldErrors();
       setApplication((current) => {
         const speaks = current.speaks.length ? [...current.speaks] : [""];
         const spokenLanguageLevels = current.spokenLanguageLevels.length
@@ -2008,6 +2012,7 @@ function StepBody({
       });
     };
     const updateSpokenLevel = (index: number, value: string) => {
+      hideAboutFieldErrors();
       setApplication((current) => {
         const speaks = current.speaks.length ? [...current.speaks] : [""];
         const spokenLanguageLevels = current.spokenLanguageLevels.length
@@ -2055,20 +2060,40 @@ function StepBody({
       <div className="grid gap-4">
         <div className="grid gap-4">
           <Field label={t("fields.firstName")} error={aboutErrors.firstName}>
-            <Input className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus-visible:ring-brand-500/15" value={application.firstName} onChange={(event) => updateField("firstName", event.target.value)} />
+            <Input
+              className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus-visible:ring-brand-500/15"
+              value={application.firstName}
+              onFocus={hideAboutFieldErrors}
+              onChange={(event) => {
+                hideAboutFieldErrors();
+                updateField("firstName", event.target.value);
+              }}
+            />
           </Field>
           <Field label={t("fields.lastName")} error={aboutErrors.lastName}>
-            <Input className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus-visible:ring-brand-500/15" value={application.lastName} onChange={(event) => updateField("lastName", event.target.value)} />
+            <Input
+              className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus-visible:ring-brand-500/15"
+              value={application.lastName}
+              onFocus={hideAboutFieldErrors}
+              onChange={(event) => {
+                hideAboutFieldErrors();
+                updateField("lastName", event.target.value);
+              }}
+            />
           </Field>
           <Field label={t("fields.country")} error={aboutErrors.country}>
             <SearchableOptionSelect
               emptyText={t("labels.noResults")}
               onOpenChange={(open) => {
+                if (open) {
+                  hideAboutFieldErrors();
+                }
                 setCountryPickerOpen(open);
                 setCountrySearch("");
               }}
               onSearchChange={setCountrySearch}
               onValueChange={(value) => {
+                hideAboutFieldErrors();
                 selectBirthCountry(value);
                 setCountryPickerOpen(false);
                 setCountrySearch("");
@@ -2082,7 +2107,18 @@ function StepBody({
             />
           </Field>
           <Field label={t("fields.teaches")} error={aboutErrors.teaches}>
-            <Select value={application.teaches || undefined} onValueChange={(value) => updateField("teaches", value)}>
+            <Select
+              value={application.teaches || undefined}
+              onOpenChange={(open) => {
+                if (open) {
+                  hideAboutFieldErrors();
+                }
+              }}
+              onValueChange={(value) => {
+                hideAboutFieldErrors();
+                updateField("teaches", value);
+              }}
+            >
               <SelectTrigger className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none">
                 <SelectValue placeholder={t("placeholders.chooseSubject")} />
               </SelectTrigger>
@@ -2116,11 +2152,15 @@ function StepBody({
                 <SearchableOptionSelect
                   emptyText={t("labels.noResults")}
                   onOpenChange={(open) => {
+                    if (open) {
+                      hideAboutFieldErrors();
+                    }
                     setLanguagePickerIndex(open ? index : null);
                     setLanguageSearch("");
                   }}
                   onSearchChange={setLanguageSearch}
                   onValueChange={(value) => {
+                    hideAboutFieldErrors();
                     updateSpokenLanguage(index, value);
                     setLanguagePickerIndex(null);
                     setLanguageSearch("");
@@ -2134,7 +2174,18 @@ function StepBody({
                 />
               </Field>
               <Field label={index === 0 ? t("fields.level") : t("fields.levelExtra")} error={aboutErrors.level}>
-                <Select value={row.level || undefined} onValueChange={(value) => updateSpokenLevel(index, value)}>
+                <Select
+                  value={row.level || undefined}
+                  onOpenChange={(open) => {
+                    if (open) {
+                      hideAboutFieldErrors();
+                    }
+                  }}
+                  onValueChange={(value) => {
+                    hideAboutFieldErrors();
+                    updateSpokenLevel(index, value);
+                  }}
+                >
                   <SelectTrigger className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none">
                     <SelectValue placeholder={t("placeholders.chooseLevel")} />
                   </SelectTrigger>
@@ -2148,7 +2199,10 @@ function StepBody({
               {canRemoveSpokenRows ? (
                 <button
                   type="button"
-                  onClick={() => removeSpokenLanguage(index)}
+                  onClick={() => {
+                    hideAboutFieldErrors();
+                    removeSpokenLanguage(index);
+                  }}
                   className="flex h-12 w-12 items-center justify-center rounded-[8px] border-2 border-transparent text-ink-soft transition-colors hover:bg-surface hover:text-ink focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15"
                   aria-label={t("actions.removeLanguage")}
                 >
@@ -2160,11 +2214,14 @@ function StepBody({
         </div>
         <button
           type="button"
-          onClick={() => setApplication((current) => ({
-            ...current,
-            speaks: current.speaks.length ? [...current.speaks, ""] : ["", ""],
-            spokenLanguageLevels: current.spokenLanguageLevels.length ? [...current.spokenLanguageLevels, ""] : ["", ""],
-          }))}
+          onClick={() => {
+            hideAboutFieldErrors();
+            setApplication((current) => ({
+              ...current,
+              speaks: current.speaks.length ? [...current.speaks, ""] : ["", ""],
+              spokenLanguageLevels: current.spokenLanguageLevels.length ? [...current.spokenLanguageLevels, ""] : ["", ""],
+            }));
+          }}
           className="-mt-1 w-fit text-base font-extrabold underline underline-offset-2"
         >
           {t("actions.addLanguage")}
@@ -2174,7 +2231,10 @@ function StepBody({
             <div className="flex h-12 items-center overflow-hidden rounded-[8px] border-2 border-[#dcdce5] bg-white focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-500/15">
               <button
                 type="button"
-                onClick={() => setPhonePickerOpen((current) => !current)}
+                onClick={() => {
+                  hideAboutFieldErrors();
+                  setPhonePickerOpen((current) => !current);
+                }}
                 className="flex h-full w-12 shrink-0 items-center justify-center gap-1 border-r border-line bg-white text-base outline-none transition-colors hover:bg-surface focus-visible:bg-surface"
                 aria-label={t("placeholders.phoneCode")}
                 aria-expanded={phonePickerOpen}
@@ -2189,7 +2249,11 @@ function StepBody({
               ) : null}
               <input
                 value={phoneLocalValue}
-                onChange={(event) => updatePhoneLocalValue(event.target.value)}
+                onFocus={hideAboutFieldErrors}
+                onChange={(event) => {
+                  hideAboutFieldErrors();
+                  updatePhoneLocalValue(event.target.value);
+                }}
                 className="h-full min-w-0 flex-1 px-3 pl-1 text-base outline-none placeholder:text-muted"
                 inputMode="tel"
                 placeholder={phoneExample}
@@ -2202,7 +2266,11 @@ function StepBody({
                     <Search className="h-4 w-4 shrink-0 text-muted" aria-hidden />
                     <input
                       value={phoneSearch}
-                      onChange={(event) => setPhoneSearch(event.target.value)}
+                      onFocus={hideAboutFieldErrors}
+                      onChange={(event) => {
+                        hideAboutFieldErrors();
+                        setPhoneSearch(event.target.value);
+                      }}
                       className="h-full min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-muted"
                       placeholder={t("placeholders.searchPhoneCountry")}
                     />
@@ -2214,6 +2282,7 @@ function StepBody({
                     key={`${option.value}-${option.code}`}
                     type="button"
                     onClick={() => {
+                      hideAboutFieldErrors();
                       syncPhoneCountry(option.value);
                       setPhonePickerOpen(false);
                       setPhoneSearch("");
@@ -2238,7 +2307,14 @@ function StepBody({
         </Field>
         <div className="grid gap-2 pt-2">
           <label className="flex min-h-11 items-center gap-3 text-base font-extrabold text-ink">
-          <Checkbox className="h-5 w-5 rounded-sm border-2 border-[#dcdce5] shadow-none" checked={application.over18} onCheckedChange={(checked) => updateField("over18", checked === true)} />
+          <Checkbox
+            className="h-5 w-5 rounded-sm border-2 border-[#dcdce5] shadow-none"
+            checked={application.over18}
+            onCheckedChange={(checked) => {
+              hideAboutFieldErrors();
+              updateField("over18", checked === true);
+            }}
+          />
           <span>{t("fields.over18")}</span>
           </label>
           {aboutErrors.over18 ? <p className="text-sm font-semibold leading-5 text-destructive">{aboutErrors.over18}</p> : null}
