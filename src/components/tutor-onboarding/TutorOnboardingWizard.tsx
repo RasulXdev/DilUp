@@ -6,7 +6,6 @@ import { useLocale, useTranslations } from "next-intl";
 import type { LucideIcon } from "lucide-react";
 import {
   BadgeCheck,
-  BriefcaseBusiness,
   CalendarDays,
   Camera,
   Check,
@@ -18,7 +17,6 @@ import {
   HelpCircle,
   Info,
   Languages,
-  Loader2,
   Mic2,
   Plus,
   RotateCcw,
@@ -28,7 +26,6 @@ import {
   Trash2,
   User,
   Upload,
-  Wand2,
   Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -294,9 +291,8 @@ const certificateYearOptions = Array.from({ length: new Date().getFullYear() - 1
 const certificateEndYearOptions = [presentYearValue, ...certificateYearOptions];
 const degreeTypeKeys = ["teaching", "subject", "other"];
 const descriptionSectionKeys = ["intro", "experience", "motivation", "headline"] as const;
-const profileDescriptionLimit = 400;
+const headlineCharacterLimit = 400;
 type DescriptionSectionKey = (typeof descriptionSectionKeys)[number];
-type DraftTone = "original" | "formal" | "friendly" | "short";
 type TutorOnboardingDraftMeta = {
   stepIndex?: number;
   highestUnlockedStep?: number;
@@ -936,15 +932,6 @@ async function createProfilePhotoFile(
   return new File([blob], "profile-photo.jpg", { type: "image/jpeg" });
 }
 
-function getProfileTextLength(application: TutorApplication) {
-  return (
-    application.intro.trim().length +
-    application.experience.trim().length +
-    application.motivation.trim().length +
-    application.headline.trim().length
-  );
-}
-
 function hasContactDetails(value: string) {
   return /(?:https?:\/\/|www\.|@|[\w.%+-]+@[\w.-]+\.[a-z]{2,}|\+?\d[\d\s().-]{7,}\d)/i.test(value);
 }
@@ -1369,11 +1356,6 @@ function StepBody({
   const [certificateUploadErrors, setCertificateUploadErrors] = useState<Record<number, string>>({});
   const [diplomaUploadErrors, setDiplomaUploadErrors] = useState<Record<number, string>>({});
   const [activeDescriptionSection, setActiveDescriptionSection] = useState<DescriptionSectionKey>("intro");
-  const [descriptionAssistantOpen, setDescriptionAssistantOpen] = useState(false);
-  const [descriptionDraft, setDescriptionDraft] = useState("");
-  const [descriptionDraftTone, setDescriptionDraftTone] = useState<DraftTone>("original");
-  const [descriptionDraftLoading, setDescriptionDraftLoading] = useState(false);
-  const [descriptionDraftAdded, setDescriptionDraftAdded] = useState(false);
   const [videoPhase, setVideoPhase] = useState<"camera" | "cameraLoading" | "recordingReady" | "countdown" | "recording" | "recorded">(
     application.videoReady ? "recorded" : "camera",
   );
@@ -2061,7 +2043,11 @@ function StepBody({
         <div className="grid gap-4">
           <Field label={t("fields.firstName")} error={aboutErrors.firstName}>
             <Input
-              className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus-visible:ring-brand-500/15"
+              aria-invalid={Boolean(aboutErrors.firstName)}
+              className={cn(
+                "h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus-visible:ring-brand-500/15",
+                aboutErrors.firstName && "border-destructive bg-destructive/10",
+              )}
               value={application.firstName}
               onFocus={hideAboutFieldErrors}
               onChange={(event) => {
@@ -2072,7 +2058,11 @@ function StepBody({
           </Field>
           <Field label={t("fields.lastName")} error={aboutErrors.lastName}>
             <Input
-              className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus-visible:ring-brand-500/15"
+              aria-invalid={Boolean(aboutErrors.lastName)}
+              className={cn(
+                "h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus-visible:ring-brand-500/15",
+                aboutErrors.lastName && "border-destructive bg-destructive/10",
+              )}
               value={application.lastName}
               onFocus={hideAboutFieldErrors}
               onChange={(event) => {
@@ -2104,6 +2094,7 @@ function StepBody({
               search={countrySearch}
               searchPlaceholder={t("placeholders.searchCountry")}
               value={application.country}
+              error={Boolean(aboutErrors.country)}
             />
           </Field>
           <Field label={t("fields.teaches")} error={aboutErrors.teaches}>
@@ -2119,7 +2110,13 @@ function StepBody({
                 updateField("teaches", value);
               }}
             >
-              <SelectTrigger className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none">
+              <SelectTrigger
+                aria-invalid={Boolean(aboutErrors.teaches)}
+                className={cn(
+                  "h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none",
+                  aboutErrors.teaches && "border-destructive bg-destructive/10",
+                )}
+              >
                 <SelectValue placeholder={t("placeholders.chooseSubject")} />
               </SelectTrigger>
               <SelectContent {...menuProps}>
@@ -2171,6 +2168,7 @@ function StepBody({
                   search={languagePickerIndex === index ? languageSearch : ""}
                   searchPlaceholder={t("placeholders.searchLanguage")}
                   value={row.language}
+                  error={Boolean(aboutErrors.speaks)}
                 />
               </Field>
               <Field label={index === 0 ? t("fields.level") : t("fields.levelExtra")} error={aboutErrors.level}>
@@ -2186,7 +2184,13 @@ function StepBody({
                     updateSpokenLevel(index, value);
                   }}
                 >
-                  <SelectTrigger className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none">
+                  <SelectTrigger
+                    aria-invalid={Boolean(aboutErrors.level)}
+                    className={cn(
+                      "h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none",
+                      aboutErrors.level && "border-destructive bg-destructive/10",
+                    )}
+                  >
                     <SelectValue placeholder={t("placeholders.chooseLevel")} />
                   </SelectTrigger>
                   <SelectContent {...menuProps}>
@@ -2308,7 +2312,10 @@ function StepBody({
         <div className="grid gap-2 pt-2">
           <label className="flex min-h-11 items-center gap-3 text-base font-extrabold text-ink">
           <Checkbox
-            className="h-5 w-5 rounded-sm border-2 border-[#dcdce5] shadow-none"
+            className={cn(
+              "h-5 w-5 rounded-sm border-2 border-[#dcdce5] shadow-none",
+              aboutErrors.over18 && "border-destructive bg-destructive/10",
+            )}
             checked={application.over18}
             onCheckedChange={(checked) => {
               hideAboutFieldErrors();
@@ -3219,18 +3226,18 @@ function StepBody({
   }
 
   if (step === "description") {
-    const profileTextLength = getProfileTextLength(application);
+    const headlineLength = application.headline.trim().length;
     const activeSectionIndex = descriptionSectionKeys.indexOf(activeDescriptionSection);
     const activeText =
       activeDescriptionSection === "headline"
         ? application.headline
         : application[activeDescriptionSection];
     const activeIssueKey = getDescriptionIssueKey(activeDescriptionSection, activeText, application);
-    const minimumMissing = profileTextLength < profileDescriptionLimit;
-    const showMinimumError = validationAttempts.description && minimumMissing;
+    const headlineIssueKey = getDescriptionIssueKey("headline", application.headline, application);
+    const showHeadlineRequiredError = validationAttempts.description && !application.headline.trim();
     const showPolicyError = validationAttempts.description && hasDescriptionIssues(application);
     const continueDescriptionSection = () => {
-      if (activeSectionIndex >= descriptionSectionKeys.length - 1 || activeIssueKey) {
+      if (!activeText.trim() || activeIssueKey || activeSectionIndex >= descriptionSectionKeys.length - 1) {
         if (activeIssueKey) {
           setValidationAttempts((current) => ({ ...current, description: true }));
         }
@@ -3238,31 +3245,6 @@ function StepBody({
       }
 
       setActiveDescriptionSection(descriptionSectionKeys[activeSectionIndex + 1]);
-    };
-    const buildGeneratedDraft = (tone: DraftTone) => {
-      const subject = application.teaches ? optionLabel(t, "languages", application.teaches) : t("description.assist.subjectFallback");
-      const templateKey = tone === "original" ? "base" : tone;
-
-      return t(`description.assist.templates.${templateKey}`, { subject });
-    };
-    const openWritingAssist = () => {
-      setDescriptionDraftTone("original");
-      setDescriptionDraft(buildGeneratedDraft("original"));
-      setDescriptionAssistantOpen(true);
-    };
-    const changeDraftTone = (tone: DraftTone) => {
-      setDescriptionDraftTone(tone);
-      setDescriptionDraftLoading(true);
-      window.setTimeout(() => {
-        setDescriptionDraft(buildGeneratedDraft(tone));
-        setDescriptionDraftLoading(false);
-      }, 650);
-    };
-    const addDraftToProfile = () => {
-      updateField("motivation", descriptionDraft);
-      setDescriptionDraftAdded(true);
-      setDescriptionAssistantOpen(false);
-      setActiveDescriptionSection("motivation");
     };
 
     return (
@@ -3285,7 +3267,8 @@ function StepBody({
             const value = section === "headline" ? application.headline : application[section];
             const sectionCopy = t.raw(`description.sections.${section}`) as { hint?: string };
             const sectionIssueKey = getDescriptionIssueKey(section, value, application);
-            const describedBy = sectionIssueKey ? `description-${section}-error` : undefined;
+            const showRequiredError = section === "headline" && showHeadlineRequiredError;
+            const describedBy = sectionIssueKey || showRequiredError ? `description-${section}-error` : undefined;
 
             return (
               <section key={section} className="border-b border-line pb-4">
@@ -3308,12 +3291,13 @@ function StepBody({
                       <Textarea
                         value={application.headline}
                         onChange={(event) => updateField("headline", event.target.value)}
+                        maxLength={headlineCharacterLimit}
                         placeholder={t("description.sections.headline.placeholder")}
-                        aria-invalid={Boolean(sectionIssueKey)}
+                        aria-invalid={Boolean(sectionIssueKey || showRequiredError)}
                         aria-describedby={describedBy}
                         className={cn(
                           "h-12 min-h-12 resize-none overflow-hidden rounded-[8px] border-2 border-[#dcdce5] px-4 py-3 text-base leading-6 shadow-none focus-visible:ring-4 focus-visible:ring-brand-500/15",
-                          sectionIssueKey && "border-destructive focus-visible:ring-destructive/15",
+                          (sectionIssueKey || showRequiredError) && "border-destructive focus-visible:ring-destructive/15",
                         )}
                       />
                     ) : (
@@ -3329,41 +3313,19 @@ function StepBody({
                         )}
                       />
                     )}
-                    {sectionIssueKey ? (
+                    {sectionIssueKey || showRequiredError ? (
                       <p id={describedBy} className="text-sm font-semibold leading-5 text-destructive">
-                        {t(`description.errors.${sectionIssueKey}`)}
+                        {showRequiredError ? t("description.errors.required") : t(`description.errors.${sectionIssueKey}`)}
                       </p>
                     ) : null}
                     {sectionCopy.hint ? (
                       <p className="text-sm leading-6 text-muted">{t(`description.sections.${section}.hint`)}</p>
                     ) : null}
-                    {section === "motivation" ? (
-                      <div className="rounded-md border border-brand-100 bg-brand-50/70 p-4">
-                        {descriptionDraftAdded ? (
-                          <p className="mb-3 text-sm font-semibold leading-5 text-brand-800">{t("description.assist.added")}</p>
-                        ) : null}
-                        <div className="flex flex-wrap items-center gap-2">
-                          <p className="text-sm font-extrabold text-ink">{t("description.assist.title")}</p>
-                          <span className="rounded-full bg-brand-600 px-2 py-0.5 text-xs font-extrabold text-white">
-                            {t("description.assist.badge")}
-                          </span>
-                        </div>
-                        <p className="mt-2 text-sm leading-5 text-muted">{t("description.assist.text")}</p>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={openWritingAssist}
-                          className="mt-3 min-h-10 rounded-md border-2 border-ink bg-white px-4 text-sm font-extrabold text-ink hover:bg-surface"
-                        >
-                          <Wand2 className="mr-2 h-4 w-4" />
-                          {t("description.assist.create")}
-                        </Button>
-                      </div>
-                    ) : null}
                     {section !== "headline" ? (
                       <Button
                         type="button"
                         onClick={continueDescriptionSection}
+                        disabled={!value.trim() || Boolean(sectionIssueKey)}
                         className="mt-1 min-h-11 w-fit rounded-md border-2 border-ink bg-brand-500 px-6 text-base font-extrabold text-white shadow-none hover:bg-brand-600 disabled:cursor-not-allowed disabled:border-line disabled:bg-surface disabled:text-muted"
                       >
                         {t("actions.continue")}
@@ -3377,11 +3339,6 @@ function StepBody({
         </div>
         <div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-start">
           <div aria-live="polite">
-            {showMinimumError ? (
-              <p className="text-sm font-semibold leading-5 text-destructive">
-                {t("description.errors.minimum", { count: profileDescriptionLimit })}
-              </p>
-            ) : null}
             {showPolicyError ? (
               <p className="text-sm font-semibold leading-5 text-destructive">{t("description.errors.reviewSections")}</p>
             ) : null}
@@ -3389,67 +3346,12 @@ function StepBody({
           <h3
             className={cn(
               "text-right text-lg font-extrabold",
-              minimumMissing && validationAttempts.description ? "text-destructive" : "text-brand-800",
+              (showHeadlineRequiredError || headlineIssueKey) && validationAttempts.description ? "text-destructive" : "text-brand-800",
             )}
           >
-            {profileTextLength} / {profileDescriptionLimit}
+            {headlineLength} / {headlineCharacterLimit}
           </h3>
         </div>
-        <Dialog open={descriptionAssistantOpen} onOpenChange={setDescriptionAssistantOpen}>
-          <DialogContent className="max-w-[748px] rounded-md border-0 p-6 shadow-2xl sm:p-8">
-            <DialogHeader className="space-y-0">
-              <DialogTitle className="font-display pr-8 text-2xl font-extrabold leading-8 text-ink sm:text-3xl">
-                {t("description.assist.modalTitle")}
-              </DialogTitle>
-            </DialogHeader>
-            <div className="mt-5 rounded-none bg-brand-100 p-4 text-sm leading-6 text-ink">
-              <div className="flex gap-3">
-                <Info className="mt-0.5 h-5 w-5 shrink-0 text-brand-800" />
-                <p>{t("description.assist.notice")}</p>
-              </div>
-            </div>
-            <div className="relative mt-5">
-              <Textarea
-                value={descriptionDraft}
-                onChange={(event) => setDescriptionDraft(event.target.value)}
-                disabled={descriptionDraftLoading}
-                className="min-h-30 rounded-[8px] border-2 border-[#dcdce5] px-4 py-3 text-base leading-6 shadow-none focus-visible:ring-4 focus-visible:ring-brand-500/15"
-              />
-              {descriptionDraftLoading ? (
-                <div className="absolute inset-0 flex items-center justify-center rounded-[8px] bg-white/75">
-                  <Loader2 className="h-6 w-6 animate-spin text-brand-700" />
-                </div>
-              ) : null}
-            </div>
-            <div className="mt-5 flex flex-wrap gap-3">
-              {(["formal", "friendly", "short"] as DraftTone[]).map((tone) => (
-                <Button
-                  key={tone}
-                  type="button"
-                  variant="outline"
-                  disabled={descriptionDraftLoading}
-                  onClick={() => changeDraftTone(descriptionDraftTone === tone ? "original" : tone)}
-                  className="min-h-10 rounded-md border-2 border-ink bg-white px-4 text-sm font-extrabold text-ink hover:bg-surface"
-                >
-                  {tone === "formal" ? <BriefcaseBusiness className="mr-2 h-4 w-4" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                  {descriptionDraftTone === tone
-                    ? t("description.assist.tones.original")
-                    : t(`description.assist.tones.${tone}`)}
-                </Button>
-              ))}
-            </div>
-            <DialogFooter className="mt-6">
-              <Button
-                type="button"
-                disabled={descriptionDraftLoading || !descriptionDraft.trim()}
-                onClick={addDraftToProfile}
-                className="min-h-12 w-full rounded-md border-2 border-ink bg-brand-500 px-6 text-base font-extrabold text-white shadow-none hover:bg-brand-600 sm:w-auto"
-              >
-                {t("description.assist.add")}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </div>
     );
   }
@@ -3853,6 +3755,7 @@ function VideoRequirements({ t }: { t: ReturnType<typeof useTranslations<"tutorO
 
 function SearchableOptionSelect({
   emptyText,
+  error = false,
   onOpenChange,
   onSearchChange,
   onValueChange,
@@ -3864,6 +3767,7 @@ function SearchableOptionSelect({
   value,
 }: {
   emptyText: string;
+  error?: boolean;
   onOpenChange: (open: boolean) => void;
   onSearchChange: (value: string) => void;
   onValueChange: (value: string) => void;
@@ -3902,7 +3806,10 @@ function SearchableOptionSelect({
       <button
         type="button"
         onClick={() => onOpenChange(!open)}
-        className="flex h-12 w-full items-center justify-between rounded-[8px] border-2 border-[#dcdce5] bg-white px-4 text-left text-base text-ink shadow-none outline-none transition-colors focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15"
+        className={cn(
+          "flex h-12 w-full items-center justify-between rounded-[8px] border-2 border-[#dcdce5] bg-white px-4 text-left text-base text-ink shadow-none outline-none transition-colors focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15",
+          error && "border-destructive bg-destructive/10",
+        )}
         aria-expanded={open}
       >
         <span className={cn("min-w-0 truncate", !selectedOption && "text-muted")}>
@@ -4399,7 +4306,7 @@ function isStepValid(step: StepKey, application: TutorApplication) {
       return application.education.some((item) => isEducationTouched(item) && isEducationComplete(item)) &&
         application.education.every((item) => !isEducationTouched(item) || isEducationComplete(item));
     case "description":
-      return getProfileTextLength(application) >= profileDescriptionLimit && !hasDescriptionIssues(application);
+      return Boolean(application.headline.trim()) && !hasDescriptionIssues(application);
     case "video":
       return application.videoReady;
     case "availability":
