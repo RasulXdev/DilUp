@@ -129,6 +129,7 @@ const steps: { key: StepKey; icon: LucideIcon }[] = [
 ];
 
 const STORAGE_KEY = "dilup_tutor_application_v2";
+const STORAGE_META_KEY = "dilup_tutor_application_meta_v1";
 
 const teachingLanguageKeys = ["english", "russian", "turkish", "german", "french", "spanish", "arabic", "italian"];
 const activeTeachingLanguageKeys = ["english"];
@@ -296,6 +297,12 @@ const descriptionSectionKeys = ["intro", "experience", "motivation", "headline"]
 const profileDescriptionLimit = 400;
 type DescriptionSectionKey = (typeof descriptionSectionKeys)[number];
 type DraftTone = "original" | "formal" | "friendly" | "short";
+type TutorOnboardingDraftMeta = {
+  stepIndex?: number;
+  highestUnlockedStep?: number;
+  videoSubstep?: "test" | "intro";
+  videoTestReady?: boolean;
+};
 const photoGuidelineImages = [
   "/images/footer/how-it-works-tutors-1.jpg",
   "/images/footer/dilup-tutor-profile.jpg",
@@ -668,14 +675,21 @@ function getInitialTutorState() {
     return {
       application: initialApplication,
       highestUnlockedStep: 0,
+      stepIndex: 0,
+      videoSubstep: "test" as const,
+      videoTestReady: false,
     };
   }
 
   const stored = window.localStorage.getItem(STORAGE_KEY);
+  const storedMeta = window.localStorage.getItem(STORAGE_META_KEY);
   if (!stored) {
     return {
       application: initialApplication,
       highestUnlockedStep: 0,
+      stepIndex: 0,
+      videoSubstep: "test" as const,
+      videoTestReady: false,
     };
   }
 
@@ -713,17 +727,31 @@ function getInitialTutorState() {
       };
     });
     const restoredIndex = steps.findLastIndex((step) => isStepValid(step.key, application));
+    const meta = storedMeta ? (JSON.parse(storedMeta) as TutorOnboardingDraftMeta) : null;
+    const derivedStepIndex = Math.max(0, Math.min(restoredIndex + 1, steps.length - 1));
+    const stepIndex = Math.max(0, Math.min(meta?.stepIndex ?? derivedStepIndex, steps.length - 1));
+    const highestUnlockedStep = Math.max(
+      0,
+      Math.min(Math.max(meta?.highestUnlockedStep ?? 0, derivedStepIndex), steps.length - 1),
+    );
 
     return {
       application,
-      highestUnlockedStep: Math.max(0, Math.min(restoredIndex + 1, steps.length - 1)),
+      highestUnlockedStep,
+      stepIndex,
+      videoSubstep: meta?.videoSubstep ?? (application.videoReady ? "intro" : "test"),
+      videoTestReady: meta?.videoTestReady ?? application.videoReady,
     };
   } catch {
     window.localStorage.removeItem(STORAGE_KEY);
+    window.localStorage.removeItem(STORAGE_META_KEY);
 
     return {
       application: initialApplication,
       highestUnlockedStep: 0,
+      stepIndex: 0,
+      videoSubstep: "test" as const,
+      videoTestReady: false,
     };
   }
 }
@@ -956,16 +984,28 @@ export function TutorOnboardingWizard() {
   const t = useTranslations("tutorOnboarding");
   const locale = useLocale();
   const [initialTutorState] = useState(getInitialTutorState);
-  const [stepIndex, setStepIndex] = useState(0);
+  const [stepIndex, setStepIndex] = useState(initialTutorState.stepIndex);
   const [application, setApplication] = useState<TutorApplication>(initialTutorState.application);
   const [highestUnlockedStep, setHighestUnlockedStep] = useState(initialTutorState.highestUnlockedStep);
   const [submitted, setSubmitted] = useState(false);
   const [isPhotoUploading, setIsPhotoUploading] = useState(false);
-  const [videoSubstep, setVideoSubstep] = useState<"test" | "intro">(initialTutorState.application.videoReady ? "intro" : "test");
-  const [videoTestReady, setVideoTestReady] = useState(initialTutorState.application.videoReady);
+  const [videoSubstep, setVideoSubstep] = useState<"test" | "intro">(initialTutorState.videoSubstep);
+  const [videoTestReady, setVideoTestReady] = useState(initialTutorState.videoTestReady);
   const [isVideoUploading, setIsVideoUploading] = useState(false);
-  const [educationSubmitAttempted, setEducationSubmitAttempted] = useState(false);
-  const [descriptionSubmitAttempted, setDescriptionSubmitAttempted] = useState(false);
+  const [validationAttempts, setValidationAttempts] = useState<Record<StepKey, boolean>>({
+    about: false,
+    photo: false,
+    certification: false,
+    education: false,
+    description: false,
+    video: false,
+    availability: false,
+    price: false,
+  });
+  const [fieldValidationAttempts, setFieldValidationAttempts] = useState({
+    certification: false,
+    education: false,
+  });
 
   const currentStep = steps[stepIndex];
   const countryOptions = useMemo(() => {
@@ -1015,12 +1055,27 @@ export function TutorOnboardingWizard() {
     }));
   }, []);
 
+  useEffect(() => {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(application));
+  }, [application]);
+
+  useEffect(() => {
+    window.localStorage.setItem(
+      STORAGE_META_KEY,
+      JSON.stringify({
+        stepIndex,
+        highestUnlockedStep,
+        videoSubstep,
+        videoTestReady,
+      }),
+    );
+  }, [highestUnlockedStep, stepIndex, videoSubstep, videoTestReady]);
+
   const canContinue =
     currentStep.key === "video" && videoSubstep === "test"
       ? videoTestReady
       : isStepValid(currentStep.key, application);
   const continueDisabled =
-    (currentStep.key !== "education" && currentStep.key !== "description" && !canContinue) ||
     (currentStep.key === "photo" && isPhotoUploading) ||
     (currentStep.key === "video" && videoSubstep === "intro" && isVideoUploading);
   const currentStepText =
@@ -1034,20 +1089,25 @@ export function TutorOnboardingWizard() {
 
   function next() {
     if (!canContinue) {
-      if (currentStep.key === "education") {
-        setEducationSubmitAttempted(true);
+      setValidationAttempts((current) => ({ ...current, [currentStep.key]: true }));
+      if (currentStep.key === "certification") {
+        setFieldValidationAttempts((current) => ({
+          ...current,
+          certification: application.certificates.some((item) => isCertificateTouched(item)),
+        }));
       }
-      if (currentStep.key === "description") {
-        setDescriptionSubmitAttempted(true);
+      if (currentStep.key === "education") {
+        setFieldValidationAttempts((current) => ({
+          ...current,
+          education: application.education.some((item) => isEducationTouched(item)),
+        }));
       }
       return;
     }
 
-    if (currentStep.key === "education") {
-      setEducationSubmitAttempted(false);
-    }
-    if (currentStep.key === "description") {
-      setDescriptionSubmitAttempted(false);
+    setValidationAttempts((current) => ({ ...current, [currentStep.key]: false }));
+    if (currentStep.key === "certification" || currentStep.key === "education") {
+      setFieldValidationAttempts((current) => ({ ...current, [currentStep.key]: false }));
     }
 
     if (currentStep.key === "video" && videoSubstep === "test") {
@@ -1176,8 +1236,10 @@ export function TutorOnboardingWizard() {
                   videoSubstep={videoSubstep}
                   videoTestReady={videoTestReady}
                   setApplication={setApplication}
-                  educationSubmitAttempted={educationSubmitAttempted}
-                  descriptionSubmitAttempted={descriptionSubmitAttempted}
+                  setFieldValidationAttempts={setFieldValidationAttempts}
+                  setValidationAttempts={setValidationAttempts}
+                  fieldValidationAttempts={fieldValidationAttempts}
+                  validationAttempts={validationAttempts}
                   t={t}
                 />
               </div>
@@ -1260,8 +1322,10 @@ function StepBody({
   videoSubstep,
   videoTestReady,
   setApplication,
-  educationSubmitAttempted,
-  descriptionSubmitAttempted,
+  setFieldValidationAttempts,
+  setValidationAttempts,
+  fieldValidationAttempts,
+  validationAttempts,
   t,
 }: {
   step: StepKey;
@@ -1277,8 +1341,10 @@ function StepBody({
   videoSubstep: "test" | "intro";
   videoTestReady: boolean;
   setApplication: React.Dispatch<React.SetStateAction<TutorApplication>>;
-  educationSubmitAttempted: boolean;
-  descriptionSubmitAttempted: boolean;
+  setFieldValidationAttempts: React.Dispatch<React.SetStateAction<{ certification: boolean; education: boolean }>>;
+  setValidationAttempts: React.Dispatch<React.SetStateAction<Record<StepKey, boolean>>>;
+  fieldValidationAttempts: { certification: boolean; education: boolean };
+  validationAttempts: Record<StepKey, boolean>;
   t: ReturnType<typeof useTranslations<"tutorOnboarding">>;
 }) {
   const [phonePickerOpen, setPhonePickerOpen] = useState(false);
@@ -1336,6 +1402,12 @@ function StepBody({
     startOffsetY: number;
     startSize: number;
   } | null>(null);
+  const updateCertificateDraft = <K extends keyof Certificate>(id: number, key: K, value: Certificate[K]) => {
+    updateCertificate(setApplication, id, key, value);
+  };
+  const updateEducationDraft = <K extends keyof Education>(id: number, key: K, value: Education[K]) => {
+    updateEducation(setApplication, id, key, value);
+  };
   const selectedPhoneCountry =
     phoneOptions.find((option) => option.value === application.phoneCountry);
   const firstSpokenIndex = application.speaks.findIndex((language, index) =>
@@ -1967,17 +2039,20 @@ function StepBody({
       });
     };
     const canRemoveSpokenRows = spokenRows.length > 1;
+    const aboutErrors = validationAttempts.about
+      ? getAboutErrors(application, t)
+      : ({} as ReturnType<typeof getAboutErrors>);
 
     return (
       <div className="grid gap-4">
         <div className="grid gap-4">
-          <Field label={t("fields.firstName")}>
+          <Field label={t("fields.firstName")} error={aboutErrors.firstName}>
             <Input className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus-visible:ring-brand-500/15" value={application.firstName} onChange={(event) => updateField("firstName", event.target.value)} />
           </Field>
-          <Field label={t("fields.lastName")}>
+          <Field label={t("fields.lastName")} error={aboutErrors.lastName}>
             <Input className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus-visible:ring-brand-500/15" value={application.lastName} onChange={(event) => updateField("lastName", event.target.value)} />
           </Field>
-          <Field label={t("fields.country")}>
+          <Field label={t("fields.country")} error={aboutErrors.country}>
             <SearchableOptionSelect
               emptyText={t("labels.noResults")}
               onOpenChange={(open) => {
@@ -1998,7 +2073,7 @@ function StepBody({
               value={application.country}
             />
           </Field>
-          <Field label={t("fields.teaches")}>
+          <Field label={t("fields.teaches")} error={aboutErrors.teaches}>
             <Select value={application.teaches || undefined} onValueChange={(value) => updateField("teaches", value)}>
               <SelectTrigger className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none">
                 <SelectValue placeholder={t("placeholders.chooseSubject")} />
@@ -2026,10 +2101,10 @@ function StepBody({
                 "grid items-end gap-2",
                 canRemoveSpokenRows
                   ? "grid-cols-[minmax(0,1fr)_minmax(128px,0.85fr)_48px]"
-                  : "grid-cols-[minmax(0,1fr)_minmax(128px,0.85fr)]",
+                : "grid-cols-[minmax(0,1fr)_minmax(128px,0.85fr)]",
               )}
             >
-              <Field label={index === 0 ? t("fields.speaks") : t("fields.speaksExtra")}>
+              <Field label={index === 0 ? t("fields.speaks") : t("fields.speaksExtra")} error={aboutErrors.speaks}>
                 <SearchableOptionSelect
                   emptyText={t("labels.noResults")}
                   onOpenChange={(open) => {
@@ -2050,7 +2125,7 @@ function StepBody({
                   value={row.language}
                 />
               </Field>
-              <Field label={index === 0 ? t("fields.level") : t("fields.levelExtra")}>
+              <Field label={index === 0 ? t("fields.level") : t("fields.levelExtra")} error={aboutErrors.level}>
                 <Select value={row.level || undefined} onValueChange={(value) => updateSpokenLevel(index, value)}>
                   <SelectTrigger className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none">
                     <SelectValue placeholder={t("placeholders.chooseLevel")} />
@@ -2153,10 +2228,13 @@ function StepBody({
             ) : null}
           </div>
         </Field>
-        <label className="flex min-h-11 items-center gap-3 pt-2 text-base font-extrabold text-ink">
+        <div className="grid gap-2 pt-2">
+          <label className="flex min-h-11 items-center gap-3 text-base font-extrabold text-ink">
           <Checkbox className="h-5 w-5 rounded-sm border-2 border-[#dcdce5] shadow-none" checked={application.over18} onCheckedChange={(checked) => updateField("over18", checked === true)} />
           <span>{t("fields.over18")}</span>
-        </label>
+          </label>
+          {aboutErrors.over18 ? <p className="text-sm font-semibold leading-5 text-destructive">{aboutErrors.over18}</p> : null}
+        </div>
       </div>
     );
   }
@@ -2394,6 +2472,9 @@ function StepBody({
         {photoUploading ? (
           <p className="text-sm font-semibold text-brand-700">{t("photo.uploading")}</p>
         ) : null}
+        {validationAttempts.photo && !application.photoReady ? (
+          <p className="text-sm font-semibold text-destructive">{t("validation.photo.required")}</p>
+        ) : null}
         {application.photoReady && application.photoUrl ? (
           <p className="text-sm font-semibold text-success">{t("photo.uploaded")}</p>
         ) : null}
@@ -2422,22 +2503,43 @@ function StepBody({
   }
 
   if (step === "certification") {
+    const certificationTouched = application.certificates.some((item) => isCertificateTouched(item));
+    const showCertificationChoiceWarning =
+      validationAttempts.certification && !application.hasNoCertificates && !certificationTouched;
+
     return (
       <div className="grid gap-5">
-        <label className="flex min-h-6 cursor-pointer items-center gap-3 text-base font-semibold text-ink">
+        <label
+          className={cn(
+            "flex min-h-6 cursor-pointer items-center gap-3 text-base font-semibold text-ink",
+            showCertificationChoiceWarning && "text-destructive",
+          )}
+        >
           <Checkbox
-            className="h-5 w-5 rounded-[4px] border-2 border-[#dcdce5] shadow-none data-[state=checked]:border-ink data-[state=checked]:bg-ink"
+            className={cn(
+              "h-5 w-5 rounded-[4px] border-2 border-[#dcdce5] shadow-none data-[state=checked]:border-ink data-[state=checked]:bg-ink",
+              showCertificationChoiceWarning && "border-destructive",
+            )}
             checked={application.hasNoCertificates}
-            onCheckedChange={(checked) =>
+            onCheckedChange={(checked) => {
+              setValidationAttempts((current) => ({ ...current, certification: false }));
+              setFieldValidationAttempts((current) => ({ ...current, certification: false }));
               setApplication((current) => ({
                 ...current,
                 hasNoCertificates: checked === true,
-              }))
-            }
+              }));
+            }}
             aria-label={t("certification.none")}
           />
           <span>{t("certification.none")}</span>
         </label>
+
+        {showCertificationChoiceWarning ? (
+          <div className="grid grid-cols-[20px_1fr] gap-3 rounded-[2px] bg-destructive/10 px-4 py-4 text-sm font-medium leading-5 text-ink">
+            <Info className="mt-0.5 h-4 w-4 text-ink" aria-hidden />
+            <p>{t("certification.errors.chooseOrSkip")}</p>
+          </div>
+        ) : null}
 
         {application.hasNoCertificates ? null : (
           <RepeatableBlock
@@ -2445,32 +2547,35 @@ function StepBody({
             addLabel={t("certification.add")}
             addVariant="link"
             showTopRemove={false}
-            onAdd={() =>
+            onAdd={() => {
               setApplication((current) => ({
                 ...current,
                 certificates: [...current.certificates, createEmptyCertificate()],
-              }))
-            }
-            onRemove={(id) =>
+              }));
+            }}
+            onRemove={(id) => {
               setApplication((current) => ({
                 ...current,
                 certificates:
                   current.certificates.length > 1
                     ? current.certificates.filter((item) => item.id !== id)
                     : [createEmptyCertificate()],
-              }))
-            }
+              }));
+            }}
             render={(item, index) => {
               const certificateUploading = certificateUploadingIds.includes(item.id);
               const certificateUploadError = certificateUploadErrors[item.id];
+              const certificationErrors = fieldValidationAttempts.certification && isCertificateTouched(item)
+                ? getCertificateErrors(item, t)
+                : ({} as ReturnType<typeof getCertificateErrors>);
 
               return (
               <div className="grid gap-4">
-                <Field label={t("fields.subject")}>
+                <Field label={t("fields.subject")} error={certificationErrors.subject}>
                   <div className={cn("grid items-center gap-2", item.subject ? "grid-cols-[minmax(0,1fr)_40px]" : "grid-cols-1")}>
                     <Select
                       value={item.subject || undefined}
-                      onValueChange={(value) =>
+                      onValueChange={(value) => {
                         setApplication((current) => ({
                           ...current,
                           certificates: current.certificates.map((certificate) =>
@@ -2485,10 +2590,16 @@ function StepBody({
                                 }
                               : certificate,
                           ),
-                        }))
-                      }
+                        }));
+                      }}
                     >
-                      <SelectTrigger className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none">
+                      <SelectTrigger
+                        aria-invalid={Boolean(certificationErrors.subject)}
+                        className={cn(
+                          "h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none",
+                          certificationErrors.subject && "border-destructive bg-destructive/10",
+                        )}
+                      >
                         <SelectValue placeholder={t("placeholders.chooseSubject")} />
                       </SelectTrigger>
                       <SelectContent>
@@ -2522,37 +2633,70 @@ function StepBody({
 
                 {!item.subject ? (
                   <div className="grid gap-4">
-                    <Field label={t("fields.certificate")}>
+                    <Field label={t("fields.certificate")} error={certificationErrors.certificate}>
                       <Input
                         value={item.certificate}
-                        onChange={(event) => updateCertificate(setApplication, item.id, "certificate", event.target.value)}
-                        className="h-12 rounded-[8px] border-2 border-[#dcdce5] text-base"
+                        onChange={(event) => updateCertificateDraft(item.id, "certificate", event.target.value)}
+                        aria-invalid={Boolean(certificationErrors.certificate)}
+                        className={cn(
+                          "h-12 rounded-[8px] border-2 border-[#dcdce5] text-base",
+                          certificationErrors.certificate && "border-destructive bg-destructive/10",
+                        )}
                       />
                     </Field>
-                    <Field label={t("fields.certificateDescription")}>
+                    <Field label={t("fields.certificateDescription")} error={certificationErrors.description}>
                       <Input
                         value={item.description}
-                        onChange={(event) => updateCertificate(setApplication, item.id, "description", event.target.value)}
-                        className="h-12 rounded-[8px] border-2 border-[#dcdce5] text-base"
+                        onChange={(event) => updateCertificateDraft(item.id, "description", event.target.value)}
+                        aria-invalid={Boolean(certificationErrors.description)}
+                        className={cn(
+                          "h-12 rounded-[8px] border-2 border-[#dcdce5] text-base",
+                          certificationErrors.description && "border-destructive bg-destructive/10",
+                        )}
                       />
                     </Field>
-                    <Field label={t("fields.issuedBy")}>
+                    <Field label={t("fields.issuedBy")} error={certificationErrors.issuedBy}>
                       <Input
                         value={item.issuedBy}
-                        onChange={(event) => updateCertificate(setApplication, item.id, "issuedBy", event.target.value)}
-                        className="h-12 rounded-[8px] border-2 border-[#dcdce5] text-base"
+                        onChange={(event) => updateCertificateDraft(item.id, "issuedBy", event.target.value)}
+                        aria-invalid={Boolean(certificationErrors.issuedBy)}
+                        className={cn(
+                          "h-12 rounded-[8px] border-2 border-[#dcdce5] text-base",
+                          certificationErrors.issuedBy && "border-destructive bg-destructive/10",
+                        )}
                       />
                     </Field>
                   </div>
                 ) : (
                   <>
-                    <Field label={t("fields.certification")}>
+                    <Field label={t("fields.certification")} error={certificationErrors.certificate}>
                       <Select
                         value={item.notListed ? undefined : item.certificate || undefined}
-                        onValueChange={(value) => updateCertificate(setApplication, item.id, "certificate", value)}
+                        onValueChange={(value) => {
+                          const certificateMeta = getVerifiedCertificateMeta(value);
+                          setApplication((current) => ({
+                            ...current,
+                            certificates: current.certificates.map((certificate) =>
+                              certificate.id === item.id
+                                ? {
+                                    ...certificate,
+                                    certificate: value,
+                                    description: certificateMeta.description,
+                                    issuedBy: certificateMeta.issuedBy,
+                                  }
+                                : certificate,
+                            ),
+                          }));
+                        }}
                         disabled={item.notListed}
                       >
-                        <SelectTrigger className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base font-normal text-ink shadow-none disabled:bg-surface disabled:text-muted">
+                        <SelectTrigger
+                          aria-invalid={Boolean(certificationErrors.certificate)}
+                          className={cn(
+                            "h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base font-normal text-ink shadow-none disabled:bg-surface disabled:text-muted",
+                            certificationErrors.certificate && "border-destructive bg-destructive/10",
+                          )}
+                        >
                           <SelectValue placeholder={t("placeholders.verifiedCertificate")} />
                         </SelectTrigger>
                         <SelectContent className="max-h-80 w-[var(--radix-select-trigger-width)] max-w-[var(--radix-select-trigger-width)] rounded-[8px]">
@@ -2570,7 +2714,22 @@ function StepBody({
                       <Checkbox
                         className="h-5 w-5 rounded-[4px] border-2 border-[#dcdce5] shadow-none data-[state=checked]:border-ink data-[state=checked]:bg-ink"
                         checked={item.notListed}
-                        onCheckedChange={(checked) => updateCertificate(setApplication, item.id, "notListed", checked === true)}
+                        onCheckedChange={(checked) => {
+                          setApplication((current) => ({
+                            ...current,
+                            certificates: current.certificates.map((certificate) =>
+                              certificate.id === item.id
+                                ? {
+                                    ...certificate,
+                                    notListed: checked === true,
+                                    certificate: "",
+                                    description: "",
+                                    issuedBy: "",
+                                  }
+                                : certificate,
+                            ),
+                          }));
+                        }}
                         aria-label={t("certification.notListed")}
                       />
                       <span>{t("certification.notListed")}</span>
@@ -2578,23 +2737,45 @@ function StepBody({
 
                     {item.notListed ? (
                       <div className="grid gap-4">
-                        <Field label={t("fields.issuedBy")}>
+                        <Field label={t("fields.issuedBy")} error={certificationErrors.issuedBy}>
                           <Input
                             value={item.issuedBy}
-                            onChange={(event) => updateCertificate(setApplication, item.id, "issuedBy", event.target.value)}
-                            className="h-12 rounded-[8px] border-2 border-[#dcdce5] text-base"
+                            onChange={(event) => updateCertificateDraft(item.id, "issuedBy", event.target.value)}
+                            aria-invalid={Boolean(certificationErrors.issuedBy)}
+                            className={cn(
+                              "h-12 rounded-[8px] border-2 border-[#dcdce5] text-base",
+                              certificationErrors.issuedBy && "border-destructive bg-destructive/10",
+                            )}
                           />
                         </Field>
-                        <Field label={t("fields.certificateName")}>
+                        <Field label={t("fields.certificateName")} error={certificationErrors.certificate}>
                           <Input
                             value={item.certificate}
-                            onChange={(event) => updateCertificate(setApplication, item.id, "certificate", event.target.value)}
-                            className="h-12 rounded-[8px] border-2 border-[#dcdce5] text-base"
+                            onChange={(event) => updateCertificateDraft(item.id, "certificate", event.target.value)}
+                            aria-invalid={Boolean(certificationErrors.certificate)}
+                            className={cn(
+                              "h-12 rounded-[8px] border-2 border-[#dcdce5] text-base",
+                              certificationErrors.certificate && "border-destructive bg-destructive/10",
+                            )}
                           />
                         </Field>
                         <p className="-mt-2 text-sm leading-6 text-muted">{t("certification.exactName")}</p>
                       </div>
                     ) : null}
+
+                    <Field label={t("fields.certificateDescription")} error={certificationErrors.description}>
+                      <Input
+                        value={item.description}
+                        onChange={(event) => updateCertificateDraft(item.id, "description", event.target.value)}
+                        readOnly={Boolean(item.certificate && !item.notListed)}
+                        aria-invalid={Boolean(certificationErrors.description)}
+                        className={cn(
+                          "h-12 rounded-[8px] border-2 border-[#dcdce5] text-base",
+                          item.certificate && !item.notListed && "bg-surface text-muted",
+                          certificationErrors.description && "border-destructive bg-destructive/10 text-ink",
+                        )}
+                      />
+                    </Field>
                   </>
                 )}
 
@@ -2604,18 +2785,31 @@ function StepBody({
                     <YearSelect
                       value={item.startYear}
                       placeholder={t("placeholders.select")}
-                      onValueChange={(value) => updateCertificate(setApplication, item.id, "startYear", value)}
+                      onValueChange={(value) => updateCertificateDraft(item.id, "startYear", value)}
                       presentLabel={t("certification.present")}
+                      error={Boolean(certificationErrors.startYear || certificationErrors.years)}
                     />
                     <span className="text-base text-muted">-</span>
                     <YearSelect
                       value={item.endYear}
                       placeholder={t("placeholders.select")}
-                      onValueChange={(value) => updateCertificate(setApplication, item.id, "endYear", value)}
+                      onValueChange={(value) => updateCertificateDraft(item.id, "endYear", value)}
                       options={certificateEndYearOptions}
                       presentLabel={t("certification.present")}
+                      error={Boolean(certificationErrors.endYear || certificationErrors.years)}
                     />
                   </div>
+                  {certificationErrors.startYear || certificationErrors.endYear || certificationErrors.years ? (
+                    <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-x-[11px]">
+                      <p className="text-sm font-semibold leading-5 text-destructive">
+                        {certificationErrors.startYear || certificationErrors.years}
+                      </p>
+                      <span aria-hidden />
+                      <p className="text-sm font-semibold leading-5 text-destructive">
+                        {certificationErrors.endYear || certificationErrors.years}
+                      </p>
+                    </div>
+                  ) : null}
                 </fieldset>
 
                 <div className="mt-2 bg-[#f4f3f8] p-6">
@@ -2628,6 +2822,7 @@ function StepBody({
                   <label
                     className={cn(
                       "mt-4 flex min-h-10 w-full cursor-pointer items-center justify-center rounded-md border-2 border-ink bg-transparent px-5 text-sm font-extrabold text-ink transition-colors hover:bg-white",
+                      certificationErrors.fileName && "border-destructive bg-destructive/10 text-destructive",
                       certificateUploading && "pointer-events-none opacity-60",
                     )}
                   >
@@ -2651,6 +2846,9 @@ function StepBody({
                       {t("certification.uploaded", { fileName: item.fileName })}
                     </p>
                   ) : null}
+                  {certificationErrors.fileName ? (
+                    <p className="mt-3 text-sm font-semibold text-destructive">{certificationErrors.fileName}</p>
+                  ) : null}
                   {item.verificationStatus === "pending" ? (
                     <p className="mt-2 text-sm font-semibold text-brand-700">{t("certification.pending")}</p>
                   ) : null}
@@ -2672,12 +2870,17 @@ function StepBody({
   }
 
   if (step === "education") {
+    const educationTouched = application.education.some((item) => isEducationTouched(item));
+    const showEducationChoiceWarning =
+      validationAttempts.education && !application.hasNoEducationDegree && !educationTouched;
     const addEducation = () => setApplication((current) => ({
       ...current,
       hasNoEducationDegree: false,
       education: [...current.education, createEmptyEducation(Date.now())],
     }));
     const updateNoDegree = (checked: boolean) => {
+      setValidationAttempts((current) => ({ ...current, education: false }));
+      setFieldValidationAttempts((current) => ({ ...current, education: false }));
       setApplication((current) => ({
         ...current,
         hasNoEducationDegree: checked,
@@ -2686,14 +2889,29 @@ function StepBody({
     };
     return (
       <div className="grid gap-6">
-        <label className="flex min-h-10 cursor-pointer items-center gap-3 text-base font-extrabold text-ink">
+        <label
+          className={cn(
+            "flex min-h-10 cursor-pointer items-center gap-3 text-base font-extrabold text-ink",
+            showEducationChoiceWarning && "text-destructive",
+          )}
+        >
           <Checkbox
             checked={application.hasNoEducationDegree}
             onCheckedChange={(checked) => updateNoDegree(checked === true)}
-            className="h-5 w-5 rounded-[3px] border-2 border-[#dcdce5] bg-white shadow-none data-[state=checked]:border-brand-600 data-[state=checked]:bg-brand-600 data-[state=checked]:text-white"
+            className={cn(
+              "h-5 w-5 rounded-[3px] border-2 border-[#dcdce5] bg-white shadow-none data-[state=checked]:border-brand-600 data-[state=checked]:bg-brand-600 data-[state=checked]:text-white",
+              showEducationChoiceWarning && "border-destructive",
+            )}
           />
           <span>{t("education.none")}</span>
         </label>
+
+        {showEducationChoiceWarning ? (
+          <div className="grid grid-cols-[20px_1fr] gap-3 rounded-[2px] bg-destructive/10 px-4 py-4 text-sm font-medium leading-5 text-ink">
+            <Info className="mt-0.5 h-4 w-4 text-ink" aria-hidden />
+            <p>{t("education.errors.chooseOrSkip")}</p>
+          </div>
+        ) : null}
 
         {!application.hasNoEducationDegree ? (
           <RepeatableBlock
@@ -2710,27 +2928,23 @@ function StepBody({
               };
             })}
             render={(item, index) => {
-              const showErrors = educationSubmitAttempted && isEducationTouched(item);
+              const showErrors = fieldValidationAttempts.education && isEducationTouched(item);
               const errors = getEducationErrors(item, t);
-              const hasErrors = showErrors && Object.keys(errors).length > 0;
               const diplomaUploadError = diplomaUploadErrors[item.id];
 
               return (
               <div className={cn("grid gap-5", index > 0 && "border-t border-line pt-6")}>
-                {hasErrors ? (
-                  <p className="rounded-[8px] bg-destructive/10 px-4 py-3 text-sm font-semibold leading-5 text-destructive">
-                    {t("education.errors.completeEntry")}
-                  </p>
-                ) : null}
-
                 <Field label={t("fields.school")} error={showErrors ? errors.school : undefined}>
                   <div className={cn("grid items-center gap-2", isEducationTouched(item) ? "grid-cols-[minmax(0,1fr)_40px]" : "grid-cols-1")}>
                     <Input
                       value={item.school}
-                      onChange={(event) => updateEducation(setApplication, item.id, "school", event.target.value)}
+                      onChange={(event) => updateEducationDraft(item.id, "school", event.target.value)}
                       placeholder={t("education.placeholders.school")}
                       aria-invalid={Boolean(showErrors && errors.school)}
-                      className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus-visible:border-brand-500 focus-visible:ring-brand-500/15"
+                      className={cn(
+                        "h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus-visible:border-brand-500 focus-visible:ring-brand-500/15",
+                        showErrors && errors.school && "border-destructive bg-destructive/10",
+                      )}
                     />
                     {isEducationTouched(item) ? (
                       <button
@@ -2754,17 +2968,20 @@ function StepBody({
                 <Field label={t("fields.degree")} error={showErrors ? errors.degree : undefined}>
                   <Input
                     value={item.degree}
-                    onChange={(event) => updateEducation(setApplication, item.id, "degree", event.target.value)}
+                    onChange={(event) => updateEducationDraft(item.id, "degree", event.target.value)}
                     placeholder={t("education.placeholders.degree")}
                     aria-invalid={Boolean(showErrors && errors.degree)}
-                    className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus-visible:border-brand-500 focus-visible:ring-brand-500/15"
+                    className={cn(
+                      "h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus-visible:border-brand-500 focus-visible:ring-brand-500/15",
+                      showErrors && errors.degree && "border-destructive bg-destructive/10",
+                    )}
                   />
                 </Field>
                 <Field label={t("education.degreeType")} error={showErrors ? errors.degreeType : undefined}>
-                  <Select value={item.degreeType || undefined} onValueChange={(value) => updateEducation(setApplication, item.id, "degreeType", value)}>
+                  <Select value={item.degreeType || undefined} onValueChange={(value) => updateEducationDraft(item.id, "degreeType", value)}>
                     <SelectTrigger
                       aria-invalid={Boolean(showErrors && errors.degreeType)}
-                      className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus:border-brand-500 focus:ring-brand-500/15 aria-[invalid=true]:border-destructive aria-[invalid=true]:ring-destructive/15"
+                      className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus:border-brand-500 focus:ring-brand-500/15 aria-[invalid=true]:border-destructive aria-[invalid=true]:bg-destructive/10 aria-[invalid=true]:ring-destructive/15"
                     >
                       <SelectValue placeholder={t("education.chooseDegreeType")} />
                     </SelectTrigger>
@@ -2780,30 +2997,47 @@ function StepBody({
                 <Field label={t("fields.field")} error={showErrors ? errors.field : undefined}>
                   <Input
                     value={item.field}
-                    onChange={(event) => updateEducation(setApplication, item.id, "field", event.target.value)}
+                    onChange={(event) => updateEducationDraft(item.id, "field", event.target.value)}
                     placeholder={t("education.placeholders.field")}
                     aria-invalid={Boolean(showErrors && errors.field)}
-                    className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus-visible:border-brand-500 focus-visible:ring-brand-500/15"
+                    className={cn(
+                      "h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus-visible:border-brand-500 focus-visible:ring-brand-500/15",
+                      showErrors && errors.field && "border-destructive bg-destructive/10",
+                    )}
                   />
                 </Field>
-                <Field label={t("fields.yearsOfStudy")} error={showErrors ? errors.years : undefined}>
+                <fieldset className="grid gap-2">
+                  <legend className="text-base font-normal leading-6 text-ink">{t("fields.yearsOfStudy")}</legend>
                   <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3">
                     <YearSelect
-                      onValueChange={(value) => updateEducation(setApplication, item.id, "startYear", value)}
+                      onValueChange={(value) => updateEducationDraft(item.id, "startYear", value)}
                       placeholder={t("placeholders.select")}
                       presentLabel={t("certification.present")}
                       value={item.startYear}
+                      error={Boolean(showErrors && (errors.startYear || errors.years))}
                     />
                     <span className="text-base text-muted">-</span>
                     <YearSelect
-                      onValueChange={(value) => updateEducation(setApplication, item.id, "endYear", value)}
+                      onValueChange={(value) => updateEducationDraft(item.id, "endYear", value)}
                       options={certificateEndYearOptions}
                       placeholder={t("placeholders.select")}
                       presentLabel={t("certification.present")}
                       value={item.endYear}
+                      error={Boolean(showErrors && (errors.endYear || errors.years))}
                     />
                   </div>
-                </Field>
+                  {showErrors && (errors.startYear || errors.endYear || errors.years) ? (
+                    <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-x-3">
+                      <p className="text-sm font-semibold leading-5 text-destructive">
+                        {errors.startYear || errors.years}
+                      </p>
+                      <span aria-hidden />
+                      <p className="text-sm font-semibold leading-5 text-destructive">
+                        {errors.endYear || errors.years}
+                      </p>
+                    </div>
+                  ) : null}
+                </fieldset>
                 <div className="bg-[#f4f3f8] p-6">
                   <h2 className="text-xl font-extrabold leading-7 text-ink">{t("education.badgeTitle")}</h2>
                   <p className="mt-3 text-sm leading-6 text-ink">{t("education.badgeText")}</p>
@@ -2862,10 +3096,13 @@ function StepBody({
         : application[activeDescriptionSection];
     const activeIssueKey = getDescriptionIssueKey(activeDescriptionSection, activeText, application);
     const minimumMissing = profileTextLength < profileDescriptionLimit;
-    const showMinimumError = descriptionSubmitAttempted && minimumMissing;
-    const showPolicyError = descriptionSubmitAttempted && hasDescriptionIssues(application);
+    const showMinimumError = validationAttempts.description && minimumMissing;
+    const showPolicyError = validationAttempts.description && hasDescriptionIssues(application);
     const continueDescriptionSection = () => {
       if (activeSectionIndex >= descriptionSectionKeys.length - 1 || activeIssueKey) {
+        if (activeIssueKey) {
+          setValidationAttempts((current) => ({ ...current, description: true }));
+        }
         return;
       }
 
@@ -2996,7 +3233,6 @@ function StepBody({
                       <Button
                         type="button"
                         onClick={continueDescriptionSection}
-                        disabled={Boolean(sectionIssueKey)}
                         className="mt-1 min-h-11 w-fit rounded-md border-2 border-ink bg-brand-500 px-6 text-base font-extrabold text-white shadow-none hover:bg-brand-600 disabled:cursor-not-allowed disabled:border-line disabled:bg-surface disabled:text-muted"
                       >
                         {t("actions.continue")}
@@ -3022,7 +3258,7 @@ function StepBody({
           <h3
             className={cn(
               "text-right text-lg font-extrabold",
-              minimumMissing && descriptionSubmitAttempted ? "text-destructive" : "text-brand-800",
+              minimumMissing && validationAttempts.description ? "text-destructive" : "text-brand-800",
             )}
           >
             {profileTextLength} / {profileDescriptionLimit}
@@ -3630,12 +3866,14 @@ function GuidelineList({ items }: { items: string[] }) {
 }
 
 function YearSelect({
+  error = false,
   onValueChange,
   options = certificateYearOptions,
   presentLabel,
   placeholder,
   value,
 }: {
+  error?: boolean;
   onValueChange: (value: string) => void;
   options?: string[];
   presentLabel: string;
@@ -3644,7 +3882,13 @@ function YearSelect({
 }) {
   return (
     <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base font-normal text-ink shadow-none">
+      <SelectTrigger
+        aria-invalid={error}
+        className={cn(
+          "h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base font-normal text-ink shadow-none",
+          error && "border-destructive bg-destructive/10",
+        )}
+      >
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent side="top" className="max-h-80 w-[var(--radix-select-trigger-width)] rounded-[8px]">
@@ -3800,8 +4044,55 @@ function isCertificateComplete(item: Certificate) {
       item.description.trim() &&
       item.issuedBy.trim() &&
       item.startYear &&
-      item.endYear,
+      item.endYear &&
+      item.fileName,
   );
+}
+
+function getVerifiedCertificateMeta(value: string) {
+  const [issuedBy, ...descriptionParts] = value.split(" • ");
+  const description = descriptionParts.join(" • ").trim();
+
+  return {
+    issuedBy: issuedBy?.trim() || "",
+    description: description || value,
+  };
+}
+
+function getCertificateErrors(
+  item: Certificate,
+  t: ReturnType<typeof useTranslations<"tutorOnboarding">>,
+) {
+  const errors: Partial<Record<"subject" | "certificate" | "description" | "issuedBy" | "startYear" | "endYear" | "years" | "fileName", string>> = {};
+
+  if (!item.subject && !item.notListed) {
+    errors.subject = t("certification.errors.required");
+  }
+  if (!item.certificate.trim()) {
+    errors.certificate = item.subject && !item.notListed
+      ? t("certification.errors.certificateSelection")
+      : t("certification.errors.certificate");
+  }
+  if (!item.description.trim()) {
+    errors.description = t("certification.errors.required");
+  }
+  if (!item.issuedBy.trim()) {
+    errors.issuedBy = t("certification.errors.required");
+  }
+  if (!item.startYear) {
+    errors.startYear = t("certification.errors.required");
+  }
+  if (!item.endYear) {
+    errors.endYear = t("certification.errors.required");
+  }
+  if (item.startYear && item.endYear && Number(item.startYear) > Number(item.endYear)) {
+    errors.years = t("certification.errors.yearRange");
+  }
+  if (!item.fileName) {
+    errors.fileName = t("certification.errors.uploadRequired");
+  }
+
+  return errors;
 }
 
 function createEmptyEducation(id = Date.now()): Education {
@@ -3853,24 +4144,61 @@ function getEducationErrors(
   item: Education,
   t: ReturnType<typeof useTranslations<"tutorOnboarding">>,
 ) {
-  const errors: Partial<Record<"school" | "degree" | "degreeType" | "field" | "years", string>> = {};
+  const errors: Partial<Record<"school" | "degree" | "degreeType" | "field" | "startYear" | "endYear" | "years", string>> = {};
 
   if (!item.school.trim()) {
-    errors.school = t("education.errors.school");
+    errors.school = t("education.errors.required");
   }
   if (!item.degree.trim()) {
-    errors.degree = t("education.errors.degree");
+    errors.degree = t("education.errors.required");
   }
   if (!item.degreeType) {
-    errors.degreeType = t("education.errors.degreeType");
+    errors.degreeType = t("education.errors.required");
   }
   if (!item.field.trim()) {
-    errors.field = t("education.errors.field");
+    errors.field = t("education.errors.required");
   }
-  if (!item.startYear || !item.endYear) {
-    errors.years = t("education.errors.years");
-  } else if (!isEducationYearRangeValid(item)) {
+  if (!item.startYear) {
+    errors.startYear = t("education.errors.required");
+  }
+  if (!item.endYear) {
+    errors.endYear = t("education.errors.required");
+  }
+  if (item.startYear && item.endYear && !isEducationYearRangeValid(item)) {
     errors.years = t("education.errors.yearRange");
+  }
+
+  return errors;
+}
+
+function getAboutErrors(
+  application: TutorApplication,
+  t: ReturnType<typeof useTranslations<"tutorOnboarding">>,
+) {
+  const errors: Partial<Record<"firstName" | "lastName" | "country" | "teaches" | "speaks" | "level" | "over18", string>> = {};
+  const hasSpokenLanguage = application.speaks.some((language, index) =>
+    Boolean(language && (application.spokenLanguageLevels[index] || (index === 0 && application.languageLevel))),
+  );
+  const hasSpokenLevel = application.spokenLanguageLevels.some((level, index) => Boolean(level || (index === 0 && application.languageLevel)));
+
+  if (!application.firstName.trim()) {
+    errors.firstName = t("validation.about.firstName");
+  }
+  if (!application.lastName.trim()) {
+    errors.lastName = t("validation.about.lastName");
+  }
+  if (!application.country) {
+    errors.country = t("validation.about.country");
+  }
+  if (!application.teaches) {
+    errors.teaches = t("validation.about.teaches");
+  }
+  if (!hasSpokenLanguage || !hasSpokenLevel) {
+    errors.speaks = t("validation.about.speaks");
+    errors.level = t("validation.about.speaks");
+  }
+  if (!application.over18) {
+    errors.over18 = t("validation.about.over18");
   }
 
   return errors;
@@ -3920,10 +4248,19 @@ function isStepValid(step: StepKey, application: TutorApplication) {
         return true;
       }
 
-      return application.certificates.some((item) => isCertificateTouched(item) && isCertificateComplete(item));
+      if (!application.certificates.some((item) => isCertificateTouched(item))) {
+        return false;
+      }
+
+      return application.certificates.some((item) => isCertificateTouched(item) && isCertificateComplete(item)) &&
+        application.certificates.every((item) => !isCertificateTouched(item) || isCertificateComplete(item));
     case "education":
       if (application.hasNoEducationDegree) {
         return true;
+      }
+
+      if (!application.education.some((item) => isEducationTouched(item))) {
+        return false;
       }
 
       return application.education.some((item) => isEducationTouched(item) && isEducationComplete(item)) &&

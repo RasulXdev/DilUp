@@ -760,6 +760,19 @@
       "ready": "This step is ready.",
       "missing": "Complete the required fields to continue."
     },
+    "validation": {
+      "about": {
+        "firstName": "Enter your first name.",
+        "lastName": "Enter your last name.",
+        "country": "Choose your country of birth.",
+        "teaches": "Choose the subject you teach.",
+        "speaks": "Add at least one language and level.",
+        "over18": "Confirm that you are over 18."
+      },
+      "photo": {
+        "required": "Add a profile photo to continue."
+      }
+    },
     "content": {
       "start": {
         "eyebrow": "Join as a tutor",
@@ -993,6 +1006,16 @@
       "uploadText": "Our team will manually review your submission.",
       "uploadTitle": "Upload your certificate",
       "errors": {
+        "completeEntry": "Complete the certificate you started or remove this block.",
+        "chooseOrSkip": "To proceed, add your teaching certification or tick the box “I don’t have a teaching certificate.” You can always add your certification later.",
+        "required": "This field is required.",
+        "subject": "Choose a subject for this certificate.",
+        "certificate": "Enter the certificate name.",
+        "certificateSelection": "Choose a certificate.",
+        "issuedBy": "Enter who issued the certificate.",
+        "uploadRequired": "Upload your certificate document.",
+        "years": "Choose both start and end years.",
+        "yearRange": "End year cannot be earlier than start year.",
         "type": "Upload a JPG or PNG document.",
         "size": "Certificate file must be 20MB or smaller.",
         "unauthorized": "Log in with your tutor account to upload certificates.",
@@ -1016,6 +1039,8 @@
       "uploaded": "{fileName} uploaded",
       "errors": {
         "completeEntry": "Complete the education entry you started or remove this block.",
+        "chooseOrSkip": "To proceed, add your higher education or tick the box “I don’t have a higher education degree.” You can always add education later.",
+        "required": "This field is required.",
         "school": "Enter the university name.",
         "degree": "Enter the degree or program name.",
         "degreeType": "Choose a degree type.",

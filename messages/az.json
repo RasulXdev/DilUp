@@ -760,6 +760,19 @@
       "ready": "Bu addım tamamdır.",
       "missing": "Davam etmək üçün tələb olunan sahələri tamamla."
     },
+    "validation": {
+      "about": {
+        "firstName": "Adını daxil et.",
+        "lastName": "Soyadını daxil et.",
+        "country": "Doğulduğun ölkəni seç.",
+        "teaches": "Öyrətdiyin fənni seç.",
+        "speaks": "Ən azı bir dil və səviyyə əlavə et.",
+        "over18": "18 yaşdan yuxarı olduğunu təsdiqlə."
+      },
+      "photo": {
+        "required": "Davam etmək üçün profil fotosu əlavə et."
+      }
+    },
     "content": {
       "start": {
         "eyebrow": "Müəllim kimi qoşul",
@@ -993,6 +1006,16 @@
       "uploadText": "Komandamız göndərdiyin sənədi əl ilə yoxlayacaq.",
       "uploadTitle": "Sertifikatını yüklə",
       "errors": {
+        "completeEntry": "Başladığın sertifikatı tamamla və ya bu bloku sil.",
+        "chooseOrSkip": "Davam etmək üçün tədris sertifikatını əlavə et və ya “Tədris sertifikatım yoxdur” seçimini işarələ. Sertifikatını daha sonra da əlavə edə bilərsən.",
+        "required": "Bu sahə tələb olunur.",
+        "subject": "Bu sertifikat üçün fənn seç.",
+        "certificate": "Sertifikat adını daxil et.",
+        "certificateSelection": "Sertifikat seç.",
+        "issuedBy": "Sertifikatı verən qurumu daxil et.",
+        "uploadRequired": "Sertifikat sənədini yüklə.",
+        "years": "Başlanğıc və bitmə ilini seç.",
+        "yearRange": "Bitmə ili başlanğıc ilindən əvvəl ola bilməz.",
         "type": "JPG və ya PNG sənəd yüklə.",
         "size": "Sertifikat faylı 20MB və ya daha kiçik olmalıdır.",
         "unauthorized": "Sertifikat yükləmək üçün müəllim hesabı ilə daxil ol.",
@@ -1016,6 +1039,8 @@
       "uploaded": "{fileName} yükləndi",
       "errors": {
         "completeEntry": "Başladığın təhsil məlumatını tamamla və ya bu bloku sil.",
+        "chooseOrSkip": "Davam etmək üçün ali təhsil məlumatını əlavə et və ya “Mənim ali təhsil dərəcəm yoxdur” seçimini işarələ. Təhsil məlumatını daha sonra da əlavə edə bilərsən.",
+        "required": "Bu sahə tələb olunur.",
         "school": "Universitet adını daxil et.",
         "degree": "Dərəcə və ya proqram adını daxil et.",
         "degreeType": "Dərəcə növünü seç.",

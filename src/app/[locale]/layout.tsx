@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Onest, Manrope } from "next/font/google";
+import type { CSSProperties } from "react";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
@@ -9,17 +9,10 @@ import { Toaster } from "@/components/ui/sonner";
 import { absoluteUrl } from "@/lib/seo";
 import "../globals.css";
 
-const fontHeading = Onest({
-  subsets: ["latin", "latin-ext", "cyrillic"],
-  variable: "--font-heading",
-  display: "swap",
-});
-
-const fontBody = Manrope({
-  subsets: ["latin", "latin-ext", "cyrillic"],
-  variable: "--font-body",
-  display: "swap",
-});
+const fontVariables = {
+  "--font-heading": 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+  "--font-body": 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+} as CSSProperties;
 
 export const metadata: Metadata = {
   title: {
@@ -61,7 +54,7 @@ export default async function LocaleLayout({
   return (
     <html
       lang={locale}
-      className={`${fontHeading.variable} ${fontBody.variable}`}
+      style={fontVariables}
     >
       <body className="flex min-h-dvh flex-col bg-white antialiased">
         <NextIntlClientProvider>
