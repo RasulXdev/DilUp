@@ -1037,30 +1037,61 @@
       }
     },
     "description": {
-      "guidance": "Bu məlumat ictimai profilində görünəcək. Onu öyrədəcəyin dildə yaz və təsdiq üçün <guidelines>qaydalarımıza</guidelines> əməl et.",
+      "guidance": "Bu mətn DilUp profilinin yazılı hissəsi olacaq. Öyrətdiyin dildə yaz və davam etməzdən əvvəl <guidelines>profil keyfiyyəti qeydlərinə</guidelines> bax.",
       "optional": "• İstəyə bağlı",
       "sections": {
         "intro": {
           "title": "Özünü təqdim et",
-          "text": "Potensial tələbələrə kim olduğunu göstər. Tədris təcrübəni, təhsilə həvəsini, maraq və hobbilərini qısa paylaş.",
-          "placeholder": "Salam, mənim adım... və mən...",
-          "hint": "Soyadını yazma və məlumatını CV formatında təqdim etmə"
+          "text": "Tələbələrə dərsin arxasında kimin dayandığını göstər. Tədris istiqamətini, üslubunu və dərslərini daha canlı edən bir neçə marağını qeyd et.",
+          "placeholder": "Salam, mən ... dərsi keçirəm. Dərslərim...",
+          "hint": "Yalnız adından istifadə et və CV kimi yox, təbii danışıqla yaz."
         },
         "experience": {
           "title": "Tədris təcrübəsi",
-          "text": "Uyğun tədris təcrübəni ətraflı təsvir et. Sertifikatları, metodikanı, təhsili və fənn biliklərini qeyd et.",
-          "placeholder": "5 illik tədris təcrübəm var. Dərslərim..."
+          "text": "Hansı tələbələrlə işlədiyini, hansı metodlardan istifadə etdiyini və tələbədə güvən yaradan təlim və fənn biliklərini təsvir et.",
+          "placeholder": "Mən ... tələbələrlə işləmişəm. Yanaşmam..."
         },
         "motivation": {
-          "title": "Tələbələri motivasiya et",
-          "text": "Tələbəni ilk dərsi bron etməyə təşviq et. Səninlə öyrənməyin faydasını vurğula.",
-          "placeholder": "Məqsədlərini və onlara necə çatacağını müzakirə etmək üçün dərs bron et...",
-          "hint": "Pulsuz trial, endirim və şəxsi əlaqə məlumatları əlavə etmə"
+          "title": "Tələbəni səninlə öyrənməyə dəvət et",
+          "text": "Tələbəyə səni seçmək üçün aydın səbəb ver. Hansı irəliləyişi gözləyə biləcəyini və ilk dərsin necə keçəcəyini izah et.",
+          "placeholder": "İlk dərsimizdə məqsədlərini müəyyən edib...",
+          "hint": "Endirim, pulsuz dərs, kənar link və şəxsi əlaqə məlumatı qeyd etmə."
         },
         "headline": {
-          "title": "Yadda qalan başlıq yaz",
-          "text": "Başlıq tələbələrin sənin haqqında gördüyü ilk mətndir. Diqqət çəkən, öyrətdiyin dili göstərən və tam təsviri oxumağa həvəsləndirən başlıq yaz.",
-          "placeholder": "5 illik təcrübəsi olan sertifikatlı müəllim"
+          "title": "Güclü başlıq yaz",
+          "text": "Tədris vədini, dili və tələbənin əldə edəcəyi nəticəni qısa bir cümlədə göstər.",
+          "placeholder": "Real danışıq üçün özgüvənli İngilis dili dərsləri"
+        }
+      },
+      "errors": {
+        "minimum": "Davam etmək üçün profil mətnində ən azı {count} simvol yaz.",
+        "reviewSections": "Yadda saxlamazdan əvvəl işarələnmiş bölməni yoxla.",
+        "lastName": "İctimai profilin məxfi qalsın deyə soyadını sil.",
+        "contact": "Link, e-poçt, telefon nömrəsi və sosial hesab məlumatlarını sil.",
+        "offers": "Pulsuz dərs, endirim və promo vədlərini sil."
+      },
+      "assist": {
+        "title": "Yazı köməkçisi",
+        "badge": "Yeni",
+        "text": "Tədris məlumatlarından redaktə edilə bilən tələbə dəvəti yarat.",
+        "create": "Mesaj yarat",
+        "added": "Mesaj əlavə edildi. Öz səsinə uyğunlaşdır.",
+        "modalTitle": "Yaradılmış profil mesajı",
+        "close": "Yazı köməkçisini bağla",
+        "notice": "Bu qaralama DilUp profil məlumatlarına əsasən yaradılır. Əlavə etməzdən əvvəl mətni redaktə edə və tonu dəyişə bilərsən.",
+        "add": "Profilə əlavə et",
+        "subjectFallback": "öyrətdiyin dil",
+        "tones": {
+          "original": "İlkin versiya",
+          "formal": "Rəsmi ton",
+          "friendly": "Səmimi ton",
+          "short": "Daha qısa versiya"
+        },
+        "templates": {
+          "base": "Mənimlə dərs bron et və {subject} məqsədlərini aydın həftəlik irəliləyişə çevirək. Faydalı ifadələri məşq edəcək, rahat düzəlişlər alacaq və hər dərsdən sonra növbəti addımını biləcəksən.",
+          "formal": "{subject} bacarıqlarını strukturlaşdırılmış və praktik dərslərlə inkişaf etdirməkdən məmnun olaram. Məqsədlərini müəyyən edəcək, özgüvənini artıracaq və hər dərsdən sonra aydın rəy alacağıq.",
+          "friendly": "Gəlin {subject} öyrənməyi daha rahat və təbii edək. Dərslərimizdə real mövzulardan danışacaq, səhvləri sakit şəkildə düzəldəcək və hər həftə irəliləmək üçün plan quracağıq.",
+          "short": "{subject} bacarıqlarını artırmağa hazırsan? Aydın məqsədlər qoyacaq, real vəziyyətləri məşq edəcək və özgüvənini addım-addım quracağıq."
         }
       }
     },

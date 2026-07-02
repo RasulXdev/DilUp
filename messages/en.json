@@ -1037,30 +1037,61 @@
       }
     },
     "description": {
-      "guidance": "This info will go on your public profile. Write it in the language you’ll be teaching and make sure to follow our <guidelines>guidelines to get approved</guidelines>.",
+      "guidance": "This will become the written part of your DilUp profile. Write in the language you teach and review our <guidelines>profile quality notes</guidelines> before continuing.",
       "optional": "• Optional",
       "sections": {
         "intro": {
           "title": "Introduce yourself",
-          "text": "Show potential students who you are! Share your teaching experience and passion for education and briefly mention your interests and hobbies.",
-          "placeholder": "Hello, my name is... and I’m from...",
-          "hint": "Don’t include your last name or present your information in a CV format"
+          "text": "Help students understand who is behind the lesson. Mention your teaching focus, personality and a few interests that make your classes feel human.",
+          "placeholder": "Hi, I teach... My lessons are...",
+          "hint": "Use your first name only and write naturally, not like a resume."
         },
         "experience": {
           "title": "Teaching experience",
-          "text": "Provide a detailed description of your relevant teaching experience. Include certifications, teaching methodology, education, and subject expertise.",
-          "placeholder": "I have 5 years of teaching experience. I’m TEFL Certified, and my classes are..."
+          "text": "Describe the learners you have worked with, the methods you use, and any training or subject expertise that helps students trust you.",
+          "placeholder": "I have taught... My approach combines..."
         },
         "motivation": {
-          "title": "Motivate potential students",
-          "text": "Encourage students to book their first lesson. Highlight the benefits of learning with you!",
-          "placeholder": "Book a trial lesson with me so we can discuss your goals and how I can help you reach them...",
-          "hint": "Do not include free trial lessons, discounts, or personal contact details"
+          "title": "Invite students to learn with you",
+          "text": "Give students a clear reason to choose you. Explain the progress they can expect and how the first lesson will feel.",
+          "placeholder": "In our first lesson, we will map your goals and...",
+          "hint": "Do not mention discounts, free lessons, external links, or private contact details."
         },
         "headline": {
-          "title": "Write a catchy headline",
-          "text": "Your headline is the first thing students see about you. Make it attention-grabbing, mention your specific teaching language and encourage students to read your full description.",
-          "placeholder": "Certified tutor with 5 years of experience"
+          "title": "Write a strong headline",
+          "text": "Create a short line that summarizes your teaching promise, language and student outcome.",
+          "placeholder": "English lessons for confident real-life conversations"
+        }
+      },
+      "errors": {
+        "minimum": "Write at least {count} characters across your profile text before continuing.",
+        "reviewSections": "Review the highlighted section before saving.",
+        "lastName": "Remove your last name so your public profile stays privacy-safe.",
+        "contact": "Remove links, email addresses, phone numbers, or social handles.",
+        "offers": "Remove promises about free lessons, discounts, or promotions."
+      },
+      "assist": {
+        "title": "Writing helper",
+        "badge": "New",
+        "text": "Create an editable student-facing invitation from your teaching details.",
+        "create": "Create message",
+        "added": "Message added. Adjust it until it sounds like you.",
+        "modalTitle": "Generated profile message",
+        "close": "Close writing helper",
+        "notice": "This draft is generated from your DilUp profile details. You can edit the text and switch tone before adding it.",
+        "add": "Add to your profile",
+        "subjectFallback": "your language",
+        "tones": {
+          "original": "Original version",
+          "formal": "Formal tone",
+          "friendly": "Friendly tone",
+          "short": "Shorter version"
+        },
+        "templates": {
+          "base": "Book a lesson with me and we will turn your {subject} goals into clear weekly progress. You will practice useful phrases, receive kind corrections, and leave each class knowing exactly what to work on next.",
+          "formal": "I would be glad to help you improve your {subject} through structured, practical lessons. Together, we will define your goals, strengthen your confidence, and build steady progress with clear feedback after every class.",
+          "friendly": "Let’s make {subject} feel easier and more natural. In our lessons, we will talk about real topics, fix mistakes kindly, and build a plan that keeps you moving forward each week.",
+          "short": "Ready to improve your {subject}? We will set clear goals, practice real situations, and build your confidence step by step."
         }
       }
     },

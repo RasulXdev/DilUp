@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import type { LucideIcon } from "lucide-react";
 import {
   BadgeCheck,
+  BriefcaseBusiness,
   CalendarDays,
   Camera,
   Check,
@@ -15,7 +16,9 @@ import {
   FileText,
   GraduationCap,
   HelpCircle,
+  Info,
   Languages,
+  Loader2,
   Mic2,
   Plus,
   RotateCcw,
@@ -25,6 +28,7 @@ import {
   Trash2,
   User,
   Upload,
+  Wand2,
   Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -290,6 +294,8 @@ const certificateEndYearOptions = [presentYearValue, ...certificateYearOptions];
 const degreeTypeKeys = ["teaching", "subject", "other"];
 const descriptionSectionKeys = ["intro", "experience", "motivation", "headline"] as const;
 const profileDescriptionLimit = 400;
+type DescriptionSectionKey = (typeof descriptionSectionKeys)[number];
+type DraftTone = "original" | "formal" | "friendly" | "short";
 const photoGuidelineImages = [
   "/images/footer/how-it-works-tutors-1.jpg",
   "/images/footer/dilup-tutor-profile.jpg",
@@ -902,6 +908,50 @@ async function createProfilePhotoFile(
   return new File([blob], "profile-photo.jpg", { type: "image/jpeg" });
 }
 
+function getProfileTextLength(application: TutorApplication) {
+  return (
+    application.intro.trim().length +
+    application.experience.trim().length +
+    application.motivation.trim().length +
+    application.headline.trim().length
+  );
+}
+
+function hasContactDetails(value: string) {
+  return /(?:https?:\/\/|www\.|@|[\w.%+-]+@[\w.-]+\.[a-z]{2,}|\+?\d[\d\s().-]{7,}\d)/i.test(value);
+}
+
+function getDescriptionIssueKey(section: DescriptionSectionKey, value: string, application: TutorApplication) {
+  const normalized = value.toLocaleLowerCase();
+  const lastName = application.lastName.trim().toLocaleLowerCase();
+
+  if (!value.trim()) {
+    return "";
+  }
+
+  if (lastName.length > 1 && normalized.includes(lastName)) {
+    return "lastName";
+  }
+
+  if (hasContactDetails(value)) {
+    return "contact";
+  }
+
+  if (section === "motivation" && /\b(free|discount|promo|coupon|trial)\b/i.test(value)) {
+    return "offers";
+  }
+
+  return "";
+}
+
+function hasDescriptionIssues(application: TutorApplication) {
+  return descriptionSectionKeys.some((section) => {
+    const value = section === "headline" ? application.headline : application[section];
+
+    return Boolean(getDescriptionIssueKey(section, value, application));
+  });
+}
+
 export function TutorOnboardingWizard() {
   const t = useTranslations("tutorOnboarding");
   const locale = useLocale();
@@ -915,6 +965,7 @@ export function TutorOnboardingWizard() {
   const [videoTestReady, setVideoTestReady] = useState(initialTutorState.application.videoReady);
   const [isVideoUploading, setIsVideoUploading] = useState(false);
   const [educationSubmitAttempted, setEducationSubmitAttempted] = useState(false);
+  const [descriptionSubmitAttempted, setDescriptionSubmitAttempted] = useState(false);
 
   const currentStep = steps[stepIndex];
   const countryOptions = useMemo(() => {
@@ -969,7 +1020,7 @@ export function TutorOnboardingWizard() {
       ? videoTestReady
       : isStepValid(currentStep.key, application);
   const continueDisabled =
-    (currentStep.key !== "education" && !canContinue) ||
+    (currentStep.key !== "education" && currentStep.key !== "description" && !canContinue) ||
     (currentStep.key === "photo" && isPhotoUploading) ||
     (currentStep.key === "video" && videoSubstep === "intro" && isVideoUploading);
   const currentStepText =
@@ -986,11 +1037,17 @@ export function TutorOnboardingWizard() {
       if (currentStep.key === "education") {
         setEducationSubmitAttempted(true);
       }
+      if (currentStep.key === "description") {
+        setDescriptionSubmitAttempted(true);
+      }
       return;
     }
 
     if (currentStep.key === "education") {
       setEducationSubmitAttempted(false);
+    }
+    if (currentStep.key === "description") {
+      setDescriptionSubmitAttempted(false);
     }
 
     if (currentStep.key === "video" && videoSubstep === "test") {
@@ -1120,6 +1177,7 @@ export function TutorOnboardingWizard() {
                   videoTestReady={videoTestReady}
                   setApplication={setApplication}
                   educationSubmitAttempted={educationSubmitAttempted}
+                  descriptionSubmitAttempted={descriptionSubmitAttempted}
                   t={t}
                 />
               </div>
@@ -1203,6 +1261,7 @@ function StepBody({
   videoTestReady,
   setApplication,
   educationSubmitAttempted,
+  descriptionSubmitAttempted,
   t,
 }: {
   step: StepKey;
@@ -1219,6 +1278,7 @@ function StepBody({
   videoTestReady: boolean;
   setApplication: React.Dispatch<React.SetStateAction<TutorApplication>>;
   educationSubmitAttempted: boolean;
+  descriptionSubmitAttempted: boolean;
   t: ReturnType<typeof useTranslations<"tutorOnboarding">>;
 }) {
   const [phonePickerOpen, setPhonePickerOpen] = useState(false);
@@ -1242,7 +1302,12 @@ function StepBody({
   const [certificateUploadingIds, setCertificateUploadingIds] = useState<number[]>([]);
   const [certificateUploadErrors, setCertificateUploadErrors] = useState<Record<number, string>>({});
   const [diplomaUploadErrors, setDiplomaUploadErrors] = useState<Record<number, string>>({});
-  const [activeDescriptionSection, setActiveDescriptionSection] = useState<(typeof descriptionSectionKeys)[number]>("intro");
+  const [activeDescriptionSection, setActiveDescriptionSection] = useState<DescriptionSectionKey>("intro");
+  const [descriptionAssistantOpen, setDescriptionAssistantOpen] = useState(false);
+  const [descriptionDraft, setDescriptionDraft] = useState("");
+  const [descriptionDraftTone, setDescriptionDraftTone] = useState<DraftTone>("original");
+  const [descriptionDraftLoading, setDescriptionDraftLoading] = useState(false);
+  const [descriptionDraftAdded, setDescriptionDraftAdded] = useState(false);
   const [videoPhase, setVideoPhase] = useState<"camera" | "cameraLoading" | "recordingReady" | "countdown" | "recording" | "recorded">(
     application.videoReady ? "recorded" : "camera",
   );
@@ -2447,7 +2512,7 @@ function StepBody({
                           }))
                         }
                         className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-transparent text-ink transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15"
-                        aria-label={t("certification.clearSubject")}
+                        aria-label={t("certification.remove")}
                       >
                         <Trash2 className="h-5 w-5" />
                       </button>
@@ -2789,30 +2854,56 @@ function StepBody({
   }
 
   if (step === "description") {
-    const profileTextLength = application.intro.length + application.experience.length + application.motivation.length;
+    const profileTextLength = getProfileTextLength(application);
     const activeSectionIndex = descriptionSectionKeys.indexOf(activeDescriptionSection);
     const activeText =
       activeDescriptionSection === "headline"
         ? application.headline
         : application[activeDescriptionSection];
-    const canContinueDescriptionSection = Boolean(activeText.trim());
+    const activeIssueKey = getDescriptionIssueKey(activeDescriptionSection, activeText, application);
+    const minimumMissing = profileTextLength < profileDescriptionLimit;
+    const showMinimumError = descriptionSubmitAttempted && minimumMissing;
+    const showPolicyError = descriptionSubmitAttempted && hasDescriptionIssues(application);
     const continueDescriptionSection = () => {
-      if (!canContinueDescriptionSection || activeSectionIndex >= descriptionSectionKeys.length - 1) {
+      if (activeSectionIndex >= descriptionSectionKeys.length - 1 || activeIssueKey) {
         return;
       }
 
       setActiveDescriptionSection(descriptionSectionKeys[activeSectionIndex + 1]);
     };
+    const buildGeneratedDraft = (tone: DraftTone) => {
+      const subject = application.teaches ? optionLabel(t, "languages", application.teaches) : t("description.assist.subjectFallback");
+      const templateKey = tone === "original" ? "base" : tone;
+
+      return t(`description.assist.templates.${templateKey}`, { subject });
+    };
+    const openWritingAssist = () => {
+      setDescriptionDraftTone("original");
+      setDescriptionDraft(buildGeneratedDraft("original"));
+      setDescriptionAssistantOpen(true);
+    };
+    const changeDraftTone = (tone: DraftTone) => {
+      setDescriptionDraftTone(tone);
+      setDescriptionDraftLoading(true);
+      window.setTimeout(() => {
+        setDescriptionDraft(buildGeneratedDraft(tone));
+        setDescriptionDraftLoading(false);
+      }, 650);
+    };
+    const addDraftToProfile = () => {
+      updateField("motivation", descriptionDraft);
+      setDescriptionDraftAdded(true);
+      setDescriptionAssistantOpen(false);
+      setActiveDescriptionSection("motivation");
+    };
 
     return (
-      <div className="grid gap-5">
+      <div className="grid gap-5" data-testid="tutor-onboarding-description-step">
         <p className="text-base leading-6 text-ink">
           {t.rich("description.guidance", {
             guidelines: (chunks) => (
               <a
-                href="https://help.preply.com/en/articles/4175164-profile-description-guidelines"
-                target="_blank"
-                rel="noreferrer"
+                href={`/${locale}/become-tutor#requirements`}
                 className="font-extrabold underline underline-offset-2"
               >
                 {chunks}
@@ -2825,6 +2916,8 @@ function StepBody({
             const active = activeDescriptionSection === section;
             const value = section === "headline" ? application.headline : application[section];
             const sectionCopy = t.raw(`description.sections.${section}`) as { hint?: string };
+            const sectionIssueKey = getDescriptionIssueKey(section, value, application);
+            const describedBy = sectionIssueKey ? `description-${section}-error` : undefined;
 
             return (
               <section key={section} className="border-b border-line pb-4">
@@ -2832,41 +2925,79 @@ function StepBody({
                   type="button"
                   onClick={() => setActiveDescriptionSection(section)}
                   className="flex w-full items-center justify-between gap-4 py-2 text-left"
+                  aria-expanded={active}
                 >
                   <h2 className="text-xl font-extrabold leading-7 text-ink">
                     {index + 1}. {t(`description.sections.${section}.title`)}
                   </h2>
-                  {value.trim() ? <Check className="h-5 w-5 shrink-0 text-brand-700" /> : null}
+                  {value.trim() && !sectionIssueKey ? <Check className="h-5 w-5 shrink-0 text-ink" /> : null}
                 </button>
                 {active ? (
                   <div className="mt-3 grid gap-3">
                     <p className="text-sm leading-6 text-ink">{t(`description.sections.${section}.text`)}</p>
                     <p className="text-sm font-bold text-muted">{t("description.optional")}</p>
                     {section === "headline" ? (
-                      <Input
+                      <Textarea
                         value={application.headline}
                         onChange={(event) => updateField("headline", event.target.value)}
                         placeholder={t("description.sections.headline.placeholder")}
-                        className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none"
+                        aria-invalid={Boolean(sectionIssueKey)}
+                        aria-describedby={describedBy}
+                        className={cn(
+                          "h-12 min-h-12 resize-none overflow-hidden rounded-[8px] border-2 border-[#dcdce5] px-4 py-3 text-base leading-6 shadow-none focus-visible:ring-4 focus-visible:ring-brand-500/15",
+                          sectionIssueKey && "border-destructive focus-visible:ring-destructive/15",
+                        )}
                       />
                     ) : (
                       <Textarea
                         value={application[section]}
-                        maxLength={profileDescriptionLimit}
                         onChange={(event) => updateField(section, event.target.value)}
                         placeholder={t(`description.sections.${section}.placeholder`)}
-                        className="min-h-34 rounded-[8px] border-2 border-[#dcdce5] px-4 py-3 text-base shadow-none"
+                        aria-invalid={Boolean(sectionIssueKey)}
+                        aria-describedby={describedBy}
+                        className={cn(
+                          "min-h-42 rounded-[8px] border-2 border-[#dcdce5] px-4 py-3 text-base leading-6 shadow-none focus-visible:ring-4 focus-visible:ring-brand-500/15",
+                          sectionIssueKey && "border-destructive focus-visible:ring-destructive/15",
+                        )}
                       />
                     )}
+                    {sectionIssueKey ? (
+                      <p id={describedBy} className="text-sm font-semibold leading-5 text-destructive">
+                        {t(`description.errors.${sectionIssueKey}`)}
+                      </p>
+                    ) : null}
                     {sectionCopy.hint ? (
                       <p className="text-sm leading-6 text-muted">{t(`description.sections.${section}.hint`)}</p>
+                    ) : null}
+                    {section === "motivation" ? (
+                      <div className="rounded-md border border-brand-100 bg-brand-50/70 p-4">
+                        {descriptionDraftAdded ? (
+                          <p className="mb-3 text-sm font-semibold leading-5 text-brand-800">{t("description.assist.added")}</p>
+                        ) : null}
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className="text-sm font-extrabold text-ink">{t("description.assist.title")}</p>
+                          <span className="rounded-full bg-brand-600 px-2 py-0.5 text-xs font-extrabold text-white">
+                            {t("description.assist.badge")}
+                          </span>
+                        </div>
+                        <p className="mt-2 text-sm leading-5 text-muted">{t("description.assist.text")}</p>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={openWritingAssist}
+                          className="mt-3 min-h-10 rounded-md border-2 border-ink bg-white px-4 text-sm font-extrabold text-ink hover:bg-surface"
+                        >
+                          <Wand2 className="mr-2 h-4 w-4" />
+                          {t("description.assist.create")}
+                        </Button>
+                      </div>
                     ) : null}
                     {section !== "headline" ? (
                       <Button
                         type="button"
                         onClick={continueDescriptionSection}
-                        disabled={!canContinueDescriptionSection}
-                        className="mt-1 min-h-11 w-fit rounded-md border-2 border-ink bg-brand-500 px-6 text-base font-extrabold text-white shadow-none hover:bg-brand-600"
+                        disabled={Boolean(sectionIssueKey)}
+                        className="mt-1 min-h-11 w-fit rounded-md border-2 border-ink bg-brand-500 px-6 text-base font-extrabold text-white shadow-none hover:bg-brand-600 disabled:cursor-not-allowed disabled:border-line disabled:bg-surface disabled:text-muted"
                       >
                         {t("actions.continue")}
                       </Button>
@@ -2877,9 +3008,81 @@ function StepBody({
             );
           })}
         </div>
-        <h3 className="text-right text-lg font-extrabold text-ink">
-          {profileTextLength} / {profileDescriptionLimit}
-        </h3>
+        <div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-start">
+          <div aria-live="polite">
+            {showMinimumError ? (
+              <p className="text-sm font-semibold leading-5 text-destructive">
+                {t("description.errors.minimum", { count: profileDescriptionLimit })}
+              </p>
+            ) : null}
+            {showPolicyError ? (
+              <p className="text-sm font-semibold leading-5 text-destructive">{t("description.errors.reviewSections")}</p>
+            ) : null}
+          </div>
+          <h3
+            className={cn(
+              "text-right text-lg font-extrabold",
+              minimumMissing && descriptionSubmitAttempted ? "text-destructive" : "text-brand-800",
+            )}
+          >
+            {profileTextLength} / {profileDescriptionLimit}
+          </h3>
+        </div>
+        <Dialog open={descriptionAssistantOpen} onOpenChange={setDescriptionAssistantOpen}>
+          <DialogContent className="max-w-[748px] rounded-md border-0 p-6 shadow-2xl sm:p-8">
+            <DialogHeader className="space-y-0">
+              <DialogTitle className="font-display pr-8 text-2xl font-extrabold leading-8 text-ink sm:text-3xl">
+                {t("description.assist.modalTitle")}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="mt-5 rounded-none bg-brand-100 p-4 text-sm leading-6 text-ink">
+              <div className="flex gap-3">
+                <Info className="mt-0.5 h-5 w-5 shrink-0 text-brand-800" />
+                <p>{t("description.assist.notice")}</p>
+              </div>
+            </div>
+            <div className="relative mt-5">
+              <Textarea
+                value={descriptionDraft}
+                onChange={(event) => setDescriptionDraft(event.target.value)}
+                disabled={descriptionDraftLoading}
+                className="min-h-30 rounded-[8px] border-2 border-[#dcdce5] px-4 py-3 text-base leading-6 shadow-none focus-visible:ring-4 focus-visible:ring-brand-500/15"
+              />
+              {descriptionDraftLoading ? (
+                <div className="absolute inset-0 flex items-center justify-center rounded-[8px] bg-white/75">
+                  <Loader2 className="h-6 w-6 animate-spin text-brand-700" />
+                </div>
+              ) : null}
+            </div>
+            <div className="mt-5 flex flex-wrap gap-3">
+              {(["formal", "friendly", "short"] as DraftTone[]).map((tone) => (
+                <Button
+                  key={tone}
+                  type="button"
+                  variant="outline"
+                  disabled={descriptionDraftLoading}
+                  onClick={() => changeDraftTone(descriptionDraftTone === tone ? "original" : tone)}
+                  className="min-h-10 rounded-md border-2 border-ink bg-white px-4 text-sm font-extrabold text-ink hover:bg-surface"
+                >
+                  {tone === "formal" ? <BriefcaseBusiness className="mr-2 h-4 w-4" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                  {descriptionDraftTone === tone
+                    ? t("description.assist.tones.original")
+                    : t(`description.assist.tones.${tone}`)}
+                </Button>
+              ))}
+            </div>
+            <DialogFooter className="mt-6">
+              <Button
+                type="button"
+                disabled={descriptionDraftLoading || !descriptionDraft.trim()}
+                onClick={addDraftToProfile}
+                className="min-h-12 w-full rounded-md border-2 border-ink bg-brand-500 px-6 text-base font-extrabold text-white shadow-none hover:bg-brand-600 sm:w-auto"
+              >
+                {t("description.assist.add")}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }
@@ -3576,6 +3779,31 @@ function createEmptyCertificate(id = Date.now()): Certificate {
   };
 }
 
+function isCertificateTouched(item: Certificate) {
+  return Boolean(
+    item.subject ||
+      item.certificate.trim() ||
+      item.description.trim() ||
+      item.issuedBy.trim() ||
+      item.year ||
+      item.startYear ||
+      item.endYear ||
+      item.notListed ||
+      item.fileName,
+  );
+}
+
+function isCertificateComplete(item: Certificate) {
+  return Boolean(
+    item.subject &&
+      item.certificate.trim() &&
+      item.description.trim() &&
+      item.issuedBy.trim() &&
+      item.startYear &&
+      item.endYear,
+  );
+}
+
 function createEmptyEducation(id = Date.now()): Education {
   return {
     id,
@@ -3688,15 +3916,20 @@ function isStepValid(step: StepKey, application: TutorApplication) {
     case "photo":
       return Boolean(application.photoReady && application.photoUrl);
     case "certification":
-      return true;
+      if (application.hasNoCertificates) {
+        return true;
+      }
+
+      return application.certificates.some((item) => isCertificateTouched(item) && isCertificateComplete(item));
     case "education":
       if (application.hasNoEducationDegree) {
         return true;
       }
 
-      return application.education.every((item) => !isEducationTouched(item) || isEducationComplete(item));
+      return application.education.some((item) => isEducationTouched(item) && isEducationComplete(item)) &&
+        application.education.every((item) => !isEducationTouched(item) || isEducationComplete(item));
     case "description":
-      return Boolean(application.headline.trim() && application.intro.trim() && application.experience.trim() && application.motivation.trim());
+      return getProfileTextLength(application) >= profileDescriptionLimit && !hasDescriptionIssues(application);
     case "video":
       return application.videoReady;
     case "availability":
