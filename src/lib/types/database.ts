@@ -864,6 +864,93 @@ export type Database = {
           },
         ]
       }
+      tutor_certificates: {
+        Row: {
+          certificate_name: string
+          created_at: string | null
+          description: string | null
+          end_year: number | null
+          file_size_bytes: number
+          id: string
+          is_current: boolean
+          issued_by: string | null
+          mime_type: string
+          not_listed: boolean
+          original_file_name: string
+          reviewer_notes: string | null
+          start_year: number | null
+          storage_bucket: string
+          storage_path: string
+          subject: string | null
+          tutor_id: string
+          updated_at: string | null
+          user_id: string
+          verification_status: string
+          verified_at: string | null
+        }
+        Insert: {
+          certificate_name: string
+          created_at?: string | null
+          description?: string | null
+          end_year?: number | null
+          file_size_bytes: number
+          id?: string
+          is_current?: boolean
+          issued_by?: string | null
+          mime_type: string
+          not_listed?: boolean
+          original_file_name: string
+          reviewer_notes?: string | null
+          start_year?: number | null
+          storage_bucket?: string
+          storage_path: string
+          subject?: string | null
+          tutor_id: string
+          updated_at?: string | null
+          user_id: string
+          verification_status?: string
+          verified_at?: string | null
+        }
+        Update: {
+          certificate_name?: string
+          created_at?: string | null
+          description?: string | null
+          end_year?: number | null
+          file_size_bytes?: number
+          id?: string
+          is_current?: boolean
+          issued_by?: string | null
+          mime_type?: string
+          not_listed?: boolean
+          original_file_name?: string
+          reviewer_notes?: string | null
+          start_year?: number | null
+          storage_bucket?: string
+          storage_path?: string
+          subject?: string | null
+          tutor_id?: string
+          updated_at?: string | null
+          user_id?: string
+          verification_status?: string
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tutor_certificates_tutor_id_fkey"
+            columns: ["tutor_id"]
+            isOneToOne: false
+            referencedRelation: "tutor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tutor_certificates_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tutor_photos: {
         Row: {
           created_at: string | null

@@ -26,7 +26,6 @@ import {
   User,
   Upload,
   Wallet,
-  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -915,6 +914,7 @@ export function TutorOnboardingWizard() {
   const [videoSubstep, setVideoSubstep] = useState<"test" | "intro">(initialTutorState.application.videoReady ? "intro" : "test");
   const [videoTestReady, setVideoTestReady] = useState(initialTutorState.application.videoReady);
   const [isVideoUploading, setIsVideoUploading] = useState(false);
+  const [educationSubmitAttempted, setEducationSubmitAttempted] = useState(false);
 
   const currentStep = steps[stepIndex];
   const countryOptions = useMemo(() => {
@@ -969,7 +969,7 @@ export function TutorOnboardingWizard() {
       ? videoTestReady
       : isStepValid(currentStep.key, application);
   const continueDisabled =
-    !canContinue ||
+    (currentStep.key !== "education" && !canContinue) ||
     (currentStep.key === "photo" && isPhotoUploading) ||
     (currentStep.key === "video" && videoSubstep === "intro" && isVideoUploading);
   const currentStepText =
@@ -983,7 +983,14 @@ export function TutorOnboardingWizard() {
 
   function next() {
     if (!canContinue) {
+      if (currentStep.key === "education") {
+        setEducationSubmitAttempted(true);
+      }
       return;
+    }
+
+    if (currentStep.key === "education") {
+      setEducationSubmitAttempted(false);
     }
 
     if (currentStep.key === "video" && videoSubstep === "test") {
@@ -1112,6 +1119,7 @@ export function TutorOnboardingWizard() {
                   videoSubstep={videoSubstep}
                   videoTestReady={videoTestReady}
                   setApplication={setApplication}
+                  educationSubmitAttempted={educationSubmitAttempted}
                   t={t}
                 />
               </div>
@@ -1194,6 +1202,7 @@ function StepBody({
   videoSubstep,
   videoTestReady,
   setApplication,
+  educationSubmitAttempted,
   t,
 }: {
   step: StepKey;
@@ -1209,6 +1218,7 @@ function StepBody({
   videoSubstep: "test" | "intro";
   videoTestReady: boolean;
   setApplication: React.Dispatch<React.SetStateAction<TutorApplication>>;
+  educationSubmitAttempted: boolean;
   t: ReturnType<typeof useTranslations<"tutorOnboarding">>;
 }) {
   const [phonePickerOpen, setPhonePickerOpen] = useState(false);
@@ -1231,6 +1241,7 @@ function StepBody({
   const [photoUploadError, setPhotoUploadError] = useState("");
   const [certificateUploadingIds, setCertificateUploadingIds] = useState<number[]>([]);
   const [certificateUploadErrors, setCertificateUploadErrors] = useState<Record<number, string>>({});
+  const [diplomaUploadErrors, setDiplomaUploadErrors] = useState<Record<number, string>>({});
   const [activeDescriptionSection, setActiveDescriptionSection] = useState<(typeof descriptionSectionKeys)[number]>("intro");
   const [videoPhase, setVideoPhase] = useState<"camera" | "cameraLoading" | "recordingReady" | "countdown" | "recording" | "recorded">(
     application.videoReady ? "recorded" : "camera",
@@ -2608,14 +2619,13 @@ function StepBody({
         education: checked ? current.education : current.education.length ? current.education : [createEmptyEducation()],
       }));
     };
-
     return (
       <div className="grid gap-6">
-        <label className="flex min-h-10 items-center gap-3 text-base font-extrabold text-ink">
+        <label className="flex min-h-10 cursor-pointer items-center gap-3 text-base font-extrabold text-ink">
           <Checkbox
             checked={application.hasNoEducationDegree}
             onCheckedChange={(checked) => updateNoDegree(checked === true)}
-            className="h-5 w-5 rounded-[3px] border-2 border-[#dcdce5] bg-white shadow-none data-[state=checked]:border-ink data-[state=checked]:bg-ink data-[state=checked]:text-white"
+            className="h-5 w-5 rounded-[3px] border-2 border-[#dcdce5] bg-white shadow-none data-[state=checked]:border-brand-600 data-[state=checked]:bg-brand-600 data-[state=checked]:text-white"
           />
           <span>{t("education.none")}</span>
         </label>
@@ -2634,18 +2644,28 @@ function StepBody({
                 education: nextEducation.length ? nextEducation : [createEmptyEducation()],
               };
             })}
-            render={(item) => (
-              <div className="grid gap-5">
-                <Field label={t("fields.school")}>
-                  <div className="relative">
+            render={(item, index) => {
+              const showErrors = educationSubmitAttempted && isEducationTouched(item);
+              const errors = getEducationErrors(item, t);
+              const hasErrors = showErrors && Object.keys(errors).length > 0;
+              const diplomaUploadError = diplomaUploadErrors[item.id];
+
+              return (
+              <div className={cn("grid gap-5", index > 0 && "border-t border-line pt-6")}>
+                {hasErrors ? (
+                  <p className="rounded-[8px] bg-destructive/10 px-4 py-3 text-sm font-semibold leading-5 text-destructive">
+                    {t("education.errors.completeEntry")}
+                  </p>
+                ) : null}
+
+                <Field label={t("fields.school")} error={showErrors ? errors.school : undefined}>
+                  <div className={cn("grid items-center gap-2", isEducationTouched(item) ? "grid-cols-[minmax(0,1fr)_40px]" : "grid-cols-1")}>
                     <Input
                       value={item.school}
                       onChange={(event) => updateEducation(setApplication, item.id, "school", event.target.value)}
                       placeholder={t("education.placeholders.school")}
-                      className={cn(
-                        "h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none",
-                        isEducationTouched(item) && "pr-12",
-                      )}
+                      aria-invalid={Boolean(showErrors && errors.school)}
+                      className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus-visible:border-brand-500 focus-visible:ring-brand-500/15"
                     />
                     {isEducationTouched(item) ? (
                       <button
@@ -2658,25 +2678,29 @@ function StepBody({
                             education: nextEducation.length ? nextEducation : [createEmptyEducation()],
                           };
                         })}
-                        className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md text-ink transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15"
+                        className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-transparent text-ink transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15"
                         aria-label={t("education.remove")}
                       >
-                        <X className="h-4 w-4" />
+                        <Trash2 className="h-5 w-5" />
                       </button>
                     ) : null}
                   </div>
                 </Field>
-                <Field label={t("fields.degree")}>
+                <Field label={t("fields.degree")} error={showErrors ? errors.degree : undefined}>
                   <Input
                     value={item.degree}
                     onChange={(event) => updateEducation(setApplication, item.id, "degree", event.target.value)}
                     placeholder={t("education.placeholders.degree")}
-                    className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none"
+                    aria-invalid={Boolean(showErrors && errors.degree)}
+                    className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus-visible:border-brand-500 focus-visible:ring-brand-500/15"
                   />
                 </Field>
-                <Field label={t("education.degreeType")}>
+                <Field label={t("education.degreeType")} error={showErrors ? errors.degreeType : undefined}>
                   <Select value={item.degreeType || undefined} onValueChange={(value) => updateEducation(setApplication, item.id, "degreeType", value)}>
-                    <SelectTrigger className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none">
+                    <SelectTrigger
+                      aria-invalid={Boolean(showErrors && errors.degreeType)}
+                      className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus:border-brand-500 focus:ring-brand-500/15 aria-[invalid=true]:border-destructive aria-[invalid=true]:ring-destructive/15"
+                    >
                       <SelectValue placeholder={t("education.chooseDegreeType")} />
                     </SelectTrigger>
                     <SelectContent className="rounded-[8px]">
@@ -2688,15 +2712,16 @@ function StepBody({
                     </SelectContent>
                   </Select>
                 </Field>
-                <Field label={t("fields.field")}>
+                <Field label={t("fields.field")} error={showErrors ? errors.field : undefined}>
                   <Input
                     value={item.field}
                     onChange={(event) => updateEducation(setApplication, item.id, "field", event.target.value)}
                     placeholder={t("education.placeholders.field")}
-                    className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none"
+                    aria-invalid={Boolean(showErrors && errors.field)}
+                    className="h-12 rounded-[8px] border-2 border-[#dcdce5] px-4 text-base shadow-none focus-visible:border-brand-500 focus-visible:ring-brand-500/15"
                   />
                 </Field>
-                <Field label={t("fields.yearsOfStudy")}>
+                <Field label={t("fields.yearsOfStudy")} error={showErrors ? errors.years : undefined}>
                   <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3">
                     <YearSelect
                       onValueChange={(value) => updateEducation(setApplication, item.id, "startYear", value)}
@@ -2714,7 +2739,7 @@ function StepBody({
                     />
                   </div>
                 </Field>
-                <div className="bg-surface p-6">
+                <div className="bg-[#f4f3f8] p-6">
                   <h2 className="text-xl font-extrabold leading-7 text-ink">{t("education.badgeTitle")}</h2>
                   <p className="mt-3 text-sm leading-6 text-ink">{t("education.badgeText")}</p>
                   <p className="mt-4 text-sm leading-6 text-ink">{t("education.format")}</p>
@@ -2728,15 +2753,34 @@ function StepBody({
                       onChange={(event) => {
                         const file = event.target.files?.[0];
                         if (file) {
+                          if (!["image/jpeg", "image/png"].includes(file.type)) {
+                            setDiplomaUploadErrors((current) => ({ ...current, [item.id]: t("education.errors.fileType") }));
+                            event.target.value = "";
+                            return;
+                          }
+                          if (file.size > 20 * 1024 * 1024) {
+                            setDiplomaUploadErrors((current) => ({ ...current, [item.id]: t("education.errors.fileSize") }));
+                            event.target.value = "";
+                            return;
+                          }
+                          setDiplomaUploadErrors((current) => {
+                            const next = { ...current };
+                            delete next[item.id];
+                            return next;
+                          });
                           updateEducation(setApplication, item.id, "diplomaFileName", file.name);
                         }
                         event.target.value = "";
                       }}
                     />
                   </label>
+                  {diplomaUploadError ? (
+                    <p className="mt-3 text-sm font-semibold leading-5 text-destructive">{diplomaUploadError}</p>
+                  ) : null}
                 </div>
               </div>
-            )}
+              );
+            }}
             showTopRemove={false}
           />
         ) : null}
@@ -3197,11 +3241,12 @@ function StepBody({
   );
 }
 
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+function Field({ label, hint, error, children }: { label: string; hint?: string; error?: string; children: React.ReactNode }) {
   return (
     <div className="grid gap-2">
       <Label className="text-base font-normal leading-6 text-ink">{label}</Label>
       {children}
+      {error ? <p className="text-sm font-semibold leading-5 text-destructive">{error}</p> : null}
       {hint ? <p className="text-sm font-medium leading-6 text-muted">{hint}</p> : null}
     </div>
   );
@@ -3416,6 +3461,7 @@ function RepeatableBlock<T extends { id: number }>({
   addLabel,
   onAdd,
   onRemove,
+  removeLabel = "Remove item",
   render,
   showTopRemove = true,
 }: {
@@ -3424,6 +3470,7 @@ function RepeatableBlock<T extends { id: number }>({
   addLabel: string;
   onAdd: () => void;
   onRemove: (id: number) => void;
+  removeLabel?: string;
   render: (item: T, index: number) => React.ReactNode;
   showTopRemove?: boolean;
 }) {
@@ -3437,9 +3484,9 @@ function RepeatableBlock<T extends { id: number }>({
                 type="button"
                 onClick={() => onRemove(item.id)}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted transition-colors hover:bg-surface hover:text-ink focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15"
-                aria-label="Remove certificate"
+                aria-label={removeLabel}
               >
-                <X className="h-5 w-5" />
+                <Trash2 className="h-5 w-5" />
               </button>
             </div>
           ) : null}
@@ -3554,6 +3601,53 @@ function isEducationTouched(item: Education) {
   );
 }
 
+function isEducationComplete(item: Education) {
+  return Boolean(
+    item.school.trim() &&
+      item.degree.trim() &&
+      item.degreeType &&
+      item.field.trim() &&
+      item.startYear &&
+      item.endYear &&
+      isEducationYearRangeValid(item),
+  );
+}
+
+function isEducationYearRangeValid(item: Education) {
+  if (!item.startYear || !item.endYear || item.endYear === presentYearValue) {
+    return true;
+  }
+
+  return Number(item.startYear) <= Number(item.endYear);
+}
+
+function getEducationErrors(
+  item: Education,
+  t: ReturnType<typeof useTranslations<"tutorOnboarding">>,
+) {
+  const errors: Partial<Record<"school" | "degree" | "degreeType" | "field" | "years", string>> = {};
+
+  if (!item.school.trim()) {
+    errors.school = t("education.errors.school");
+  }
+  if (!item.degree.trim()) {
+    errors.degree = t("education.errors.degree");
+  }
+  if (!item.degreeType) {
+    errors.degreeType = t("education.errors.degreeType");
+  }
+  if (!item.field.trim()) {
+    errors.field = t("education.errors.field");
+  }
+  if (!item.startYear || !item.endYear) {
+    errors.years = t("education.errors.years");
+  } else if (!isEducationYearRangeValid(item)) {
+    errors.years = t("education.errors.yearRange");
+  }
+
+  return errors;
+}
+
 function updateCertificate<K extends keyof Certificate>(
   setApplication: React.Dispatch<React.SetStateAction<TutorApplication>>,
   id: number,
@@ -3596,17 +3690,11 @@ function isStepValid(step: StepKey, application: TutorApplication) {
     case "certification":
       return true;
     case "education":
-      return Boolean(
-        application.hasNoEducationDegree ||
-          application.education.some((item) =>
-            item.school.trim() &&
-            item.degree.trim() &&
-            item.degreeType &&
-            item.field.trim() &&
-            item.startYear &&
-            item.endYear,
-          ),
-      );
+      if (application.hasNoEducationDegree) {
+        return true;
+      }
+
+      return application.education.every((item) => !isEducationTouched(item) || isEducationComplete(item));
     case "description":
       return Boolean(application.headline.trim() && application.intro.trim() && application.experience.trim() && application.motivation.trim());
     case "video":

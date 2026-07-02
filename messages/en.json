@@ -784,7 +784,7 @@
       "education": {
         "eyebrow": "Education",
         "title": "Education",
-        "text": "Tell students more about the higher education that you've completed or are working on."
+        "text": "Add the higher education you have finished or are currently completing."
       },
       "description": {
         "eyebrow": "Profile text",
@@ -1002,14 +1002,29 @@
     "education": {
       "add": "Add another education",
       "none": "I don’t have a higher education degree",
+      "noneHint": "You can skip this section for now and add education details after profile review.",
       "remove": "Remove education",
+      "entryLabel": "Education #{number}",
+      "entryHint": "Completed education helps students understand your academic background.",
+      "optionalHint": "No higher education to add? Leave this section empty and continue.",
       "degreeType": "Degree type",
       "chooseDegreeType": "Choose degree type...",
       "badgeTitle": "Get a “Diploma verified” badge",
-      "badgeText": "Upload your diploma to boost your credibility! Our team will review it and add the badge to your profile. Once reviewed, your files will be deleted.",
+      "badgeText": "Add a diploma document so our review team can verify it and show a trust badge on your profile. Documents are not kept after review is complete.",
       "format": "JPG or PNG format; maximum size of 20MB.",
       "upload": "Upload",
       "uploaded": "{fileName} uploaded",
+      "errors": {
+        "completeEntry": "Complete the education entry you started or remove this block.",
+        "school": "Enter the university name.",
+        "degree": "Enter the degree or program name.",
+        "degreeType": "Choose a degree type.",
+        "field": "Enter your specialization.",
+        "years": "Choose both start and end years.",
+        "yearRange": "End year cannot be earlier than start year.",
+        "fileType": "Upload a JPG or PNG diploma file.",
+        "fileSize": "Diploma file must be 20MB or smaller."
+      },
       "degreeTypes": {
         "teaching": "Teaching degree",
         "subject": "Degree in the subject you teach",

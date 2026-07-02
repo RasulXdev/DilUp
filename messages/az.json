@@ -784,7 +784,7 @@
       "education": {
         "eyebrow": "Təhsil",
         "title": "Təhsil",
-        "text": "Tamamladığın və ya hazırda davam etdirdiyin ali təhsil haqqında tələbələrə daha çox məlumat ver."
+        "text": "Bitirdiyin və ya davam etdirdiyin ali təhsil məlumatlarını profilinə əlavə et."
       },
       "description": {
         "eyebrow": "Profil mətni",
@@ -1002,14 +1002,29 @@
     "education": {
       "add": "Başqa təhsil əlavə et",
       "none": "Mənim ali təhsil dərəcəm yoxdur",
+      "noneHint": "Bu halda bölməni keçə bilərsən. Profil təsdiqindən sonra istəsən əlavə edərsən.",
       "remove": "Təhsili sil",
+      "entryLabel": "Təhsil #{number}",
+      "entryHint": "Əlavə etdiyin təhsil ictimai profilində etibar siqnalı kimi görünəcək.",
+      "optionalHint": "Ali təhsil məlumatın yoxdursa, bu bölməni boş saxlayıb davam edə bilərsən.",
       "degreeType": "Dərəcə növü",
       "chooseDegreeType": "Dərəcə növünü seç...",
       "badgeTitle": "“Diplom təsdiqləndi” nişanı al",
-      "badgeText": "Etibarlılığını artırmaq üçün diplomunu yüklə. Komandamız onu yoxlayıb profilinə nişan əlavə edəcək. Yoxlanışdan sonra faylların silinəcək.",
+      "badgeText": "Diplom sənədini əlavə etsən, yoxlama komandamız onu nəzərdən keçirib profilində təsdiq nişanı göstərə bilər. Yoxlama tamamlanandan sonra sənəd saxlanılmır.",
       "format": "JPG və ya PNG formatı; maksimum 20MB.",
       "upload": "Yüklə",
       "uploaded": "{fileName} yükləndi",
+      "errors": {
+        "completeEntry": "Başladığın təhsil məlumatını tamamla və ya bu bloku sil.",
+        "school": "Universitet adını daxil et.",
+        "degree": "Dərəcə və ya proqram adını daxil et.",
+        "degreeType": "Dərəcə növünü seç.",
+        "field": "İxtisaslaşmanı daxil et.",
+        "years": "Başlanğıc və bitmə ilini seç.",
+        "yearRange": "Bitmə ili başlanğıc ilindən əvvəl ola bilməz.",
+        "fileType": "Diplom üçün JPG və ya PNG faylı yüklə.",
+        "fileSize": "Diplom faylı 20MB və ya daha kiçik olmalıdır."
+      },
       "degreeTypes": {
         "teaching": "Pedaqoji dərəcə",
         "subject": "Öyrətdiyin fənn üzrə dərəcə",
